@@ -46,4 +46,4 @@ Pool revolutionizes course management in universities by leveraging technology t
 Date
 17.02.2024
 
-Video link: https://m.youtube.com/watch?v=BhMEsyj3BxY
+Video link: [pool-proposal-video](https://www.youtube.com/watch?v=_EOHPGk5RNc)
