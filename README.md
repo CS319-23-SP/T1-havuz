@@ -6,7 +6,7 @@
 
 As students ourselves, we recognize the challenges within the current educational system. We are motivated to address these issues to ensure a smoother experience for both students and educators. Our project, Pool, aims to tackle these problems by creating a user-friendly website that caters to the needs of students, teachers, and administrators. By combining our observations and research, Pool strives to streamline course management processes and enhance overall efficiency within universities.
 
-
+31
 **Goal & Solving Problems**
 
 Pool's primary objective is to simplify course management by offering a comprehensive solution that caters to the requirements of all stakeholders in the academic setting. By automating routine tasks and facilitating seamless communication, Pool aims to increase productivity, reduce administrative burdens, and elevate the quality of education.
