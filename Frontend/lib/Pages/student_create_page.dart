@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'student.dart';
 
 class StudentCreationPage extends StatefulWidget {
+  final Function(Student) onCreateStudent;
+
+  const StudentCreationPage({Key? key, required this.onCreateStudent}) : super(key: key);
+
   @override
   _StudentCreationPageState createState() => _StudentCreationPageState();
 }
@@ -11,13 +16,12 @@ class _StudentCreationPageState extends State<StudentCreationPage> {
   final TextEditingController coursesController = TextEditingController();
 
   void _createStudent() {
-    final studentId = studentIdController.text;
-    final studentName = studentNameController.text;
-    final courses = coursesController.text;
-
-    print("id" + studentId + " name " + studentName + " courses " + courses);
-    // logic
-  }
+  final studentId = studentIdController.text;
+  final studentName = studentNameController.text;
+  final courses = coursesController.text;
+  
+  widget.onCreateStudent(Student(id: studentId, name: studentName, course: courses));
+}
 
   @override
   Widget build(BuildContext context) {
