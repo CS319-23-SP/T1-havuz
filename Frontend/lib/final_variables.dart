@@ -1,7 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/painting/text_style.dart';
-import 'package:google_fonts/google_fonts.dart';
+//import 'package:google_fonts/google_fonts.dart';
 import 'package:flip_card/flip_card.dart';
 
 class PoolColors {
@@ -20,6 +20,7 @@ class AssetLocations {
   static const String userPhoto = "lib/Assets/user_photo.jpg";
 }
 
+/*
 class PoolFonts {
   static const TextStyle Function(
       {Paint? background,
@@ -42,7 +43,7 @@ class PoolFonts {
       TextStyle? textStyle,
       double? wordSpacing}) alike = GoogleFonts.alike;
 }
-
+*/
 const List<String> examButtonList = <String>[
   'Exams',
   'Create',
@@ -145,8 +146,7 @@ class AppBarChoice extends StatelessWidget {
       onPressed: onPressed,
       child: Text(
         text,
-        style: PoolFonts.alike(
-            textStyle: const TextStyle(fontSize: 18, color: PoolColors.black)),
+        style: TextStyle(fontSize: 15),
       ),
     );
   }

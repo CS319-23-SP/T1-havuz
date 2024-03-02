@@ -1,3 +1,4 @@
+import 'package:first_trial/Pages/admin_page.dart';
 import 'package:first_trial/Pages/password_forget_page.dart';
 import 'package:first_trial/final_variables.dart';
 import 'package:flutter/material.dart';
@@ -89,8 +90,7 @@ class LoginPageWidget extends StatelessWidget {
                                 Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) =>
-                                            const CourseHomePage()));
+                                        builder: (context) => Admin()));
                                 //TODO
                               },
                               child: const Text(

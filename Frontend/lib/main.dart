@@ -17,6 +17,6 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           useMaterial3: true,
         ),
-        home: Admin());
+        home: LoginPage());
   }
 }
