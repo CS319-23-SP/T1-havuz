@@ -35,11 +35,9 @@ class _AdminState extends State<Admin> {
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(
-                builder: (context) => StudentCreationPage(
-                  onCreateStudent: addStudent,
-                ),
-              ),
+              MaterialPageRoute(builder: (context) => StudentCreationPage(
+                onCreateStudent: addStudent,
+              )),
             );
           },
           backgroundColor: Colors.blue,
