@@ -42,10 +42,22 @@ class _AdminState extends State<Admin> {
   }
 
 
-  void addStudent(Student student) {
-    setState(() {
-      students.add(student);
-    });
+  Future<void> deleteStudent(String studentId, int index) async {
+    try {
+      print("localhost:3000/student/$studentId");
+      final response = await http.delete(Uri.http('localhost:3000', '/student/$studentId'));
+      if (response.statusCode == 200) {
+        setState(() {
+          students.removeAt(index);
+        });
+      } else {
+          print("student id yok herhalde bilmiom");
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Error: $e'),
+      ));
+    }
   }
 
   @override
@@ -53,11 +65,7 @@ class _AdminState extends State<Admin> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(title: const Text('Admin')),
-        body: StudentData(students: students, onDelete: (index) {
-          setState(() {
-            students.removeAt(index);
-          });
-        }),
+        body: StudentData(students: students, onDelete: deleteStudent),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
             Navigator.push(
@@ -79,7 +87,7 @@ class _AdminState extends State<Admin> {
 
 class StudentData extends StatelessWidget {
   final List<Student> students;
-  final Function(int) onDelete;
+  final Function(String, int) onDelete;
 
   const StudentData({
     Key? key,
@@ -97,7 +105,7 @@ class StudentData extends StatelessWidget {
           title: Text('${student.id} - ${student.name} - ${student.courses}'),
           trailing: IconButton(
             icon: const Icon(Icons.delete, color: Colors.red),
-            onPressed: () => onDelete(index),
+            onPressed: () => onDelete(student.id, index),
           ),
         );
       },

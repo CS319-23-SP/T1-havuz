@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'student.dart';
+import 'dart:convert';
 
 class StudentCreationPage extends StatefulWidget {
 
@@ -15,12 +16,31 @@ class _StudentCreationPageState extends State<StudentCreationPage> {
   final TextEditingController studentNameController = TextEditingController();
   final TextEditingController coursesController = TextEditingController();
 
-  void _createStudent() {
+ void _createStudent() async {
   final studentId = studentIdController.text;
   final studentName = studentNameController.text;
-  final courses = coursesController.text;
-  
-  //widget.onCreateStudent(Student(id: studentId, name: studentName, course: courses));
+  final courses = coursesController.text.split(',').map((course) => course.trim()).toList();
+
+  final url = Uri.parse('http://localhost:3000/student');
+  final id = int.tryParse(studentId);
+  if (id == null) {
+    print("bad id");
+    return;
+  }
+  final response = await http.post(
+    url,
+    headers: {'Content-Type': 'application/json'},
+    body: json.encode({
+      'id': id,
+      'name': studentName,
+      'courses': courses,
+    }),
+  );
+  if (response.statusCode == 201) {
+    print('Student created successfully');
+  } else {
+    print('Failed to create student: ${response.reasonPhrase}');
+  }
 }
 
   @override
