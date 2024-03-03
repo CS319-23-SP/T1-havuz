@@ -100,3 +100,26 @@ app.delete(('/student/:id'), (req, res) => {
         res.status(400).json({error: 'Not a valid id'});
     }
 });
+
+app.patch('/student/:id', (req,res) => {
+    const student = req.body;
+    db.collection('student')
+        .findOne({ id: student.id })
+        .then(existingStudent => {
+            if (existingStudent) {
+                db.collection('student')
+                .updateOne({id: student.id}, {$set: student})
+                .then(result => {
+                    res.status(200).json(result);
+                })
+                .catch(err => {
+                    res.status(500).json({error: 'Couldnt update the document'});
+                });
+            } else {
+                res.status(500).json({ error: "Student doesnt exists" });
+            }
+        })
+        .catch(error => {
+            res.status(500).json({ error: "error checking for students" });
+        });
+});
