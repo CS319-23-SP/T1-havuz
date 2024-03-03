@@ -33,6 +33,7 @@ class _StudentCreationPageState extends State<StudentCreationPage> {
       'id': id,
       'name': studentName,
       'courses': courses,
+      'password': "123456",
     }),
   );
   if (response.statusCode == 201) {
