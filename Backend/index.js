@@ -18,7 +18,7 @@ connectToDb((err) => {
 app.get("/student", (req,res) => {
     let students = [];
 
-    db.collection('db')
+    db.collection('student')
         .find()
         .sort({id: 1})
         .forEach(student => students.push(student))
@@ -33,7 +33,7 @@ app.get("/student", (req,res) => {
 app.get("/student/:id", (req, res) => {
     const id = parseInt(req.params.id);
     if (!isNaN(id) && Number.isInteger(id)) {
-        db.collection('db')
+        db.collection('student')
             .findOne({ id: id })
             .then(student => {
                 if (student) {
@@ -53,13 +53,13 @@ app.get("/student/:id", (req, res) => {
 app.post('/student', (req, res) => {
     const student = req.body;
 
-    db.collection('db')
+    db.collection('student')
         .findOne({ id: student.id })
         .then(existingStudent => {
             if (existingStudent) {
                 res.status(400).json({ error: "Student with the ID exists" });
             } else {
-                db.collection('db')
+                db.collection('student')
                     .insertOne(student)
                     .then(result => {
                         res.status(201).json(result);
@@ -77,11 +77,11 @@ app.post('/student', (req, res) => {
 app.delete(('/student/:id'), (req, res) => {
     const id = parseInt(req.params.id);
     if (!isNaN(id) && Number.isInteger(id)) {
-        db.collection('db')
+        db.collection('student')
             .findOne({ id: id })
             .then(existingStudent => {
                 if (existingStudent) {
-                    db.collection('db')
+                    db.collection('student')
                         .deleteOne({ id: id })
                         .then(result => {
                             res.status(200).json(result);
