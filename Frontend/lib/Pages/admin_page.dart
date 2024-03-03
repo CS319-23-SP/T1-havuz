@@ -40,17 +40,17 @@ class _AdminState extends State<Admin> {
         .toList();
   }
 
+
   Future<void> deleteStudent(String studentId, int index) async {
     try {
       print("localhost:3000/student/$studentId");
-      final response =
-          await http.delete(Uri.http('localhost:3000', '/student/$studentId'));
+      final response = await http.delete(Uri.http('localhost:3000', '/student/$studentId'));
       if (response.statusCode == 200) {
         setState(() {
           students.removeAt(index);
         });
       } else {
-        print("student id yok herhalde bilmiom");
+          print("student id yok herhalde bilmiom");
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -95,24 +95,22 @@ class StudentData extends StatelessWidget {
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return ListView.builder(
-      itemCount: students.length,
-      itemBuilder: (context, index) {
-        var student = students[index];
-        return ListTile(
-          title: Text('${student.id} - ${student.name} - ${student.courses}'),
-          trailing: Row(
-            children: [
-              TextButton(onPressed: () {}, child: Text("Edit")),
-              IconButton(
-                icon: const Icon(Icons.delete, color: Colors.red),
-                onPressed: () => onDelete(student.id, index),
-              ),
-            ],
+Widget build(BuildContext context) {
+  return ListView.builder(
+    itemCount: students.length,
+    itemBuilder: (context, index) {
+      var student = students[index];
+      return ListTile(
+        title: Text('${student.id} - ${student.name} - ${student.courses}'),
+        trailing: SizedBox(
+          width: 48,
+          child: IconButton(
+            icon: const Icon(Icons.delete, color: Colors.red),
+            onPressed: () => onDelete(student.id, index),
           ),
-        );
-      },
-    );
-  }
+        ),
+      );
+    },
+  );
+}
 }
