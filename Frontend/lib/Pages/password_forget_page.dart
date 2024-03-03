@@ -2,6 +2,8 @@ import 'package:first_trial/Pages/login_page.dart';
 import 'package:first_trial/final_variables.dart';
 import 'package:flutter/material.dart';
 import 'course_homepage.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 void main() {
   runApp(const PasswordForgetPage());
@@ -30,6 +32,47 @@ class ForgotPageWidget extends StatelessWidget {
 
   ForgotPageWidget({super.key});
 
+  Future<void> _changePassword(BuildContext context) async {
+    final id = int.tryParse(usernameController.text);
+    if (id == null) {
+      print("bad id");
+      return;
+    }
+    final newpassword = newPasswordController.text;
+    final url = Uri.parse('http://localhost:3000/changepassword');
+    final response = await http.patch(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode({
+        'id': id,
+        'password': newpassword,
+      }),
+    );
+
+    print(response.statusCode);
+
+    if (response.statusCode == 200) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => LoginPage()),
+      );
+    } else {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('Error'),
+          content: Text('Failed to change password: ${response.body}'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('OK'),
+            ),
+          ],
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -50,6 +93,7 @@ class ForgotPageWidget extends StatelessWidget {
                   screenHeight: screenHeight,
                   usernameController: usernameController,
                   newPasswordController: newPasswordController,
+                  onPressed: () => _changePassword(context),
                 ),
               ],
             ),
@@ -70,12 +114,14 @@ class LoginPageContainer extends StatelessWidget {
     required this.screenHeight,
     required this.usernameController,
     required this.newPasswordController,
+    required this.onPressed,
   });
 
   final double screenWidth;
   final double screenHeight;
   final TextEditingController usernameController;
   final TextEditingController newPasswordController;
+  final VoidCallback onPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -114,12 +160,7 @@ class LoginPageContainer extends StatelessWidget {
                       ),
                     ),
                   ),
-                  onPressed: () {
-                    Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const LoginPage()));
-                  },
+                  onPressed: onPressed,
                   child: const Text(
                     'Change',
                     style: TextStyle(color: PoolColors.black, fontSize: 25),
