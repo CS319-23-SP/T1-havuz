@@ -35,7 +35,6 @@ class _AdminState extends State<Admin> {
   }
 
   List<Student> parseStudentsData(dynamic responseData) {
-    print("5");
     return (responseData as List<dynamic>)
         .map((studentData) => Student.fromJson(studentData))
         .toList();
