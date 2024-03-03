@@ -48,7 +48,6 @@ app.get("/student/:id", (req, res) => {
     } else {
         res.status(500).json({error: 'Not a valid id'});
     }
-
 });
 
 app.post('/student', (req, res) => {
@@ -73,4 +72,31 @@ app.post('/student', (req, res) => {
         .catch(error => {
             res.status(500).json({ error: "error checking for students" });
         });
+});
+
+app.delete(('/student/:id'), (req, res) => {
+    const id = parseInt(req.params.id);
+    if (!isNaN(id) && Number.isInteger(id)) {
+        db.collection('db')
+            .findOne({ id: id })
+            .then(existingStudent => {
+                if (existingStudent) {
+                    db.collection('db')
+                        .deleteOne({ id: id })
+                        .then(result => {
+                            res.status(200).json(result);
+                        })
+                        .catch(err => {
+                            res.status(500).json({error: 'Couldnt delete the student'});
+                        });
+                } else {
+                    res.status(404).json({ error: "Student with id doesnt exist" });
+                }
+            })
+            .catch(err => {
+                res.status(500).json({ error: 'Error finding the student' });
+            });
+    } else {
+        res.status(400).json({error: 'Not a valid id'});
+    }
 });
