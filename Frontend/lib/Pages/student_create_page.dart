@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'student.dart';
 import 'dart:convert';
 
 class StudentCreationPage extends StatefulWidget {

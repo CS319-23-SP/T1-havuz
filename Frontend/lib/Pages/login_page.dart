@@ -3,6 +3,8 @@ import 'package:first_trial/Pages/password_forget_page.dart';
 import 'package:first_trial/final_variables.dart';
 import 'package:flutter/material.dart';
 import 'course_homepage.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 void main() {
   runApp(const LoginPage());
@@ -30,6 +32,38 @@ class LoginPageWidget extends StatelessWidget {
   final TextEditingController _passwordController = TextEditingController();
 
   LoginPageWidget({super.key});
+
+  Future<void> _login(BuildContext context) async {
+    final id = int.tryParse(_usernameController.text);
+    if (id == null) {
+      print("bad id");
+      return;
+    }
+    String password = _passwordController.text;
+
+    try {
+      var response = await http.post(
+      Uri.parse('http://localhost:3000/admin'),
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode({'id': id, 'password': password}),
+    );
+
+
+      print(response.statusCode);
+
+      if (response.statusCode == 200) {
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Admin()));
+      } else if (response.statusCode == 201) {
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => CourseHomePage()));
+      } else {
+        print("bura" + response.body);
+      }
+
+    } catch (e) {
+      print("erro");
+      print(e);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -84,15 +118,11 @@ class LoginPageWidget extends StatelessWidget {
                                   ),
                                 ),
                               ),
-                              onPressed: () {
-                                //String username = _usernameController.text;
+                              onPressed: () => _login(context),
+                                /*String username = _usernameController.text;
                                 //String password = _passwordController.text;
-                                Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => Admin()));
                                 //TODO
-                              },
+                              },*/
                               child: const Text(
                                 'Log in',
                                 style: TextStyle(
