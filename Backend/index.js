@@ -1,9 +1,19 @@
 const express = require("express");
 const {connectToDb, getDb} = require("./db");
 const { ObjectId } = require("mongodb");
+const cors = require("cors");
 
 const app = express();
 app.use(express.json());
+
+app.use(cors());
+
+app.use((req, res, next) => {
+    res.setHeader("Access-Control-Allow-Origin", "http://localhost:50885");
+    res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    next();
+  });
 
 let db;
 connectToDb((err) => {
@@ -17,7 +27,6 @@ connectToDb((err) => {
 
 app.get("/student", (req,res) => {
     let students = [];
-
     db.collection('student')
         .find()
         .sort({id: 1})
@@ -123,3 +132,5 @@ app.patch('/student/:id', (req,res) => {
             res.status(500).json({ error: "error checking for students" });
         });
 });
+
+module.exports = app;

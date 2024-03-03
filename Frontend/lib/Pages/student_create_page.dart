@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'student.dart';
 
 class StudentCreationPage extends StatefulWidget {
-  final Function(Student) onCreateStudent;
 
-  const StudentCreationPage({Key? key, required this.onCreateStudent}) : super(key: key);
+  const StudentCreationPage({Key? key}) : super(key: key);
 
   @override
   _StudentCreationPageState createState() => _StudentCreationPageState();
@@ -20,7 +20,7 @@ class _StudentCreationPageState extends State<StudentCreationPage> {
   final studentName = studentNameController.text;
   final courses = coursesController.text;
   
-  widget.onCreateStudent(Student(id: studentId, name: studentName, course: courses));
+  //widget.onCreateStudent(Student(id: studentId, name: studentName, course: courses));
 }
 
   @override

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'student_create_page.dart';
 import 'student.dart';
+import 'dart:convert';
 
 class Admin extends StatefulWidget {
   @override
@@ -8,12 +10,37 @@ class Admin extends StatefulWidget {
 }
 
 class _AdminState extends State<Admin> {
-  List<Student> students = [
-    Student(id: '3131', name: 'Arda', course: 'CS 331'),
-    Student(id: '3132', name: 'Arda', course: 'CS 331'),
-    Student(id: '3133', name: 'Arda', course: 'CS 331'),
-    Student(id: '3134', name: 'Arda', course: 'CS 331'),
-  ];
+  List<Student> students = [];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchStudents();
+  }
+
+  Future<void> fetchStudents() async {
+    try {
+      final response = await http.get(Uri.http('localhost:3000', '/student/'));
+
+      if (response.statusCode == 200) {
+        setState(() {
+          students = parseStudentsData(json.decode(response.body));
+        });
+      } else {
+        throw Exception('Failed to fetch students data');
+      }
+    } catch (e) {
+      print('Error fetching students: $e');
+    }
+  }
+
+  List<Student> parseStudentsData(dynamic responseData) {
+    print("5");
+    return (responseData as List<dynamic>)
+        .map((studentData) => Student.fromJson(studentData))
+        .toList();
+  }
+
 
   void addStudent(Student student) {
     setState(() {
@@ -35,10 +62,12 @@ class _AdminState extends State<Admin> {
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => StudentCreationPage(
-                onCreateStudent: addStudent,
-              )),
-            );
+              MaterialPageRoute(
+                builder: (context) => StudentCreationPage(),
+              ),
+            ).then((_) {
+              fetchStudents();
+            });
           },
           backgroundColor: Colors.blue,
           child: const Icon(Icons.add),
@@ -65,7 +94,7 @@ class StudentData extends StatelessWidget {
       itemBuilder: (context, index) {
         var student = students[index];
         return ListTile(
-          title: Text('${student.id} - ${student.name} - ${student.course}'),
+          title: Text('${student.id} - ${student.name} - ${student.courses}'),
           trailing: IconButton(
             icon: const Icon(Icons.delete, color: Colors.red),
             onPressed: () => onDelete(index),
