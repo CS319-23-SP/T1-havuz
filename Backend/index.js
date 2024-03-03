@@ -164,21 +164,35 @@ app.post('/admin', (req, res) => {
 app.patch('/changepassword', (req, res) => {
     const id = req.body.id;
     const newPassword = req.body.password;
+    
 
     db.collection('admin')
-        .updateOne({ id: id }, { $set: { password: newPassword } })
-        .then(result => {
-            res.status(200).json("Password of admin updated");
+        .findOne({id: id})
+        .then(existingAdmin => {
+            if(existingAdmin){
+                db.collection('admin')
+                    .updateOne({ id: id }, { $set: { password: newPassword } })
+                    .then(result => {
+                        res.status(200).json("Password of admin updated");
+                })
+            }
+            else{
+                db.collection('student')
+                    .findOne({id: id})
+                    .then(existingStudent => {
+                        db.collection('student')
+                            .updateOne({ id: id }, { $set: { password: newPassword } })
+                            .then(result => {
+                                res.status(200).json("Password of student updated");
+                            })
+                    })
+                    .catch(error => {
+                        res.status(503).json({ error: "something went wrong trying to looking for student" });
+                    });
+            }
         })
         .catch(error => {
-            db.collection('student')
-                .updateOne({ id: id }, { $set: { password: newPassword } })
-                .then(result => {
-                    res.status(200).json("Password of student updated");
-                })
-                .catch(error => {
-                    res.status(503).json({ error: "something went wrong trying to looking for account" });
-                });
+                res.status(503).json({ error: "something went wrong trying to looking for admin" });
         });
 });
 
