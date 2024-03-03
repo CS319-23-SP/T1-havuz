@@ -1,3 +1,4 @@
+import 'package:first_trial/Pages/login_page.dart';
 import 'package:first_trial/final_variables.dart';
 import 'package:flutter/material.dart';
 import 'course_homepage.dart';
@@ -24,7 +25,8 @@ class PasswordForgetPage extends StatelessWidget {
 }
 
 class ForgotPageWidget extends StatelessWidget {
-  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController usernameController = TextEditingController();
+  final TextEditingController newPasswordController = TextEditingController();
 
   ForgotPageWidget({super.key});
 
@@ -44,9 +46,11 @@ class ForgotPageWidget extends StatelessWidget {
                   width: 8 * (screenWidth / 7) / 14,
                 ),
                 LoginPageContainer(
-                    screenWidth: screenWidth,
-                    screenHeight: screenHeight,
-                    usernameController: _usernameController),
+                  screenWidth: screenWidth,
+                  screenHeight: screenHeight,
+                  usernameController: usernameController,
+                  newPasswordController: newPasswordController,
+                ),
               ],
             ),
           ),
@@ -64,12 +68,14 @@ class LoginPageContainer extends StatelessWidget {
     super.key,
     required this.screenWidth,
     required this.screenHeight,
-    required TextEditingController usernameController,
-  }) : _usernameController = usernameController;
+    required this.usernameController,
+    required this.newPasswordController,
+  });
 
   final double screenWidth;
   final double screenHeight;
-  final TextEditingController _usernameController;
+  final TextEditingController usernameController;
+  final TextEditingController newPasswordController;
 
   @override
   Widget build(BuildContext context) {
@@ -86,9 +92,13 @@ class LoginPageContainer extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               PasswordForgotPageInputButton(
-                usernameController: _usernameController,
+                usernameController: usernameController,
                 labelText: "Enter email or Bilkent ID",
               ),
+              const SizedBox(height: 30),
+              PasswordForgotPageInputButton(
+                  usernameController: newPasswordController,
+                  labelText: "Enter new ID"),
               const SizedBox(height: 30),
               SizedBox(
                 height: screenHeight / 14,
@@ -105,12 +115,13 @@ class LoginPageContainer extends StatelessWidget {
                     ),
                   ),
                   onPressed: () {
-                    //String username = _usernameController.text;
-                    //String password = _passwordController.text;
-                    //TODO
+                    Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const LoginPage()));
                   },
                   child: const Text(
-                    'Send email',
+                    'Change',
                     style: TextStyle(color: PoolColors.black, fontSize: 25),
                   ),
                 ),
