@@ -6,10 +6,6 @@ import 'course_homepage.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-void main() {
-  runApp(const LoginPage());
-}
-
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
 
@@ -95,15 +91,15 @@ class LoginPageWidget extends StatelessWidget {
                           LoginPageInputButton(
                             usernameController: _usernameController,
                             labelText: "Bilkent ID",
+                            isObscured: false,
                           ),
                           const SizedBox(height: 20),
-                          LoginPageInputButton2(
+                          LoginPageInputButton(
                             usernameController: _passwordController,
                             labelText: "Password",
                             isObscured: true,
                           ),
-                          const RememberUsernameCheckbox(),
-                          const SizedBox(height: 10),
+                          const SizedBox(height: 30),
                           SizedBox(
                             height: screenHeight / 14,
                             width: 3 * (8 * (screenWidth / 7) / 14) / 2,
@@ -168,39 +164,8 @@ class LoginPageWidget extends StatelessWidget {
   }
 }
 
-class LoginPageInputButton extends StatelessWidget {
+class LoginPageInputButton extends StatefulWidget {
   const LoginPageInputButton({
-    super.key,
-    required TextEditingController usernameController,
-    required this.labelText,
-  }) : _usernameController = usernameController;
-
-  final TextEditingController _usernameController;
-  final String labelText;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-          border: Border.all(color: PoolColors.black),
-          color: PoolColors.fairTurkuaz,
-          borderRadius: const BorderRadius.all(Radius.circular(15))),
-      child: Padding(
-        padding: const EdgeInsets.only(left: 12.0),
-        child: TextField(
-          controller: _usernameController,
-          decoration: InputDecoration(
-            border: InputBorder.none,
-            labelText: labelText,
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class LoginPageInputButton2 extends StatefulWidget {
-  const LoginPageInputButton2({
     Key? key,
     required TextEditingController usernameController,
     required this.labelText,
@@ -213,14 +178,39 @@ class LoginPageInputButton2 extends StatefulWidget {
   final bool isObscured;
 
   @override
-  _LoginPageInputButton2State createState() => _LoginPageInputButton2State();
+  _LoginPageInputButtonState createState() => _LoginPageInputButtonState();
 }
 
-class _LoginPageInputButton2State extends State<LoginPageInputButton2> {
-  bool _isObscured = false;
+class _LoginPageInputButtonState extends State<LoginPageInputButton> {
+  bool _isObscured = true;
 
   @override
   Widget build(BuildContext context) {
+    var textField = TextField(
+      controller: widget._usernameController,
+      decoration: InputDecoration(
+        border: InputBorder.none,
+        labelText: widget.labelText,
+      ),
+    );
+    var textFieldForPassword = TextField(
+      obscureText: _isObscured,
+      controller: widget._usernameController,
+      decoration: InputDecoration(
+        border: InputBorder.none,
+        labelText: widget.labelText,
+        suffixIcon: IconButton(
+          icon: _isObscured
+              ? const Icon(Icons.visibility_off)
+              : const Icon(Icons.visibility),
+          onPressed: () {
+            setState(() {
+              _isObscured = !_isObscured;
+            });
+          },
+        ),
+      ),
+    );
     return Container(
       decoration: BoxDecoration(
         border: Border.all(color: PoolColors.black),
@@ -229,52 +219,8 @@ class _LoginPageInputButton2State extends State<LoginPageInputButton2> {
       ),
       child: Padding(
         padding: const EdgeInsets.only(left: 12.0),
-        child: TextField(
-          obscureText: _isObscured,
-          controller: widget._usernameController,
-          decoration: InputDecoration(
-            border: InputBorder.none,
-            labelText: widget.labelText,
-            suffixIcon: IconButton(
-              icon: _isObscured
-                  ? const Icon(Icons.visibility)
-                  : const Icon(Icons.visibility_off),
-              onPressed: () {
-                setState(() {
-                  _isObscured = !_isObscured;
-                });
-              },
-            ),
-          ),
-        ),
+        child: widget.isObscured ? textFieldForPassword : textField,
       ),
-    );
-  }
-}
-
-class RememberUsernameCheckbox extends StatefulWidget {
-  const RememberUsernameCheckbox({super.key});
-
-  @override
-  State<RememberUsernameCheckbox> createState() =>
-      _RememberUsernameCheckboxState();
-}
-
-class _RememberUsernameCheckboxState extends State<RememberUsernameCheckbox> {
-  bool isChecked = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return CheckboxListTile(
-      title: const Text("Remember me"),
-      checkColor: PoolColors.black,
-      value: isChecked,
-      onChanged: (bool? value) {
-        setState(() {
-          isChecked = value!;
-        });
-      },
-      activeColor: Colors.transparent,
     );
   }
 }
