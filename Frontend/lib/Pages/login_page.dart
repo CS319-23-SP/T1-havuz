@@ -169,7 +169,7 @@ class LoginPageWidget extends StatelessWidget {
 }
 
 class LoginPageInputButton extends StatelessWidget {
-  LoginPageInputButton({
+  const LoginPageInputButton({
     super.key,
     required TextEditingController usernameController,
     required this.labelText,
