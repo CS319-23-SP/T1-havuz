@@ -3,8 +3,6 @@ import 'package:first_trial/Pages/password_forget_page.dart';
 import 'package:first_trial/final_variables.dart';
 import 'package:flutter/material.dart';
 import 'course_homepage.dart';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
 
 void main() {
   runApp(const LoginPage());
@@ -32,38 +30,6 @@ class LoginPageWidget extends StatelessWidget {
   final TextEditingController _passwordController = TextEditingController();
 
   LoginPageWidget({super.key});
-
-  Future<void> _login(BuildContext context) async {
-    final id = int.tryParse(_usernameController.text);
-    if (id == null) {
-      print("bad id");
-      return;
-    }
-    String password = _passwordController.text;
-
-    try {
-      var response = await http.post(
-      Uri.parse('http://localhost:3000/admin'),
-      headers: {"Content-Type": "application/json"},
-      body: jsonEncode({'id': id, 'password': password}),
-    );
-
-
-      print(response.statusCode);
-
-      if (response.statusCode == 200) {
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Admin()));
-      } else if (response.statusCode == 201) {
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => CourseHomePage()));
-      } else {
-        print("bura" + response.body);
-      }
-
-    } catch (e) {
-      print("erro");
-      print(e);
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -97,9 +63,11 @@ class LoginPageWidget extends StatelessWidget {
                             labelText: "Bilkent ID",
                           ),
                           const SizedBox(height: 20),
-                          LoginPageInputButton(
-                              usernameController: _passwordController,
-                              labelText: "Password"),
+                          LoginPageInputButton2(
+                            usernameController: _passwordController,
+                            labelText: "Password",
+                            isObscured: true,
+                          ),
                           const RememberUsernameCheckbox(),
                           const SizedBox(height: 10),
                           SizedBox(
@@ -118,11 +86,15 @@ class LoginPageWidget extends StatelessWidget {
                                   ),
                                 ),
                               ),
-                              onPressed: () => _login(context),
-                                /*String username = _usernameController.text;
+                              onPressed: () {
+                                //String username = _usernameController.text;
                                 //String password = _passwordController.text;
+                                Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => Admin()));
                                 //TODO
-                              },*/
+                              },
                               child: const Text(
                                 'Log in',
                                 style: TextStyle(
@@ -163,7 +135,7 @@ class LoginPageWidget extends StatelessWidget {
 }
 
 class LoginPageInputButton extends StatelessWidget {
-  const LoginPageInputButton({
+  LoginPageInputButton({
     super.key,
     required TextEditingController usernameController,
     required this.labelText,
@@ -186,6 +158,59 @@ class LoginPageInputButton extends StatelessWidget {
           decoration: InputDecoration(
             border: InputBorder.none,
             labelText: labelText,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class LoginPageInputButton2 extends StatefulWidget {
+  const LoginPageInputButton2({
+    Key? key,
+    required TextEditingController usernameController,
+    required this.labelText,
+    required this.isObscured,
+  })  : _usernameController = usernameController,
+        super(key: key);
+
+  final TextEditingController _usernameController;
+  final String labelText;
+  final bool isObscured;
+
+  @override
+  _LoginPageInputButton2State createState() => _LoginPageInputButton2State();
+}
+
+class _LoginPageInputButton2State extends State<LoginPageInputButton2> {
+  bool _isObscured = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        border: Border.all(color: PoolColors.black),
+        color: PoolColors.fairTurkuaz,
+        borderRadius: const BorderRadius.all(Radius.circular(15)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.only(left: 12.0),
+        child: TextField(
+          obscureText: _isObscured,
+          controller: widget._usernameController,
+          decoration: InputDecoration(
+            border: InputBorder.none,
+            labelText: widget.labelText,
+            suffixIcon: IconButton(
+              icon: _isObscured
+                  ? const Icon(Icons.visibility)
+                  : const Icon(Icons.visibility_off),
+              onPressed: () {
+                setState(() {
+                  _isObscured = !_isObscured;
+                });
+              },
+            ),
           ),
         ),
       ),
