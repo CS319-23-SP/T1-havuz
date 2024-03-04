@@ -5,10 +5,6 @@ import 'course_homepage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-void main() {
-  runApp(const PasswordForgetPage());
-}
-
 class PasswordForgetPage extends StatelessWidget {
   const PasswordForgetPage({super.key});
 
