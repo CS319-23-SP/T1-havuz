@@ -3,7 +3,7 @@ const router = express.Router()
 const Student = require('../models/student')
 
 
-router.get('/student', async (req, res) => {
+router.get('/', async (req, res) => {
     try {
         const students = await Student.find().sort({id: 1}).toArray();
         res.json(students);
@@ -13,7 +13,7 @@ router.get('/student', async (req, res) => {
 });
 
 
-router.get("/student/:id", async (req, res) => {
+router.get("/:id", async (req, res) => {
     const id = parseInt(req.params.id);
     if (!isNaN(id) && Number.isInteger(id)) {
         try {
@@ -32,8 +32,9 @@ router.get("/student/:id", async (req, res) => {
 });
 
 
-router.post('/student', async (req, res) => {
+router.post('/', async (req, res) => {
     const student = new Student({
+        id: req.body.id,
         firstName: req.body.firstName,
         middleName: req.body.middleName,
         lastName: req.body.lastName,
@@ -44,17 +45,17 @@ router.post('/student', async (req, res) => {
     try {
         const existingStudent = await Student.findOne({ id: student.id });
         if (existingStudent) {
-            return res.status(400).json({ error: "Student with the id :${id} exists" });
-        }
-        
-        const result = await Student.insertOne(student);
+            return res.status(400).json({ error: `Student with the id ${student.id} exists` });     
+          }
+    
+        const result = await student.save();
         res.status(201).json(result);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 });
 
-router.delete('/student/:id', async (req, res) => {
+router.delete('/:id', async (req, res) => {
     const id = parseInt(req.params.id);
     
     if (!isNaN(id) && Number.isInteger(id)) {
@@ -75,9 +76,10 @@ router.delete('/student/:id', async (req, res) => {
 });
 
 
-router.patch('/student/:id', async (req, res) => {
+router.patch('/:id', async (req, res) => {
     const studentId = parseInt(req.params.id);
     const studentUpdates = new Student({
+        id: req.params.id, //to ensure it does not change the id
         firstName: req.body.firstName,
         middleName: req.body.middleName,
         lastName: req.body.lastName,

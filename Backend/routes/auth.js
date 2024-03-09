@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const Admin = require('../models/admin');
-
+const Auth = require('../models/auth'); 
 
 router.post('/login', async (req, res) => {
     const id = req.body.id;
@@ -37,7 +36,7 @@ router.post('/login', async (req, res) => {
 
 
 
-app.patch('/changepassword', async (req, res) => {
+router.patch('/changepassword', async (req, res) => {
     const id = req.body.id;
     const newPassword = req.body.password;
 
