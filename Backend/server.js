@@ -9,7 +9,6 @@ db.once('open', () => console.log('Database Connected'))
 
 const app = express();
 app.use(express.json());
-//app.use(cors());
 const flutterurl = "http://localhost:50885";
 
 app.use((req, res, next) => {
