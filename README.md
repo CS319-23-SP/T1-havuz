@@ -28,7 +28,7 @@ Pool offers a wide range of features to address the diverse needs of its users, 
   - Support for four different user types
   - Exam archive
   - Instructor evaluation
-  - Project team and team assignment, and team grading
+  - Project team, team assignment and team grading
   - Deployment
 
 **Selling Points**
