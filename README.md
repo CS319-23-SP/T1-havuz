@@ -4,7 +4,7 @@
 
 **Description & Motivation**
 
-As students ourselves, we recognize the challenges within the current educational system. We are motivated to address these issues to ensure a smoother experience for both students and educators. Our project, Pool, aims to tackle these problems by creating a user-friendly website that caters to the needs of students, teachers, and administrators. By combining our observations and research, Pool strives to streamline course management processes and enhance overall efficiency within universities.
+As students ourselves, we recognize the challenges like within the current educational system. For example, group submission is missing in Moodle, an individual submission by a group member cannot be seen by other group members. We are motivated to address these issues to ensure a smoother experience for both students and educators. Therefore we decided to add project team feature to our system. Our project, Pool, aims to tackle these problems by creating a user-friendly website that caters to the needs of students, teachers, and administrators. By combining our observations and research, Pool strives to streamline course management processes and enhance overall efficiency within universities.
 
 **Goal & Solving Problems**
 
@@ -18,13 +18,18 @@ Pool offers a wide range of features to address the diverse needs of its users, 
   - Exam scheduling and monitoring
   - Assignment submission and grading
   - Discussion forums and messaging
-  - Event scheduling and monitoring
+  - Event scheduling and notification
   - Resource sharing and collaboration tools
   - Attendance and grade tracking
-  - Performance analytics and reporting
+  - Custom report creation
+  - Performance and trend analytics and reporting
+  - ABET table
+  - Question database with their solution keys
   - Support for four different user types
   - Exam archive
   - Instructor evaluation
+  - Project team and team assignment, and team grading
+  - Deployment
 
 **Selling Points**
 
