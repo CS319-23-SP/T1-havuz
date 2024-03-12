@@ -26,6 +26,7 @@ class LoginPage extends StatelessWidget {
 class LoginPageWidget extends StatelessWidget {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  String _errorMessage = 'Invalid ID or password';
 
   LoginPageWidget({super.key});
 
@@ -53,7 +54,43 @@ class LoginPageWidget extends StatelessWidget {
         Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (context) => CourseHomePage()));
       } else {
-        print("bura" + response.body);
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Container(
+              padding: EdgeInsets.all(20.0),
+              height: 90,
+              margin: EdgeInsetsDirectional.fromSTEB(200, 0, 200, 0),
+              decoration: BoxDecoration(
+                color: Colors.red,
+                borderRadius: BorderRadius.all(Radius.circular(30)),
+              ),
+              child: Row(
+                children: [
+                  const SizedBox(
+                    width: 48,
+                  ),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Sorry!',
+                            style:
+                                TextStyle(fontSize: 18, color: Colors.white)),
+                        Text(
+                          'Invalid ID or password',
+                          style: TextStyle(fontSize: 12, color: Colors.white),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              )),
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          duration: Duration(seconds: 3),
+        ));
       }
     } catch (e) {
       print("erro");
