@@ -5,7 +5,7 @@ const Student = require('../models/student')
 
 router.get('/', async (req, res) => {
     try {
-        const students = await Student.find().sort({id: 1}).toArray();
+        const students = await Student.find().sort({ id: 1 });
         res.json(students);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -75,17 +75,15 @@ router.delete('/:id', async (req, res) => {
     }
 });
 
-
 router.patch('/:id', async (req, res) => {
     const studentId = parseInt(req.params.id);
-    const studentUpdates = new Student({
-        id: req.params.id, //to ensure it does not change the id
+    const studentUpdates = {
         firstName: req.body.firstName,
         middleName: req.body.middleName,
         lastName: req.body.lastName,
         department: req.body.department,
         coursesTaken: req.body.coursesTaken, 
-    });
+    };
     try {
         const existingStudent = await Student.findOne({ id: studentId });
 
@@ -98,7 +96,7 @@ router.patch('/:id', async (req, res) => {
 
             res.status(200).json(updatedStudent);
         } else {
-            res.status(404).json({ error: "Student with the id:${id} doesn't exist" });
+            res.status(404).json({ error: `Student with the id: ${studentId} doesn't exist` });
         }
     } catch (error) {
         res.status(500).json({ message: error.message });
