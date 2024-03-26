@@ -4,6 +4,7 @@ const authSchema = new mongoose.Schema({
     id: {
         type: Number,
         required: true,
+        unique: true
     },
     password: {
         type: String,
@@ -12,6 +13,7 @@ const authSchema = new mongoose.Schema({
     role: {
         type: String, 
         required: true,
+        enum: ['student', 'admin', 'TA', 'instructor']
     },
 })
 

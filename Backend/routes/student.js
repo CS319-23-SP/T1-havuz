@@ -1,6 +1,8 @@
 const express = require('express')
+const mongoose = require('mongoose')
 const router = express.Router()
 const Student = require('../models/student')
+const Auth = require('../models/auth')
 
 
 router.get('/', async (req, res) => {
@@ -41,15 +43,22 @@ router.post('/', async (req, res) => {
         department: req.body.department,
         coursesTaken: req.body.coursesTaken, 
     });
+    const auth = new Auth({
+        id: req.body.id,
+        password: req.body.password ? req.body.password : "default",
+        role: "student"
+    })
 
     try {
         const existingStudent = await Student.findOne({ id: student.id });
         if (existingStudent) {
             return res.status(400).json({ error: `Student with the id ${student.id} exists` });     
-          }
+        }
     
-        const result = await student.save();
-        res.status(201).json(result);
+        const studentResult = await student.save();
+        const authResult = await auth.save();
+
+        res.status(201).json(studentResult);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

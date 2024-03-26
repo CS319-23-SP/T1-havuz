@@ -3,30 +3,19 @@ const router = express.Router();
 const Auth = require('../models/auth'); 
 
 router.post('/login', async (req, res) => {
-    const id = req.body.id;
-    const enteredPassword = req.body.password;
+    const { id, password, role } = req.body;
 
     try {
-        const existingAdmin = await Admin.findOne({ id: id });
+        const auth = await Auth.findOne({ id: id, role: role });
 
-        if (existingAdmin) {
-            if (enteredPassword === existingAdmin.password) {
-                return res.status(200).json("Successful admin login");
+        if (auth) {
+            if (password === auth.password) {
+                return res.status(200).json({ message: `Successful ${role} login` });
             } else {
-                return res.status(400).json("Admin Login Error: id:${id} has different password than ${enteredPassword}");
+                return res.status(400).json({ error: `Incorrect password for ${role} with id: ${id}` });
             }
         } else {
-            const existingStudent = await Student.findOne({ id: id });
-
-            if (existingStudent) {
-                if (enteredPassword === existingStudent.password) {
-                    return res.status(201).json("Successful student login");
-                } else {
-                    return res.status(400).json("Student Login Error: id:${id} has different password than ${enteredPassword}");
-                }
-            } else {
-                return res.status(404).json({ error: "Account not found" });
-            }
+            return res.status(404).json({ error: "Account not found" });
         }
     } catch (error) {
         return res.status(500).json({ error: "Something went wrong while trying to authenticate" });
@@ -35,26 +24,17 @@ router.post('/login', async (req, res) => {
 
 
 
-
 router.patch('/changepassword', async (req, res) => {
-    const id = req.body.id;
-    const newPassword = req.body.password;
+    const { id, newPassword } = req.body;
 
     try {
-        const existingAdmin = await Admin.findOne({ id: id });
+        const auth = await Auth.findOne({ id: id });
 
-        if (existingAdmin) {
-            await Admin.updateOne({ id: id }, { $set: { password: newPassword } });
-            return res.status(200).json("Password of admin updated");
+        if (auth) {
+            await Auth.updateOne({ id: id }, { $set: { password: newPassword } });
+            return res.status(200).json({ message: "Password updated successfully" });
         } else {
-            const existingStudent = await Student.findOne({ id: id });
-
-            if (existingStudent) {
-                await Student.updateOne({ id: id }, { $set: { password: newPassword } });
-                return res.status(200).json("Password of student updated");
-            } else {
-                return res.status(404).json({ error: "Account not found" });
-            }
+            return res.status(404).json({ error: "Account not found" });
         }
     } catch (error) {
         return res.status(500).json({ error: "Something went wrong while trying to update password" });
