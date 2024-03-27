@@ -1,6 +1,10 @@
 import 'package:first_trial/Pages/Widgets/AppBars/app_bars.dart';
 import 'package:first_trial/final_variables.dart';
 import 'package:flutter/material.dart';
+import 'question_create.dart';
+import 'question.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 const List<String> list = <String>[
   '2018-2019 Fall',
@@ -22,7 +26,38 @@ class _QuestionHomepageState extends State<QuestionHomepage> {
   //final QIDController = TextEditingController();
   final TextEditingController _KeywordController = TextEditingController();
 
+    List<Question> questions = [];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchQuestions();
+  }
+  
+  Future<void> fetchQuestions() async {
+    try {
+      final response = await http.get(Uri.parse('http://localhost:8080/question/'));
+      if (response.statusCode == 200) {
+        setState(() {
+          parseQuestionsData(json.decode(response.body));
+        });
+      } else {
+        throw Exception('Failed to fetch questions data');
+      }
+    } catch (e) {
+      print('Error fetching questions: $e');
+    }
+  }
+
+  void parseQuestionsData(dynamic responseData) {
+    for (var questionData in responseData as List<dynamic>) {
+      final question = Question.fromJson(questionData);
+      questions.add(question);
+    }
+  }
+
   String dropdownValue = list.first;
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -179,9 +214,16 @@ class _QuestionHomepageState extends State<QuestionHomepage> {
                                   ),
                                 ),
                               ),
-                              onPressed: () {},
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => AddQuestionPage()),
+                                ).then((_) {
+                                  fetchQuestions();
+                                });
+                              },
                               child: const Text(
-                                'Search',
+                                'Add Question',
                                 style: TextStyle(
                                     color: PoolColors.black, fontSize: 25),
                               ),
@@ -347,13 +389,29 @@ class _QuestionHomepageState extends State<QuestionHomepage> {
                         width: 3 * screenWidth / 7,
                         child: Container(
                           decoration: BoxDecoration(
-                              color: PoolColors.white,
-                              border: Border.all(color: PoolColors.black),
-                              borderRadius:
-                                  const BorderRadius.all(Radius.circular(15))),
+                            color: PoolColors.white,
+                            border: Border.all(color: PoolColors.black),
+                            borderRadius: const BorderRadius.all(Radius.circular(15))),
+                          child: ListView.builder(
+                            itemCount: questions.length,
+                            itemBuilder: (context, index) {
+                              final question = questions[index];
+                              return ListTile(
+                                title: Text('Question ID: ${question.id}'),
+                                subtitle: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text('Header: ${question.header}'),
+                                    Text('Courses: ${question.courses.join(', ')}'),
+                                    Text('Topics: ${question.topics.join(', ')}'),
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
                         ),
                       ),
-                    )
+                    ),
                   ],
                 ),
               ),
