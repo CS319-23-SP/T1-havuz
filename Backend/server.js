@@ -24,8 +24,12 @@ app.use('/student', studentsRoute)
 const adminsRoute = require('./routes/admin')
 app.use('/admin', adminsRoute) 
 
+const questionRoute = require('./routes/question')
+app.use('/question', questionRoute) 
+
 const authRoute = require('./routes/auth')
 app.use('/auth', authRoute) 
+
 
 app.listen(8080, ()=> console.log('Server Started'))
 
