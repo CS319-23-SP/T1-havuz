@@ -6,13 +6,15 @@ router.post('/login', async (req, res) => {
     const { id, password, role } = req.body;
 
     try {
-        const auth = await Auth.findOne({ id: id, role: role });
+        const auth = await Auth.findOne({ id: id});
+        const role = auth.role;
+
 
         if (auth) {
             if (password === auth.password) {
-                return res.status(200).json({ message: `Successful ${role} login` });
+                return res.status(200).json({ message: `Successful ${role} login`, role: role});
             } else {
-                return res.status(400).json({ error: `Incorrect password for ${role} with id: ${id}` });
+                return res.status(400).json({ error: `Incorrect password for with id: ${id}` });
             }
         } else {
             return res.status(404).json({ error: "Account not found" });

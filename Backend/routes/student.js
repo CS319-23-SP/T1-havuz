@@ -8,7 +8,7 @@ const Auth = require('../models/auth')
 router.get('/', async (req, res) => {
     try {
         const students = await Student.find().sort({ id: 1 });
-        res.json(students);
+        res.status(200).json(students);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -54,7 +54,6 @@ router.post('/', async (req, res) => {
         if (existingStudent) {
             return res.status(400).json({ error: `Student with the id ${student.id} exists` });     
         }
-    
         const studentResult = await student.save();
         const authResult = await auth.save();
 
@@ -72,6 +71,8 @@ router.delete('/:id', async (req, res) => {
             const existingStudent = await Student.findOneAndDelete({ id: id });
             
             if (existingStudent) {
+                await Auth.findOneAndDelete({ id: id });
+
                 res.status(200).json(existingStudent);
             } else {
                 res.status(404).json({ error: "Student with id :${id} doesn't exist" });
