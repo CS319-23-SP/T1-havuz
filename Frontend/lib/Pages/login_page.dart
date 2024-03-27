@@ -37,35 +37,39 @@ class LoginPageWidget extends StatelessWidget {
       return;
     }
     String password = _passwordController.text;
+    String role = "";
 
     try {
       var response = await http.post(
-        Uri.parse('http://localhost:3000/admin'),
+        Uri.parse('http://localhost:8080/auth/login'),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({'id': id, 'password': password}),
       );
 
-      print(response.statusCode);
-
       if (response.statusCode == 200) {
-        Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => Admin()));
-      } else if (response.statusCode == 201) {
-        Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => CourseHomePage()));
+        var data = jsonDecode(response.body);
+        role = data['role'];
+
+        if(role == "admin"){
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Admin()));
+        }
+        else if(role == "student"){
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => CourseHomePage()));
+        }
       } else {
+        print("Login failed: ${response.statusCode}");
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Container(
-              padding: EdgeInsets.all(20.0),
+              padding: const EdgeInsets.all(20.0),
               height: 90,
-              margin: EdgeInsetsDirectional.fromSTEB(200, 0, 200, 0),
-              decoration: BoxDecoration(
+              margin: const EdgeInsetsDirectional.fromSTEB(200, 0, 200, 0),
+              decoration: const BoxDecoration(
                 color: Colors.red,
                 borderRadius: BorderRadius.all(Radius.circular(30)),
               ),
-              child: Row(
+              child: const Row(
                 children: [
-                  const SizedBox(
+                  SizedBox(
                     width: 48,
                   ),
                   Expanded(
@@ -89,7 +93,7 @@ class LoginPageWidget extends StatelessWidget {
           behavior: SnackBarBehavior.floating,
           backgroundColor: Colors.transparent,
           elevation: 0,
-          duration: Duration(seconds: 3),
+          duration: const Duration(seconds: 3),
         ));
       }
     } catch (e) {

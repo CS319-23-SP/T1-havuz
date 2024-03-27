@@ -20,7 +20,7 @@ class _AdminState extends State<Admin> {
 
   Future<void> fetchStudents() async {
     try {
-      final response = await http.get(Uri.http('localhost:3000', '/student/'));
+      final response = await http.get(Uri.http('localhost:8080', '/student/'));
 
       if (response.statusCode == 200) {
         setState(() {
@@ -44,7 +44,8 @@ class _AdminState extends State<Admin> {
   Future<void> deleteStudent(String studentId, int index) async {
     try {
       print("localhost:3000/student/$studentId");
-      final response = await http.delete(Uri.http('localhost:3000', '/student/$studentId'));
+      final response = await http.delete(Uri.http('localhost:8080', '/student/$studentId'));
+
       if (response.statusCode == 200) {
         setState(() {
           students.removeAt(index);
