@@ -14,13 +14,35 @@ class _StudentCreationPageState extends State<StudentCreationPage> {
   final TextEditingController studentIdController = TextEditingController();
   final TextEditingController studentNameController = TextEditingController();
   final TextEditingController coursesController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController departmentController = TextEditingController();
 
  void _createStudent() async {
   final studentId = studentIdController.text;
-  final studentName = studentNameController.text;
-  final courses = coursesController.text.split(',').map((course) => course.trim()).toList();
+  List<String> parts = studentNameController.text.split(' ');
+  String firstName = "";
+  String middleName = "";
+  String lastName = "";
 
-  final url = Uri.parse('http://localhost:3000/student');
+  if(parts.length == 1){
+    print("last name missing");
+    return;
+  }
+  else if(parts.length == 2){
+    firstName = parts[0];
+    lastName = parts[1];
+  }
+  else if(parts.length >= 3){
+    firstName = parts[0];
+    middleName = parts.sublist(1, parts.length - 1).join(' ');
+    lastName = parts.last;
+  }
+
+  final courses = coursesController.text.split(',').map((course) => course.trim()).toList();
+  final department = departmentController.text;
+  final password = passwordController.text;
+
+  final url = Uri.parse('http://localhost:8080/student');
   final id = int.tryParse(studentId);
   if (id == null) {
     print("bad id");
@@ -31,9 +53,12 @@ class _StudentCreationPageState extends State<StudentCreationPage> {
     headers: {'Content-Type': 'application/json'},
     body: json.encode({
       'id': id,
-      'name': studentName,
-      'courses': courses,
-      'password': "123456",
+      'firstName': firstName,
+      if (middleName.isNotEmpty) 'middleName': middleName,
+      'lastName': lastName,
+      'coursesTaken': courses,
+      'department': department,
+      'password': password
     }),
   );
   if (response.statusCode == 201) {
@@ -73,7 +98,7 @@ class _StudentCreationPageState extends State<StudentCreationPage> {
               TextFormField(
                 controller: studentNameController,
                 decoration: const InputDecoration(
-                  hintText: 'Enter Student Name',
+                  hintText: 'Enter Student Name (be careful about spacing)',
                 ),
               ),
               const SizedBox(height: 16),
@@ -82,6 +107,22 @@ class _StudentCreationPageState extends State<StudentCreationPage> {
                 controller: coursesController,
                 decoration: const InputDecoration(
                   hintText: 'Enter Courses',
+                ),
+              ),
+              const SizedBox(height: 16),
+              const Text('Password'),
+              TextFormField(
+                controller: passwordController,
+                decoration: const InputDecoration(
+                  hintText: 'Enter Password',
+                ),
+              ),
+              const SizedBox(height: 16),
+              const Text('Department'),
+              TextFormField(
+                controller: departmentController,
+                decoration: const InputDecoration(
+                  hintText: 'Enter Department',
                 ),
               ),
               const SizedBox(height: 24),
