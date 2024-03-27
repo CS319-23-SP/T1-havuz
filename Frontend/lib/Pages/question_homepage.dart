@@ -2,6 +2,13 @@ import 'package:first_trial/Pages/Widgets/AppBars/app_bars.dart';
 import 'package:first_trial/final_variables.dart';
 import 'package:flutter/material.dart';
 
+const List<String> list = <String>[
+  '2018-2019 Fall',
+  '2019-2020 Fall',
+  '2019-2020 Spring',
+  '2020-2021 Fall'
+];
+
 class QuestionHomepage extends StatefulWidget {
   const QuestionHomepage({super.key});
 
@@ -10,10 +17,18 @@ class QuestionHomepage extends StatefulWidget {
 }
 
 class _QuestionHomepageState extends State<QuestionHomepage> {
+  final TextEditingController _QIDController = TextEditingController();
+  final TextEditingController _CourseController = TextEditingController();
+  //final QIDController = TextEditingController();
+  final TextEditingController _KeywordController = TextEditingController();
+
+  String dropdownValue = list.first;
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
+
+    //controllers
     return Scaffold(
       appBar: const InstructorAppBar(),
       body: Row(
@@ -33,7 +48,7 @@ class _QuestionHomepageState extends State<QuestionHomepage> {
                     width: screenWidth / 4,
                     height: 3 * (screenHeight / 4),
                     child: Padding(
-                      padding: const EdgeInsets.all(12.0),
+                      padding: const EdgeInsets.all(25.0),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -43,12 +58,13 @@ class _QuestionHomepageState extends State<QuestionHomepage> {
                                 color: PoolColors.fairTurkuaz,
                                 borderRadius: const BorderRadius.all(
                                     Radius.circular(15))),
-                            child: const Padding(
+                            child: Padding(
                               padding: EdgeInsets.only(left: 12.0),
                               child: TextField(
+                                controller: _QIDController,
                                 decoration: InputDecoration(
                                   border: InputBorder.none,
-                                  labelText: "labelText",
+                                  labelText: "Question ID",
                                 ),
                               ),
                             ),
@@ -60,12 +76,13 @@ class _QuestionHomepageState extends State<QuestionHomepage> {
                                 color: PoolColors.fairTurkuaz,
                                 borderRadius: const BorderRadius.all(
                                     Radius.circular(15))),
-                            child: const Padding(
+                            child: Padding(
                               padding: EdgeInsets.only(left: 12.0),
                               child: TextField(
+                                controller: _CourseController,
                                 decoration: InputDecoration(
                                   border: InputBorder.none,
-                                  labelText: "labelText",
+                                  labelText: "Course",
                                 ),
                               ),
                             ),
@@ -73,34 +90,75 @@ class _QuestionHomepageState extends State<QuestionHomepage> {
                           const SizedBox(height: 20),
                           Container(
                             decoration: BoxDecoration(
-                                border: Border.all(color: PoolColors.black),
                                 color: PoolColors.fairTurkuaz,
+                                border: Border.all(color: PoolColors.black),
                                 borderRadius: const BorderRadius.all(
                                     Radius.circular(15))),
-                            child: const Padding(
-                              padding: EdgeInsets.only(left: 12.0),
-                              child: TextField(
-                                decoration: InputDecoration(
-                                  border: InputBorder.none,
-                                  labelText: "labelText",
-                                ),
-                              ),
+                            child: DropdownMenu<String>(
+                              width: 430,
+                              inputDecorationTheme: InputDecorationTheme(
+                                  border: InputBorder.none),
+                              hintText: "  Select Term",
+                              //initialSelection: "Course",
+                              onSelected: (String? value) {
+                                setState(() {
+                                  dropdownValue = value!;
+                                });
+                              },
+                              dropdownMenuEntries: list
+                                  .map<DropdownMenuEntry<String>>(
+                                      (String value) {
+                                return DropdownMenuEntry<String>(
+                                    value: value, label: "  " + value);
+                              }).toList(),
                             ),
                           ),
                           const SizedBox(height: 20),
                           Container(
+                            width: double.infinity,
                             decoration: BoxDecoration(
                                 border: Border.all(color: PoolColors.black),
                                 color: PoolColors.fairTurkuaz,
                                 borderRadius: const BorderRadius.all(
                                     Radius.circular(15))),
-                            child: const Padding(
+                            child: Padding(
                               padding: EdgeInsets.only(left: 12.0),
                               child: TextField(
+                                controller: _KeywordController,
                                 decoration: InputDecoration(
                                   border: InputBorder.none,
-                                  labelText: "labelText",
+                                  labelText: "Keyword",
                                 ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                          SizedBox(
+                            height: screenHeight / 14,
+                            width: 3 * (8 * (screenWidth / 7) / 14) / 2,
+                            child: ElevatedButton(
+                              style: ButtonStyle(
+                                backgroundColor:
+                                    const MaterialStatePropertyAll<Color>(
+                                  PoolColors.fairBlue,
+                                ),
+                                shape: MaterialStateProperty.all<
+                                    RoundedRectangleBorder>(
+                                  RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(15),
+                                  ),
+                                ),
+                              ),
+                              onPressed: () {
+                                print(_CourseController.text);
+                                print(_QIDController.text);
+                                print(_KeywordController.text);
+                                print(dropdownValue);
+                              },
+                              child: const Text(
+                                'Search',
+                                style: TextStyle(
+                                    color: PoolColors.black, fontSize: 25),
                               ),
                             ),
                           ),
