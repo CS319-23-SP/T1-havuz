@@ -50,12 +50,12 @@ router.post('/', async (req, res) => {
     })
 
     try {
-        const existingStudent = await Student.findOne({ id: student.id });
-        if (existingStudent) {
-            return res.status(400).json({ error: `Student with the id ${student.id} exists` });     
+        if(await Auth.findOne({ id: student.id})){
+            return res.status(400).json({ error: `User with the id ${student.id} exists` });    
         }
+
         const studentResult = await student.save();
-        const authResult = await auth.save();
+
 
         res.status(201).json(studentResult);
     } catch (error) {
