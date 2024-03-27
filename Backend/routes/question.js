@@ -33,6 +33,10 @@ router.get("/:id", async (req, res) => {
 });
 
 router.post('/', async (req, res) => {
+    if (!req.body.header || !req.body.text || !req.body.creatorId || req.body.courses.length === 0 || req.body.topics.length === 0) {
+        return res.status(400).json({ message: "Required fields are missing or empty." });
+    }
+
     var randomId = Math.floor(Math.random() * 10000000000);
     while(await Question.findOne({ id: randomId })){
         randomId = Math.floor(Math.random() * 10000000000);
