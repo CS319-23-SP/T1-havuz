@@ -117,6 +117,7 @@ class _StudentCreationPageState extends State<StudentCreationPage> {
                   hintText: 'Enter Password',
                 ),
               ),
+              const SizedBox(height: 16),
               const Text('Department'),
               TextFormField(
                 controller: departmentController,
