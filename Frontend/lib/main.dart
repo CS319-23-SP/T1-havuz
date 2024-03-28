@@ -6,6 +6,6 @@ import "Pages/admin_page.dart";
 
 void main() {
   runApp(MaterialApp(
-    home: QuestionHomepage(),
+    home: LoginPage(),
   ));
 }
