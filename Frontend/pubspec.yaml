@@ -31,7 +31,6 @@ dependencies:
   flutter:
     sdk: flutter
   http: ^0.13.3
-  multi_select_flutter: ^0.4.0
 
 
 
