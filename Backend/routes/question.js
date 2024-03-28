@@ -22,8 +22,8 @@ router.post('/search', async (req, res) => {
 
     var filter = {};
 
-    if (id !== undefined)
-        filter.id = id;
+    if (id)
+        filter.id = { $regex: id, $options: 'i' };
     if (pastExams)
         filter.pastExams = { $in: pastExams };
     if (courses)
@@ -33,7 +33,11 @@ router.post('/search', async (req, res) => {
 
     try {
         const questions = await Question.find(filter).sort({ id: 1 });
-        res.status(200).json(questions);
+        if(questions){
+            res.status(200).json(questions);
+        } else {
+            res.status(404).json({ error: 'No question found' });
+        }
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -68,7 +72,7 @@ router.post('/', async (req, res) => {
     }
 
     const question = new Question({
-        id:randomId,
+        id:randomId.toString(),
         courses:req.body.courses,
         header:req.body.header,
         text:req.body.text,
@@ -93,8 +97,6 @@ router.delete('/:id', async (req, res) => {
             const existingQuestion = await Question.findOneAndDelete({ id: id });
             
             if (existingQuestion) {
-                await Question.findOneAndDelete({ id: id });
-
                 res.status(200).json(existingQuestion);
             } else {
                 res.status(404).json({ error: "Question with id :${id} doesn't exist" });
@@ -108,7 +110,7 @@ router.delete('/:id', async (req, res) => {
 });
 
 router.patch('/:id', async (req, res) => {
-    const questionId = parseInt(req.params.id);
+    const questionId = req.params.id;
     const questionUpdates = {
         toughness:req.body.toughness,
         pastExams:req.body.pastExams,
@@ -119,18 +121,16 @@ router.patch('/:id', async (req, res) => {
         creatorId:req.body.creatorId
     };
     try {
-        const existingQuestion = await Question.findOne({ id: questionId });
+        const updatedQuestion = await Question.findOneAndUpdate(
+            { id: questionId },
+            { $set: questionUpdates },
+            { new: true } 
+        );
 
-        if (existingQuestion) {
-            const updatedQuestion = await Question.findOneAndUpdate(
-                { id: questionId },
-                { $set: questionUpdates },
-                { new: true } 
-            );
-
+        if(updatedQuestion){
             res.status(200).json(updatedQuestion);
         } else {
-            res.status(404).json({ error: `Question with the id: ${studentId} doesn't exist` });
+            res.status(404).json({ error: `Question with the id: ${questionId} doesn't exist` });
         }
     } catch (error) {
         res.status(500).json({ message: error.message });
