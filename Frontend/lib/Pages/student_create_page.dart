@@ -1,9 +1,9 @@
+import 'package:first_trial/Pages/Widgets/AppBars/app_bars.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class StudentCreationPage extends StatefulWidget {
-
   const StudentCreationPage({Key? key}) : super(key: key);
 
   @override
@@ -17,63 +17,62 @@ class _StudentCreationPageState extends State<StudentCreationPage> {
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController departmentController = TextEditingController();
 
- void _createStudent() async {
-  final studentId = studentIdController.text;
-  List<String> parts = studentNameController.text.split(' ');
-  String firstName = "";
-  String middleName = "";
-  String lastName = "";
+  void _createStudent() async {
+    final studentId = studentIdController.text;
+    List<String> parts = studentNameController.text.split(' ');
+    String firstName = "";
+    String middleName = "";
+    String lastName = "";
 
-  if(parts.length == 1){
-    print("last name missing");
-    return;
-  }
-  else if(parts.length == 2){
-    firstName = parts[0];
-    lastName = parts[1];
-  }
-  else if(parts.length >= 3){
-    firstName = parts[0];
-    middleName = parts.sublist(1, parts.length - 1).join(' ');
-    lastName = parts.last;
-  }
+    if (parts.length == 1) {
+      print("last name missing");
+      return;
+    } else if (parts.length == 2) {
+      firstName = parts[0];
+      lastName = parts[1];
+    } else if (parts.length >= 3) {
+      firstName = parts[0];
+      middleName = parts.sublist(1, parts.length - 1).join(' ');
+      lastName = parts.last;
+    }
 
-  final courses = coursesController.text.split(',').map((course) => course.trim()).toList();
-  final department = departmentController.text;
-  final password = passwordController.text;
+    final courses = coursesController.text
+        .split(',')
+        .map((course) => course.trim())
+        .toList();
+    final department = departmentController.text;
+    final password = passwordController.text;
 
-  final url = Uri.parse('http://localhost:8080/student');
-  final id = int.tryParse(studentId);
-  if (id == null) {
-    print("bad id");
-    return;
+    final url = Uri.parse('http://localhost:8080/student');
+    final id = int.tryParse(studentId);
+    if (id == null) {
+      print("bad id");
+      return;
+    }
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode({
+        'id': id,
+        'firstName': firstName,
+        if (middleName.isNotEmpty) 'middleName': middleName,
+        'lastName': lastName,
+        'coursesTaken': courses,
+        'department': department,
+        'password': password
+      }),
+    );
+    if (response.statusCode == 201) {
+      print('Student created successfully');
+    } else {
+      print('Failed to create student: ${response.reasonPhrase}');
+    }
   }
-  final response = await http.post(
-    url,
-    headers: {'Content-Type': 'application/json'},
-    body: json.encode({
-      'id': id,
-      'firstName': firstName,
-      if (middleName.isNotEmpty) 'middleName': middleName,
-      'lastName': lastName,
-      'coursesTaken': courses,
-      'department': department,
-      'password': password
-    }),
-  );
-  if (response.statusCode == 201) {
-    print('Student created successfully');
-  } else {
-    print('Failed to create student: ${response.reasonPhrase}');
-  }
-}
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Create Student'),
-      ),
+      appBar: AdminAppBar(),
       body: Center(
         child: Container(
           margin: const EdgeInsets.symmetric(horizontal: 200.0, vertical: 20.0),
