@@ -14,6 +14,31 @@ router.get('/', async (req, res) => {
     }
 });
 
+router.post('/search', async (req, res) => {
+    var id = req.body.id;
+    var pastExams = req.body.pastExams;
+    var courses = req.body.courses;
+    var topics = req.body.topics;
+
+    var filter = {};
+
+    if (id !== undefined)
+        filter.id = id;
+    if (pastExams)
+        filter.pastExams = { $in: pastExams };
+    if (courses)
+        filter.courses = { $in: courses };
+    if (topics)
+        filter.topics = { $in: topics };
+
+    try {
+        const questions = await Question.find(filter).sort({ id: 1 });
+        res.status(200).json(questions);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
 router.get("/:id", async (req, res) => {
     const id = parseInt(req.params.id);
     if (!isNaN(id) && Number.isInteger(id)) {

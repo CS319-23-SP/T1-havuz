@@ -26,12 +26,58 @@ class _QuestionHomepageState extends State<QuestionHomepage> {
   //final QIDController = TextEditingController();
   final TextEditingController _KeywordController = TextEditingController();
 
-    List<Question> questions = [];
+  List<Question> questions = [];
 
   @override
   void initState() {
     super.initState();
     fetchQuestions();
+  }
+
+  void searchQuestions() async{
+    final id = int.tryParse(_QIDController.text);
+    final courses = _CourseController.text;
+    final keyword = _KeywordController.text;
+
+    Map<String, dynamic> queryData = {};
+
+    if (id != null) {
+      queryData['id'] = id.toString();
+    }
+    if (courses.isNotEmpty) {
+      queryData['courses'] = courses;
+    }
+    if (keyword.isNotEmpty) {
+      queryData['topics'] = keyword;
+    }
+    if (dropdownValue.isNotEmpty) {
+      queryData['pastExams'] = dropdownValue;
+    }
+
+    if(queryData.isEmpty){
+      fetchQuestions();
+      return;
+    }
+
+    final url = Uri.http('localhost:8080', '/question/search');
+
+    try {
+          final response = await http.post(
+            url,
+            headers: {'Content-Type': 'application/json'},
+            body: json.encode(queryData),
+          );
+
+      if (response.statusCode == 200) {
+        setState(() {
+          parseQuestionsData(json.decode(response.body));
+        });
+      } else {
+        throw Exception('Failed to fetch question data');
+      }
+    } catch (e) {
+      print('Error fetching questions: $e');
+    }
   }
   
   Future<void> fetchQuestions() async {
@@ -50,13 +96,14 @@ class _QuestionHomepageState extends State<QuestionHomepage> {
   }
 
   void parseQuestionsData(dynamic responseData) {
+    questions.clear();
     for (var questionData in responseData as List<dynamic>) {
       final question = Question.fromJson(questionData);
       questions.add(question);
     }
   }
 
-  String dropdownValue = list.first;
+  String dropdownValue = "";
 
   @override
   Widget build(BuildContext context) {
@@ -185,10 +232,7 @@ class _QuestionHomepageState extends State<QuestionHomepage> {
                                 ),
                               ),
                               onPressed: () {
-                                print(_CourseController.text);
-                                print(_QIDController.text);
-                                print(_KeywordController.text);
-                                print(dropdownValue);
+                                searchQuestions();
                               },
                               child: const Text(
                                 'Search',
