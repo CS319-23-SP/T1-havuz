@@ -1,6 +1,7 @@
 import 'package:first_trial/Pages/Admin/admin_page.dart';
 import 'package:first_trial/Pages/Questions/question_homepage.dart';
 import 'package:first_trial/Pages/LoginRelated/password_forget_page.dart';
+import 'package:first_trial/Pages/Student/student_homepage.dart';
 import 'package:first_trial/final_variables.dart';
 import 'package:flutter/material.dart';
 import '../course_homepage.dart';
@@ -55,6 +56,10 @@ class LoginPageWidget extends StatelessWidget {
           Navigator.pushReplacement(
               context, MaterialPageRoute(builder: (context) => Admin()));
         } else if (role == "student") {
+          Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (context) => StudentHomepage()));
+        }
+        else if (role == "instructor") {
           Navigator.pushReplacement(context,
               MaterialPageRoute(builder: (context) => CourseHomePage()));
         }
