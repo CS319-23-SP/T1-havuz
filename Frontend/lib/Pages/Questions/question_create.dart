@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'Widgets/success_fail.dart';
+import '../Widgets/success_fail.dart';
 
 class AddQuestionPage extends StatefulWidget {
   @override
@@ -18,23 +18,23 @@ class _AddQuestionPageState extends State<AddQuestionPage> {
   final TextEditingController creatorIDController = TextEditingController();
   final TextEditingController textController = TextEditingController();
 
-  void clearInputs(){
+  void clearInputs() {
     setState(() {
       selectedCourses.clear();
       headerController.clear();
       topicsController.clear();
       creatorIDController.clear();
       textController.clear();
-      });
+    });
   }
 
-  void createQuestion() async{
+  void createQuestion() async {
     final header = headerController.text;
     final topics = topicsController.text
-      .split(',')
-      .map((topic) => topic.trim())
-      .where((topic) => topic.isNotEmpty)
-      .toList();
+        .split(',')
+        .map((topic) => topic.trim())
+        .where((topic) => topic.isNotEmpty)
+        .toList();
     final creatorID = int.tryParse(creatorIDController.text);
     final text = textController.text;
 
@@ -56,29 +56,29 @@ class _AddQuestionPageState extends State<AddQuestionPage> {
 
     if (response.statusCode == 201) {
       showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return SuccessWidget(
-              context: context,
-              onDismiss: () {
-                clearInputs();
-              },
-            );
-          },
-        );
+        context: context,
+        builder: (BuildContext context) {
+          return SuccessWidget(
+            context: context,
+            onDismiss: () {
+              clearInputs();
+            },
+          );
+        },
+      );
     } else {
       print('Failed to create question: ${response.reasonPhrase}');
       showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return FailWidget(
-              context: context,
-              onDismiss: () {
-                clearInputs();
-              },
-            );
-          },
-        );
+        context: context,
+        builder: (BuildContext context) {
+          return FailWidget(
+            context: context,
+            onDismiss: () {
+              clearInputs();
+            },
+          );
+        },
+      );
     }
   }
 

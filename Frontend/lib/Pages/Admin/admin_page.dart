@@ -2,7 +2,7 @@ import 'package:first_trial/Pages/Widgets/AppBars/app_bars.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'student_create_page.dart';
-import 'student.dart';
+import '../../Objects/student.dart';
 import 'dart:convert';
 
 class Admin extends StatefulWidget {

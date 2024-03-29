@@ -1,8 +1,9 @@
-import 'package:first_trial/Pages/admin_page.dart';
-import 'package:first_trial/Pages/password_forget_page.dart';
+import 'package:first_trial/Pages/Admin/admin_page.dart';
+import 'package:first_trial/Pages/Questions/question_homepage.dart';
+import 'package:first_trial/Pages/LoginRelated/password_forget_page.dart';
 import 'package:first_trial/final_variables.dart';
 import 'package:flutter/material.dart';
-import 'course_homepage.dart';
+import '../course_homepage.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
@@ -50,11 +51,12 @@ class LoginPageWidget extends StatelessWidget {
         var data = jsonDecode(response.body);
         role = data['role'];
 
-        if(role == "admin"){
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Admin()));
-        }
-        else if(role == "student"){
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => CourseHomePage()));
+        if (role == "admin") {
+          Navigator.pushReplacement(
+              context, MaterialPageRoute(builder: (context) => Admin()));
+        } else if (role == "student") {
+          Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (context) => CourseHomePage()));
         }
       } else {
         print("Login failed: ${response.statusCode}");

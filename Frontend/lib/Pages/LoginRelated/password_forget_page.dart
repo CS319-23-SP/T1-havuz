@@ -1,7 +1,7 @@
-import 'package:first_trial/Pages/login_page.dart';
+import 'package:first_trial/Pages/LoginRelated/login_page.dart';
 import 'package:first_trial/final_variables.dart';
 import 'package:flutter/material.dart';
-import 'course_homepage.dart';
+import '../course_homepage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
