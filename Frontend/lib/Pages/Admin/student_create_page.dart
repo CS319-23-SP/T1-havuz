@@ -1,4 +1,5 @@
 import 'package:first_trial/Pages/Widgets/AppBars/app_bars.dart';
+import 'package:first_trial/Pages/Admin/admin_page.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -67,6 +68,12 @@ class _StudentCreationPageState extends State<StudentCreationPage> {
     } else {
       print('Failed to create student: ${response.reasonPhrase}');
     }
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => Admin(),
+      ),
+    );
   }
 
   @override

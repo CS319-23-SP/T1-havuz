@@ -1,8 +1,9 @@
+import 'package:first_trial/Objects/question.dart';
 import 'package:first_trial/Pages/Widgets/AppBars/app_bars.dart';
 import 'package:first_trial/final_variables.dart';
 import 'package:flutter/material.dart';
 import 'question_create.dart';
-import 'question.dart';
+
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -34,7 +35,7 @@ class _QuestionHomepageState extends State<QuestionHomepage> {
     fetchQuestions();
   }
 
-  void searchQuestions() async{
+  void searchQuestions() async {
     final id = int.tryParse(_QIDController.text);
     final courses = _CourseController.text;
     final keyword = _KeywordController.text;
@@ -54,7 +55,7 @@ class _QuestionHomepageState extends State<QuestionHomepage> {
       queryData['pastExams'] = dropdownValue;
     }
 
-    if(queryData.isEmpty){
+    if (queryData.isEmpty) {
       fetchQuestions();
       return;
     }
@@ -62,11 +63,11 @@ class _QuestionHomepageState extends State<QuestionHomepage> {
     final url = Uri.http('localhost:8080', '/question/search');
 
     try {
-          final response = await http.post(
-            url,
-            headers: {'Content-Type': 'application/json'},
-            body: json.encode(queryData),
-          );
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode(queryData),
+      );
 
       if (response.statusCode == 200) {
         setState(() {
@@ -79,10 +80,11 @@ class _QuestionHomepageState extends State<QuestionHomepage> {
       print('Error fetching questions: $e');
     }
   }
-  
+
   Future<void> fetchQuestions() async {
     try {
-      final response = await http.get(Uri.parse('http://localhost:8080/question/'));
+      final response =
+          await http.get(Uri.parse('http://localhost:8080/question/'));
       if (response.statusCode == 200) {
         setState(() {
           parseQuestionsData(json.decode(response.body));
@@ -261,7 +263,8 @@ class _QuestionHomepageState extends State<QuestionHomepage> {
                               onPressed: () {
                                 Navigator.push(
                                   context,
-                                  MaterialPageRoute(builder: (context) => AddQuestionPage()),
+                                  MaterialPageRoute(
+                                      builder: (context) => AddQuestionPage()),
                                 ).then((_) {
                                   fetchQuestions();
                                 });
@@ -433,9 +436,10 @@ class _QuestionHomepageState extends State<QuestionHomepage> {
                         width: 3 * screenWidth / 7,
                         child: Container(
                           decoration: BoxDecoration(
-                            color: PoolColors.white,
-                            border: Border.all(color: PoolColors.black),
-                            borderRadius: const BorderRadius.all(Radius.circular(15))),
+                              color: PoolColors.white,
+                              border: Border.all(color: PoolColors.black),
+                              borderRadius:
+                                  const BorderRadius.all(Radius.circular(15))),
                           child: ListView.builder(
                             itemCount: questions.length,
                             itemBuilder: (context, index) {
@@ -446,8 +450,10 @@ class _QuestionHomepageState extends State<QuestionHomepage> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text('Header: ${question.header}'),
-                                    Text('Courses: ${question.courses.join(', ')}'),
-                                    Text('Topics: ${question.topics.join(', ')}'),
+                                    Text(
+                                        'Courses: ${question.courses.join(', ')}'),
+                                    Text(
+                                        'Topics: ${question.topics.join(', ')}'),
                                   ],
                                 ),
                               );

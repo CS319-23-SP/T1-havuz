@@ -1,7 +1,7 @@
-import 'package:first_trial/Pages/admin_page.dart';
+import 'package:first_trial/Pages/Admin/admin_page.dart';
 import 'package:first_trial/Pages/course_homepage.dart';
-import 'package:first_trial/Pages/question_homepage.dart';
-import 'package:first_trial/Pages/student_create_page.dart';
+import 'package:first_trial/Pages/Questions/question_homepage.dart';
+import 'package:first_trial/Pages/Admin/student_create_page.dart';
 import 'package:first_trial/Pages/user_prifile_page.dart';
 import 'package:flutter/material.dart';
 import 'package:first_trial/final_variables.dart';
@@ -282,7 +282,7 @@ class _AdminAppBarState extends State<AdminAppBar> {
                   onChanged: (value) {
                     //Do something when selected item is changed.
                     if (value == items[0]) {
-                      Navigator.pushReplacement(
+                      Navigator.push(
                           context,
                           MaterialPageRoute(
                               builder: (context) =>
@@ -319,7 +319,7 @@ class _AdminAppBarState extends State<AdminAppBar> {
                 child: DropdownButtonFormField2<String>(
                   hint: Text("List"),
                   isExpanded: true,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     enabledBorder: InputBorder.none,
                     focusedBorder: InputBorder.none,
                     contentPadding: const EdgeInsets.symmetric(vertical: 16),
@@ -342,7 +342,6 @@ class _AdminAppBarState extends State<AdminAppBar> {
                                   return null;
                                 },*/
                   onChanged: (value) {
-                    //Do something when selected item is changed.
                     if (value == items[0]) {
                       Navigator.pushReplacement(
                           context,
