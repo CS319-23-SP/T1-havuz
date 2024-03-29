@@ -18,19 +18,22 @@ app.use((req, res, next) => {
     next();
   });
 
-const studentsRoute = require('./routes/student')
-app.use('/student', studentsRoute) 
+const studentsRoute = require('./routes/student');
+app.use('/student', studentsRoute); 
 
-const adminsRoute = require('./routes/admin')
-app.use('/admin', adminsRoute) 
+const instructorsRoute = require('./routes/instructor');
+app.use('/instructor', instructorsRoute); 
 
-const questionRoute = require('./routes/question')
-app.use('/question', questionRoute) 
+const adminsRoute = require('./routes/admin');
+app.use('/admin', adminsRoute);
 
-const authRoute = require('./routes/auth')
-app.use('/auth', authRoute) 
+const questionRoute = require('./routes/question');
+app.use('/question', questionRoute); 
+
+const authRoute = require('./routes/auth');
+app.use('/auth', authRoute); 
 
 
-app.listen(8080, ()=> console.log('Server Started'))
+app.listen(8080, ()=> console.log('Server Started on port 8080'));
 
 
