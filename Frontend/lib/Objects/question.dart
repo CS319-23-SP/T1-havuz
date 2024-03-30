@@ -5,6 +5,7 @@ class Question {
   String creatorID;
   List<String> topics;
   List<String> courses;
+  List<String> pastExams;
 
   Question({
     required this.id,
@@ -13,6 +14,7 @@ class Question {
     required this.text,
     required this.topics,
     required this.creatorID,
+    required this.pastExams,
   });
 
   factory Question.fromJson(Map<String, dynamic> json) {
@@ -23,6 +25,7 @@ class Question {
       creatorID: json['creatorId'].toString(),
       text: json['text'],
       topics: List<String>.from(json['topics']),
+      pastExams: List<String>.from(json['pastExams']),
     );
   }
 }

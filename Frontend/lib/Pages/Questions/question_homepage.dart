@@ -8,10 +8,11 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 const List<String> list = <String>[
+  'All',
   '2018-2019 Fall',
   '2019-2020 Fall',
   '2019-2020 Spring',
-  '2020-2021 Fall'
+  '2020-2021 Fall',
 ];
 
 class QuestionHomepage extends StatefulWidget {
@@ -186,7 +187,12 @@ class _QuestionHomepageState extends State<QuestionHomepage> {
                               //initialSelection: "Course",
                               onSelected: (String? value) {
                                 setState(() {
-                                  dropdownValue = value!;
+                                  if(value == "All"){
+                                    dropdownValue = "";
+                                  }
+                                  else{
+                                    dropdownValue = value!;
+                                  }  
                                 });
                               },
                               dropdownMenuEntries: list
@@ -454,6 +460,8 @@ class _QuestionHomepageState extends State<QuestionHomepage> {
                                         'Courses: ${question.courses.join(', ')}'),
                                     Text(
                                         'Topics: ${question.topics.join(', ')}'),
+                                    Text(
+                                        'Past Terms: ${question.pastExams.join(', ')}'),
                                   ],
                                 ),
                               );
