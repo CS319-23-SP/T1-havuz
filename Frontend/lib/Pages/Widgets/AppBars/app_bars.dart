@@ -31,56 +31,55 @@ class _InstructorAppBarState extends State<InstructorAppBar> {
       appBar: AppBar(
         backgroundColor: PoolColors.appBarBackground,
         automaticallyImplyLeading: false,
-        title: Expanded(
-          child: Row(
-            children: [
-              const SizedBox(
-                width: 23,
+        leadingWidth: 800,
+        leading: Row(
+          children: [
+            SizedBox(
+              width: 25,
+            ),
+            IconButton(
+              icon: Row(
+                children: [
+                  Image.asset(
+                    AssetLocations.bilkentLogo,
+                    width: 35,
+                    height: 35,
+                  ),
+                  const SizedBox(
+                    width: 5,
+                  ),
+                  const Text("Course Homepage"),
+                ],
               ),
-              IconButton(
-                icon: Row(
-                  children: [
-                    Image.asset(
-                      AssetLocations.bilkentLogo,
-                      width: 35,
-                      height: 35,
-                    ),
-                    const SizedBox(
-                      width: 5,
-                    ),
-                    const Text("Course Homepage"),
-                  ],
-                ),
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const CourseHomePage()));
+              },
+            ),
+            const VerticalD(),
+            const DropdownButtonChoice(),
+            const VerticalD(),
+            AppBarChoice(
+              text: "Weekly Schedule",
+              onPressed: () {},
+            ),
+            const VerticalD(),
+            AppBarChoice(
+              text: "Attendance",
+              onPressed: () {},
+            ),
+            const VerticalD(),
+            AppBarChoice(
+                text: "Questions",
                 onPressed: () {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const CourseHomePage()));
-                },
-              ),
-              const VerticalD(),
-              const DropdownButtonChoice(),
-              const VerticalD(),
-              AppBarChoice(
-                text: "Weekly Schedule",
-                onPressed: () {},
-              ),
-              const VerticalD(),
-              AppBarChoice(
-                text: "Attendance",
-                onPressed: () {},
-              ),
-              const VerticalD(),
-              AppBarChoice(
-                  text: "Questions",
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const QuestionHomepage()));
-                  }),
-            ],
-          ),
+                          builder: (context) => const QuestionHomepage()));
+                }),
+          ],
         ),
         actions: <Widget>[
           IconButton(
@@ -225,10 +224,11 @@ class _AdminAppBarState extends State<AdminAppBar> {
       appBar: AppBar(
         backgroundColor: PoolColors.appBarBackground,
         automaticallyImplyLeading: false,
-        title: Row(
+        leadingWidth: 800,
+        leading: Row(
           children: [
-            const SizedBox(
-              width: 23,
+            SizedBox(
+              width: 25,
             ),
             IconButton(
               icon: Row(
@@ -374,6 +374,24 @@ class _AdminAppBarState extends State<AdminAppBar> {
             const VerticalD(),
           ],
         ),
+        actions: <Widget>[
+          IconButton(
+              onPressed: () {},
+              icon: const Icon(Icons.notifications_active_outlined)),
+          IconButton(
+              onPressed: () {}, icon: const Icon(Icons.chat_bubble_outline)),
+          IconButton(
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const UserProfilePage()));
+              },
+              icon: const Icon(Icons.person_outline)),
+          const SizedBox(
+            width: 45,
+          ),
+        ],
       ),
     );
   }
