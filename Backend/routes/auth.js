@@ -10,7 +10,6 @@ router
   .get('/:id', auth.onGetAuthByID)
   .delete('/:id', auth.onDeleteAuthByID)
   .patch('/:id', auth.onEditAuthByID)
-  .post('/login', encode, auth.onLogin);
-  
+  .post('/login/:id', encode, auth.onLogin);
 
 module.exports = router;

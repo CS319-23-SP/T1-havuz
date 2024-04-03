@@ -5,13 +5,14 @@ const SECRET_KEY = 'some-secret-key';
 const TOKEN_EXPIRATION = '1h'; 
 
 const encode = async (req, res, next) => {
+  
   try {
     const {id} = req.params;  
   
     const auth = await authModel.getAuthById(id);    
 
     const payload = {
-      id: auth._id,
+      id: auth.id,
       password: auth.password,
       role: auth.role
     };

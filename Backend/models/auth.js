@@ -7,7 +7,7 @@ const authSchema = new mongoose.Schema(
             type: String,
             default: () => uuidv4().replace(/\-/g, ""),
           },
-          username: String,
+          id: String,
           password: String,
           role: String,
     },
@@ -28,7 +28,7 @@ authSchema.statics.createAuth = async function (id, password, role) {
 
 authSchema.statics.getAuthById = async function (id) {
     try {
-        const auth = await this.findOne({ _id: id});
+        const auth = await this.findOne({ id: id});
 
         if(!auth) throw ({error: 'No user with this id found' });
         return auth;

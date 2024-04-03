@@ -40,7 +40,7 @@ instructorSchema.statics.createInstructor = async function (firstName, middleNam
         const enteringYear = new Date().getFullYear();
 
         const instructor = await this.create({id, firstName, middleName, lastName, department, enteringYear, yearOfDeparture: 0});
-        const authResult = await Auth.create({username: id, password, role});
+        const authResult = await Auth.create({id: id, password, role});
         return instructor, authResult;
     } catch (error) {
         throw error;
@@ -68,7 +68,7 @@ instructorSchema.statics.getInstructors = async function () {
 
 instructorSchema.statics.deleteInstructorByID = async function (id) {
     try {
-      const authResult = await Auth.deleteOne({username: id});
+      const authResult = await Auth.deleteOne({id: id});
       const result = await this.deleteOne({ id: id });
       return authResult, result;
     } catch (error) {
