@@ -37,7 +37,7 @@ adminSchema.statics.createAdmin = async function (firstName, middleName, lastNam
         const enteringYear = new Date().getFullYear();
 
         const admin = await this.create({id, firstName, middleName, lastName, title, enteringYear});
-        const authResult = await Auth.create({username: id, password:"69", role:"admin"});
+        const authResult = await Auth.create({id, password:"69", role:"admin"});
         return admin, authResult;
     } catch (error) {
         throw error;
@@ -65,7 +65,7 @@ adminSchema.statics.getAdmins = async function () {
 
 adminSchema.statics.deleteAdminByID = async function (id) {
     try {
-      const authResult = await Auth.deleteOne({username: id});
+      const authResult = await Auth.deleteOne({id: id});
       const result = await this.deleteOne({ id: id });
       return authResult, result;
     } catch (error) {

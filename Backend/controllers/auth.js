@@ -72,11 +72,16 @@ const onGetAuthByID = async (req, res) => {
 }
 
 const onLogin = async (req, res) => {
+    console.log("asdasfadf");
     const {id, password} = req.body;
 
+    console.log("asdas");
+
     try {
-        const auth = await Auth.findOne({ id: id});
+        console.log("auth");
+        const auth = await authModel.findOne({ id: id});
         const role = auth.role;
+        console.log(auth);
         if(auth) {
             if(password === auth.password) {
                 return res.status(200).json({success: true, authorization: req.authToken, role: role});

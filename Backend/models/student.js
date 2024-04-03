@@ -42,7 +42,7 @@ studentSchema.statics.createStudent = async function (firstName, middleName, las
         const enteringYear = new Date().getFullYear();
 
         const student = await this.create({id, firstName, middleName, lastName, department, enteringYear, totalGrade: 0, totalCredits: 0});
-        const authResult = await Auth.create({username: id, password, role});
+        const authResult = await Auth.create({id: id, password, role});
         return student, authResult;
     } catch (error) {
         throw error;
@@ -70,7 +70,7 @@ studentSchema.statics.getStudents = async function () {
 
 studentSchema.statics.deleteStudentByID = async function (id) {
     try {
-      const authResult = await Auth.deleteOne({username: id});
+      const authResult = await Auth.deleteOne({id: id});
       const result = await this.deleteOne({ id: id });
       return authResult, result;
     } catch (error) {
