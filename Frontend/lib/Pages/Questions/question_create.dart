@@ -35,8 +35,9 @@ class _AddQuestionPageState extends State<AddQuestionPage> {
         .map((topic) => topic.trim())
         .where((topic) => topic.isNotEmpty)
         .toList();
-    final creatorID = int.tryParse(creatorIDController.text);
+    final creatorID = creatorIDController.text;
     final text = textController.text;
+    final toughness = "5";
 
     final url = Uri.parse('http://localhost:8080/question');
 
@@ -44,9 +45,12 @@ class _AddQuestionPageState extends State<AddQuestionPage> {
       'courses': selectedCourses,
       'header': header,
       'topics': topics,
-      'creatorId': creatorID,
+      'creatorID': creatorID,
       'text': text,
+      'toughness': toughness
     };
+
+    print(requestBody);
 
     final response = await http.post(
       url,
@@ -54,7 +58,7 @@ class _AddQuestionPageState extends State<AddQuestionPage> {
       body: json.encode(requestBody),
     );
 
-    if (response.statusCode == 201) {
+    if (response.statusCode == 200) {
       showDialog(
         context: context,
         builder: (BuildContext context) {

@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'student_create_page.dart';
 import '../../Objects/student.dart';
 import 'dart:convert';
+import 'package:first_trial/token.dart';
 
 class Admin extends StatefulWidget {
   @override
@@ -20,26 +21,31 @@ class _AdminState extends State<Admin> {
   }
 
   Future<void> fetchStudents() async {
-    try {
-      final response = await http.get(Uri.http('localhost:8080', '/student/'));
+  try {
+    final response = await http.get(Uri.http('localhost:8080', '/student/'));
 
-      if (response.statusCode == 200) {
+    if (response.statusCode == 200) {
+      final responseData = json.decode(response.body);
+      if (responseData['success']) {
         setState(() {
-          students = parseStudentsData(json.decode(response.body));
+          students = parseStudentsData(responseData['students']);
         });
       } else {
         throw Exception('Failed to fetch students data');
       }
-    } catch (e) {
-      print('Error fetching students: $e');
+    } else {
+      throw Exception('Failed to fetch students data');
     }
+  } catch (e) {
+    print('Error fetching students: $e');
   }
+}
 
-  List<Student> parseStudentsData(dynamic responseData) {
-    return (responseData as List<dynamic>)
-        .map((studentData) => Student.fromJson(studentData))
-        .toList();
-  }
+List<Student> parseStudentsData(dynamic responseData) {
+  return (responseData as List<dynamic>)
+      .map((studentData) => Student.fromJson(studentData))
+      .toList();
+}
 
   Future<void> deleteStudent(String studentId, int index) async {
     try {

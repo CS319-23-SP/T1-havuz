@@ -83,28 +83,31 @@ class _QuestionHomepageState extends State<QuestionHomepage> {
   }
 
   Future<void> fetchQuestions() async {
-    try {
-      final response =
-          await http.get(Uri.parse('http://localhost:8080/question/'));
-      if (response.statusCode == 200) {
-        setState(() {
-          parseQuestionsData(json.decode(response.body));
-        });
-      } else {
-        throw Exception('Failed to fetch questions data');
-      }
-    } catch (e) {
-      print('Error fetching questions: $e');
+  try {
+    final response =
+        await http.get(Uri.parse('http://localhost:8080/question/'));
+    if (response.statusCode == 200) {
+      setState(() {
+        parseQuestionsData(json.decode(response.body));
+      });
+    } else {
+      throw Exception('Failed to fetch questions data');
     }
+  } catch (e) {
+    print('Error fetching questions: $e');
   }
+}
 
-  void parseQuestionsData(dynamic responseData) {
-    questions.clear();
-    for (var questionData in responseData as List<dynamic>) {
-      final question = Question.fromJson(questionData);
-      questions.add(question);
-    }
+void parseQuestionsData(dynamic responseData) {
+  List<Question> parsedQuestions = [];
+  for (var questionData in responseData['questions'] as List<dynamic>) {
+    final question = Question.fromJson(questionData);
+    parsedQuestions.add(question);
   }
+  setState(() {
+    questions = parsedQuestions;
+  });
+}
 
   String dropdownValue = "";
 
