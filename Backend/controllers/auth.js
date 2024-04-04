@@ -72,13 +72,12 @@ const onGetAuthByID = async (req, res) => {
 }
 
 const onLogin = async (req, res) => {
-    console.log("asdasfadf");
-    const {id, password} = req.body;
+    const {password} = req.body;
+    const {id} = req.params;
 
-    console.log("asdas");
+    console.log(id);
 
     try {
-        console.log("auth");
         const auth = await authModel.findOne({ id: id});
         const role = auth.role;
         console.log(auth);

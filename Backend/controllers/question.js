@@ -6,10 +6,10 @@ const onCreateQuestion = async (req, res) => {
     const validation = makeValidation(types => ({
       payload: req.body,
       checks: {
-        courses: { type: types.string },
+        courses: { type: types.array },
         header: { type: types.string },
         text: { type: types.string },
-        topics: { type: types.string },
+        topics: { type: types.array },
         toughness: { type: types.string },
         creatorID: { type: types.string },
       }
@@ -56,14 +56,15 @@ const onSearchQuestion = async (req, res) => {
 const onEditQuestionByID = async (req, res) => {
     try {
         const validation = makeValidation(types => ({
-        payload: req.body,
+        payload: req.params,
         checks: {
             id: {type: types.string},
         }
         }));
         if (!validation.success) return res.status(400).json(validation);
 
-        const { id, courses, header, text, topics, toughness, pastExams, creatorID} = req.body;
+        const {id} = req.params;
+        const { courses, header, text, topics, toughness, pastExams, creatorID} = req.body;
         const question = await questionModel.editQuestionByID( id, courses, header, text, topics, toughness, pastExams, creatorID);
         return res.status(200).json({ success: true, question });
     } catch (error) {
@@ -74,10 +75,15 @@ const onEditQuestionByID = async (req, res) => {
 const onDeleteQuestionByID = async (req, res) => {
     try {
         const question = await questionModel.deleteQuestionByID(req.params.id);
-        return res.status(200).json({ 
-        success: true, 
-        message: `Deleted an question with ID ${req.params.id}.` 
-        });
+        if(question.deletedCount !== 0){
+            return res.status(200).json({ 
+                success: true, 
+                message: `Deleted a question with ID ${req.params.id}.` 
+            });
+        } else {
+            res.status(404).json({ error: "Question with id ${id} doesn't exist" });
+        }
+        
     } catch (error) {
         return res.status(500).json({ success: false, error: error })
     }
@@ -93,10 +99,9 @@ const onGetAllQuestions = async (req, res) => {
     }
 }
 
-
 const onGetQuestionByID = async (req, res) => {
     try {
-        const quesiton = await questionModel.getQuestionById(req.params.id);
+        const question = await questionModel.getQuestionByID(req.params.id);
         return res.status(200).json({ success: true, question });
     } catch (error) {
         return res.status(500).json({ success: false, error: error })

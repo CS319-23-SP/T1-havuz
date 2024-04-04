@@ -26,15 +26,18 @@ const onCreateAdmin = async (req, res) => {
 const onEditAdminByID = async (req, res) => {
   try {
     const validation = makeValidation(types => ({
-      payload: req.body,
+      payload: req.params,
       checks: {
         id: { type: types.string },
       }
     }));
     if (!validation.success) return res.status(400).json(validation);
 
-    const { id, firstName, middleName, lastName, title, enteringYear, yearOfDeparture } = req.body;
+    const {id} = req.params;
+    
+    const {firstName, middleName, lastName, title, enteringYear, yearOfDeparture } = req.body;
     const admin = await adminModel.editAdminByID(id, firstName, middleName, lastName, title, enteringYear, yearOfDeparture);
+    
     return res.status(200).json({ success: true, admin });
   } catch (error) {
     return res.status(500).json({ success: false, error: error })
@@ -44,10 +47,14 @@ const onEditAdminByID = async (req, res) => {
 const onDeleteAdminByID = async (req, res) => {
   try {
     const admin = await adminModel.deleteAdminByID(req.params.id);
-    return res.status(200).json({ 
-      success: true, 
-      message: `Deleted an admin with ID ${req.params.id}.` 
-    });
+    if(admin.deletedCount !== 0){
+      return res.status(200).json({ 
+        success: true, 
+        message: `Deleted an admin with ID ${req.params.id}.` 
+      });
+    } else {
+      res.status(404).json({ error: "Admin with id ${id} doesn't exist" });
+    }
   } catch (error) {
     return res.status(500).json({ success: false, error: error })
   }
@@ -66,7 +73,7 @@ const onGetAllAdmins = async (req, res) => {
 
 const onGetAdminByID = async (req, res) => {
   try {
-    const admin = await adminModel.getAdminById(req.params.id);
+    const admin = await adminModel.getAdminByID(req.params.id);
     return res.status(200).json({ success: true, admin });
   } catch (error) {
     return res.status(500).json({ success: false, error: error })

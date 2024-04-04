@@ -40,7 +40,7 @@ instructorSchema.statics.createInstructor = async function (firstName, middleNam
         const enteringYear = new Date().getFullYear();
 
         const instructor = await this.create({id, firstName, middleName, lastName, department, enteringYear, yearOfDeparture: 0});
-        const authResult = await Auth.create({id: id, password, role});
+        const authResult = await Auth.create({id: id, password: "69", role: "instructor"});
         return instructor, authResult;
     } catch (error) {
         throw error;
@@ -80,10 +80,13 @@ instructorSchema.statics.editInstructorByID = async function (id, firstName, mid
                                                                 advisedStudents, enteringYear, yearOfDeparture, allTimeCourses) {
     try {
         const instructor = await this.findOne({id: id});
-        const updatedAllTimeCourses = [...instructor.allTimeCourses, ...allTimeCourses];
+        var updatedAllTimeCourses = instructor.allTimeCourses;
+        
+        if (instructor && instructor.allTimeCourses && Array.isArray(instructor.allTimeCourses) && allTimeCourses && Array.isArray(allTimeCourses)) {
+            updatedAllTimeCourses.push(allTimeCourses);
+        } 
 
         const instructorUpdates = {
-            id: id,
             firstName: firstName,
             middleName: middleName,
             lastName: lastName,
@@ -95,7 +98,7 @@ instructorSchema.statics.editInstructorByID = async function (id, firstName, mid
             allTimeCourses: updatedAllTimeCourses
         };
 
-        const instructorUpdated = await this.findOneandUpdateOne(
+        const instructorUpdated = await this.findOneAndUpdate(
             { id: id },
             { $set: instructorUpdates },
             { new: true } 

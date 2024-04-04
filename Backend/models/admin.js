@@ -37,7 +37,7 @@ adminSchema.statics.createAdmin = async function (firstName, middleName, lastNam
         const enteringYear = new Date().getFullYear();
 
         const admin = await this.create({id, firstName, middleName, lastName, title, enteringYear});
-        const authResult = await Auth.create({id, password:"69", role:"admin"});
+        const authResult = await Auth.create({id, password:"1", role:"admin"});
         return admin, authResult;
     } catch (error) {
         throw error;
@@ -75,7 +75,6 @@ adminSchema.statics.deleteAdminByID = async function (id) {
 
 adminSchema.statics.editAdminByID = async function (id, firstName, middleName, lastName, title, enteringYear, yearOfDeparture) {
     const adminUpdates = {
-        id: id,
         firstName: firstName,
         middleName: middleName,
         lastName: lastName,
@@ -84,12 +83,19 @@ adminSchema.statics.editAdminByID = async function (id, firstName, middleName, l
         yearOfDeparture: yearOfDeparture
     };
     try {
-        const admin = await this.findOneandUpdate(
-            { id: id },
-            { $set: adminUpdates },
-            { new: true } 
-        );
-        return admin;
+        const existingAdmin = await this.findOne({id: id});
+
+        if(existingAdmin){
+            const admin = await this.findOneAndUpdate(
+                { id: id },
+                { $set: adminUpdates },
+                { new: true } 
+            );
+            return admin;
+        } else {
+            res.status(404).json({ error: `Admin with the id: ${id} doesn't exist` });
+        }
+        
     } catch (error) {
         throw error;
     }

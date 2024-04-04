@@ -24,14 +24,15 @@ const onCreateStudent = async (req, res) => {
 const onEditStudentByID = async (req, res) => {
     try {
         const validation = makeValidation(types => ({
-        payload: req.body,
+        payload: req.params,
         checks: {
             id: { type: types.string },
         }
         }));
         if (!validation.success) return res.status(400).json(validation);
 
-        const { id, firstName, middleName, lastName, department, coursesTaken, advisorID, 
+        const {id} = req.params;
+        const { firstName, middleName, lastName, department, coursesTaken, advisorID, 
             yearOfDeparture, enteringYear, allTakenCourses, totalGrade, totalCredits} = req.body;
         const student = await studentModel.editStudentByID( id, firstName, middleName, lastName, department, coursesTaken, advisorID, 
             yearOfDeparture, enteringYear, allTakenCourses, totalGrade, totalCredits);
@@ -44,10 +45,16 @@ const onEditStudentByID = async (req, res) => {
 const onDeleteStudentByID = async (req, res) => {
     try {
         const student = await studentModel.deleteStudentByID(req.params.id);
-        return res.status(200).json({ 
-        success: true, 
-        message: `Deleted a student with ID ${req.params.id}.` 
-        });
+        if(student.deletedCount !== 0){
+            return res.status(200).json({ 
+                success: true, 
+                message: `Deleted a student with ID ${req.params.id}.` 
+                });
+        }
+         else {
+            res.status(404).json({ error: "Student with id ${req.params.id} doesn't exist" });
+         }
+        
     } catch (error) {
         return res.status(500).json({ success: false, error: error })
     }
@@ -66,7 +73,7 @@ const onGetAllStudents = async (req, res) => {
 
 const onGetStudentByID = async (req, res) => {
     try {
-        const student = await studentModel.getStudentById(req.params.id);
+        const student = await studentModel.getStudentByID(req.params.id);
         return res.status(200).json({ success: true, student });
     } catch (error) {
         return res.status(500).json({ success: false, error: error })
