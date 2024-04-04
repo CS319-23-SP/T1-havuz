@@ -45,10 +45,10 @@ class _AdminState extends State<Admin> {
       } else {
         throw Exception('Failed to fetch students data');
       }
-    } else if (response.statusCode == 401) {
+    } /*else if (response.statusCode == 401) {
       print('Unauthorized access: Token may be invalid or expired');
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage()));
-    } else {
+    } */else {
       throw Exception('Failed to fetch students data');
     }
   } catch (e) {
