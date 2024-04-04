@@ -11,7 +11,7 @@ const questionSchema = new mongoose.Schema(
           courses: [String],
           header: String,
           text: String,
-          topics: String,
+          topics: [String],
           toughness: String,
           pastExams: [String],
           creatorID: String,
@@ -29,9 +29,9 @@ questionSchema.statics.createQuestion = async function (courses, header, text, t
 
         if (lastQuestion) {
             const lastSequentialNumber = parseInt(lastQuestion.id.substring(2));
-            id = `${(new Date().getFullYear() % 100).toString().padStart(2, '0')}${(lastSequentialNumber + 1).toString().padStart(6, '0')}`;
+            id = `${(new Date().getFullYear() % 100).toString().padStart(2, '0')}${(lastSequentialNumber + 1).toString().padStart(8, '0')}`;
         } else {
-            id = `${(new Date().getFullYear() % 100).toString().padStart(2, '0')}000001`;
+            id = `${(new Date().getFullYear() % 100).toString().padStart(2, '0')}00000001`;
         }
 
         const question = await this.create({id, courses, header, text, topics, toughness, creatorID});
@@ -70,23 +70,33 @@ questionSchema.statics.deleteQuestionByID = async function (id) {
 }
 
 questionSchema.statics.editQuestionByID = async function (id, courses, header, text, topics, toughness, pastExams, creatorID) {
-    const questionUpdates = {
-        id: id,
-        courses: courses,
-        header: header,
-        text: text,
-        topics: topics,
-        toughness: toughness,
-        pastExams: pastExams,
-        creatorID: creatorID,
-    };
+    
     try {
-      const question = await this.findOneandUpdateOne(
+      const question = await this.findOne({id: id});
+        var updatedPastExams = question.pastExams;
+        
+        if (question && question.pastExams && Array.isArray(pastExams) && pastExams && Array.isArray(question.pastExams)) {
+          pastExams.forEach(exam => {
+            updatedPastExams.push(exam);
+          });
+        } 
+
+        const questionUpdates = {
+          courses: courses,
+          header: header,
+          text: text,
+          topics: topics,
+          toughness: toughness,
+          pastExams: updatedPastExams,
+          creatorID: creatorID,
+      };
+
+      const updatedQuestion = await this.findOneAndUpdate(
         { id: id },
         { $set: questionUpdates },
         { new: true } 
       );
-      return question;
+      return updatedQuestion;
     } catch (error) {
       throw error;
     }

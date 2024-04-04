@@ -24,14 +24,15 @@ const onCreateInstructor = async (req, res) => {
 const onEditInstructorByID = async (req, res) => {
     try {
         const validation = makeValidation(types => ({
-        payload: req.body,
+        payload: req.params,
         checks: {
             id: { type: types.string },
         }
         }));
         if (!validation.success) return res.status(400).json(validation);
 
-        const { id, firstName, middleName, lastName, department, coursesGiven, advisedStudents, enteringYear, yearOfDeparture, allTimeCourses} = req.body;
+        const {id} = req.params;
+        const {firstName, middleName, lastName, department, coursesGiven, advisedStudents, enteringYear, yearOfDeparture, allTimeCourses} = req.body;
         const instructor = await instructorModel.editInstructorByID( id, firstName, middleName, lastName, department, coursesGiven, advisedStudents, enteringYear, yearOfDeparture, allTimeCourses);
         return res.status(200).json({ success: true, instructor });
     } catch (error) {
@@ -42,10 +43,15 @@ const onEditInstructorByID = async (req, res) => {
 const onDeleteInstructorByID = async (req, res) => {
     try {
         const instructor = await instructorModel.deleteInstructorByID(req.params.id);
-        return res.status(200).json({ 
-        success: true, 
-        message: `Deleted an instructor with ID ${req.params.id}.` 
-        });
+        if(instructor.deletedCount !== 0){
+            return res.status(200).json({ 
+                success: true, 
+                message: `Deleted an instructor with ID ${req.params.id}.` 
+            });
+        } else {
+            res.status(404).json({ error: "Instructor with id ${id} doesn't exist" });
+        }
+        
     } catch (error) {
         return res.status(500).json({ success: false, error: error })
     }
@@ -64,7 +70,7 @@ const onGetAllInstructors = async (req, res) => {
 
 const onGetInstructorByID = async (req, res) => {
     try {
-        const instructor = await authModel.getInstructorById(req.params.id);
+        const instructor = await instructorModel.getInstructorByID(req.params.id);
         return res.status(200).json({ success: true, instructor });
     } catch (error) {
         return res.status(500).json({ success: false, error: error })

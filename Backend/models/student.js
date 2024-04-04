@@ -42,7 +42,7 @@ studentSchema.statics.createStudent = async function (firstName, middleName, las
         const enteringYear = new Date().getFullYear();
 
         const student = await this.create({id, firstName, middleName, lastName, department, enteringYear, totalGrade: 0, totalCredits: 0});
-        const authResult = await Auth.create({id: id, password, role});
+        const authResult = await Auth.create({ id, password: "31", role:"student"});
         return student, authResult;
     } catch (error) {
         throw error;
@@ -82,29 +82,33 @@ studentSchema.statics.editStudentByID = async function (id, firstName, middleNam
                                                         yearOfDeparture, enteringYear, allTakenCourses, totalGrade, totalCredits) {
     try {
         const student = await this.findOne({id: id});
-        const updatedAllTakenCourses = [...student.allTakenCourses, ...allTakenCourses];
+        var updatedAllTakenCourses = student.allTakenCourses;
+        
+        if (student && student.allTakenCourses && Array.isArray(student.allTakenCourses) && allTakenCourses && Array.isArray(allTakenCourses)) {
+            updatedAllTakenCourses.push(allTakenCourses);
+        } 
 
         const studentUpdates = {
-            id: id,
             firstName: firstName,
             middleName: middleName,
             lastName: lastName,
             department: department,
-            coursesGiven: coursesGiven,
             coursesTaken: coursesTaken,
             advisorID: advisorID,
             enteringYear: enteringYear,
             yearOfDeparture: yearOfDeparture,
             totalGrade: totalGrade,
             totalCredits: totalCredits,
-            allTimeCourses: updatedAllTakenCourses
+            allTakenCourses: updatedAllTakenCourses
         };
 
-        const studentUpdated = await this.findOneandUpdateOne(
+        const studentUpdated = await this.findOneAndUpdate(
             { id: id },
             { $set: studentUpdates },
             { new: true } 
         );
+
+        console.log("ah");
         return studentUpdated;
     } catch (error) {
         throw error;
