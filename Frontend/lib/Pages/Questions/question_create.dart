@@ -1,3 +1,4 @@
+import 'package:first_trial/token.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -50,11 +51,17 @@ class _AddQuestionPageState extends State<AddQuestionPage> {
       'toughness': toughness
     };
 
-    print(requestBody);
+    String? token = await TokenStorage.getToken();
+      if (token == null) {
+        throw Exception('Token not found');
+      }
 
     final response = await http.post(
       url,
-      headers: {'Content-Type': 'application/json'},
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
       body: json.encode(requestBody),
     );
 

@@ -1,3 +1,4 @@
+import 'package:first_trial/Pages/LoginRelated/login_page.dart';
 import 'package:first_trial/Pages/Widgets/AppBars/app_bars.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -22,7 +23,18 @@ class _AdminState extends State<Admin> {
 
   Future<void> fetchStudents() async {
   try {
-    final response = await http.get(Uri.http('localhost:8080', '/student/'));
+    String? token = await TokenStorage.getToken();
+    if (token == null) {
+      throw Exception('Token not found');
+    }
+
+    final response = await http.get(
+      Uri.http('localhost:8080', '/student/'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+    );
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
@@ -33,6 +45,9 @@ class _AdminState extends State<Admin> {
       } else {
         throw Exception('Failed to fetch students data');
       }
+    } else if (response.statusCode == 401) {
+      print('Unauthorized access: Token may be invalid or expired');
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage()));
     } else {
       throw Exception('Failed to fetch students data');
     }
@@ -49,9 +64,18 @@ List<Student> parseStudentsData(dynamic responseData) {
 
   Future<void> deleteStudent(String studentId, int index) async {
     try {
-      print("localhost:3000/student/$studentId");
-      final response =
-          await http.delete(Uri.http('localhost:8080', '/student/$studentId'));
+      String? token = await TokenStorage.getToken();
+      if (token == null) {
+        throw Exception('Token not found');
+      }
+
+      final response = await http.delete(
+        Uri.http('localhost:8080', '/student/$studentId'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+      );
 
       if (response.statusCode == 200) {
         setState(() {

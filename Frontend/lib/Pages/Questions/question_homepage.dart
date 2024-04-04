@@ -1,6 +1,7 @@
 import 'package:first_trial/Objects/question.dart';
 import 'package:first_trial/Pages/Widgets/AppBars/app_bars.dart';
 import 'package:first_trial/final_variables.dart';
+import 'package:first_trial/token.dart';
 import 'package:flutter/material.dart';
 import 'question_create.dart';
 
@@ -64,9 +65,18 @@ class _QuestionHomepageState extends State<QuestionHomepage> {
     final url = Uri.http('localhost:8080', '/question/search');
 
     try {
+
+      String? token = await TokenStorage.getToken();
+      if (token == null) {
+        throw Exception('Token not found');
+      }
+
       final response = await http.post(
         url,
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
         body: json.encode(queryData),
       );
 
@@ -84,8 +94,19 @@ class _QuestionHomepageState extends State<QuestionHomepage> {
 
   Future<void> fetchQuestions() async {
   try {
-    final response =
-        await http.get(Uri.parse('http://localhost:8080/question/'));
+    String? token = await TokenStorage.getToken();
+    if (token == null) {
+      throw Exception('Token not found');
+    }
+    
+    final response = await http.get(
+      Uri.http('localhost:8080', '/question/'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+    );
+
     if (response.statusCode == 200) {
       setState(() {
         parseQuestionsData(json.decode(response.body));

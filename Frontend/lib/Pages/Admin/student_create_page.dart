@@ -1,5 +1,6 @@
 import 'package:first_trial/Pages/Widgets/AppBars/app_bars.dart';
 import 'package:first_trial/Pages/Admin/admin_page.dart';
+import 'package:first_trial/token.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -50,9 +51,18 @@ class _StudentCreationPageState extends State<StudentCreationPage> {
       print("bad id");
       return;
     }
+
+    String? token = await TokenStorage.getToken();
+    if (token == null) {
+      throw Exception('Token not found');
+    }
+
     final response = await http.post(
       url,
-      headers: {'Content-Type': 'application/json'},
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
       body: json.encode({
         'firstName': firstName,
         if (middleName.isNotEmpty) 'middleName': middleName,
