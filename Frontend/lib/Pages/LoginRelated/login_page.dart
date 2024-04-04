@@ -55,8 +55,6 @@ class LoginPageWidget extends StatelessWidget {
         role = data['role'];
         await TokenStorage.saveToken(data['authorization']);
 
-        print(role);
-
         if (role == "admin") {
           Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Admin()));
         } else if (role == "student") {
