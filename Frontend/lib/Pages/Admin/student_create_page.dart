@@ -54,16 +54,13 @@ class _StudentCreationPageState extends State<StudentCreationPage> {
       url,
       headers: {'Content-Type': 'application/json'},
       body: json.encode({
-        'id': id,
         'firstName': firstName,
         if (middleName.isNotEmpty) 'middleName': middleName,
         'lastName': lastName,
-        'coursesTaken': courses,
         'department': department,
-        'password': password
       }),
     );
-    if (response.statusCode == 201) {
+    if (response.statusCode == 200) {
       print('Student created successfully');
     } else {
       print('Failed to create student: ${response.reasonPhrase}');
