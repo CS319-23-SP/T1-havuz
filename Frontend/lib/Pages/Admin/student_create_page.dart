@@ -4,6 +4,7 @@ import 'package:first_trial/token.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:go_router/go_router.dart';
 
 class StudentCreationPage extends StatefulWidget {
   const StudentCreationPage({Key? key}) : super(key: key);
@@ -75,12 +76,7 @@ class _StudentCreationPageState extends State<StudentCreationPage> {
     } else {
       print('Failed to create student: ${response.reasonPhrase}');
     }
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (context) => Admin(),
-      ),
-    );
+    GoRouter.of(context).go('/admin');
   }
 
   @override
@@ -147,6 +143,12 @@ class _StudentCreationPageState extends State<StudentCreationPage> {
                   ),
                   child: const Text('Create Student'),
                 ),
+              ),
+              IconButton(
+                icon: Icon(Icons.arrow_back),
+                onPressed: () {
+                  GoRouter.of(context).go('/admin');
+                },
               ),
             ],
           ),

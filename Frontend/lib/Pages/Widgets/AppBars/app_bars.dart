@@ -1,13 +1,14 @@
 import 'package:first_trial/Pages/Admin/admin_page.dart';
 import 'package:first_trial/Pages/LoginRelated/login_page.dart';
-import 'package:first_trial/Pages/course_homepage.dart';
+import 'package:first_trial/Pages/Instructor/course_homepage.dart';
 import 'package:first_trial/Pages/Questions/question_homepage.dart';
 import 'package:first_trial/Pages/Admin/student_create_page.dart';
-import 'package:first_trial/Pages/user_prifile_page.dart';
+import 'package:first_trial/Pages/Instructor/user_profile_page.dart';
 import 'package:first_trial/token.dart';
 import 'package:flutter/material.dart';
 import 'package:first_trial/final_variables.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
+import 'package:go_router/go_router.dart';
 
 const List<String> listforExam = <String>[
   'Create',
@@ -54,10 +55,7 @@ class _StudentAppBarState extends State<StudentAppBar> {
                   ],
                 ),
                 onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const CourseHomePage()));
+                  GoRouter.of(context).go('/instructor');
                 },
               ),
               const VerticalD(),
@@ -76,10 +74,7 @@ class _StudentAppBarState extends State<StudentAppBar> {
               AppBarChoice(
                   text: "Questions",
                   onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const QuestionHomepage()));
+                    GoRouter.of(context).go('/instructor/question');
                   }),
             ],
           ),
@@ -95,10 +90,7 @@ class _StudentAppBarState extends State<StudentAppBar> {
               onPressed: () {}, icon: const Icon(Icons.chat_bubble_outline)),
           IconButton(
               onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const UserProfilePage()));
+                GoRouter.of(context).go('/instructor/profile');
               },
               icon: const Icon(Icons.person_outline)),
           const SizedBox(
@@ -107,7 +99,7 @@ class _StudentAppBarState extends State<StudentAppBar> {
           ElevatedButton(
             onPressed: () async {
               await TokenStorage.deleteToken();
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage()));
+              GoRouter.of(context).go('/login');
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.transparent,
@@ -169,10 +161,7 @@ class _InstructorAppBarState extends State<InstructorAppBar> {
                   ],
                 ),
                 onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const CourseHomePage()));
+                  GoRouter.of(context).go('/instructor');
                 },
               ),
               const VerticalD(),
@@ -191,10 +180,7 @@ class _InstructorAppBarState extends State<InstructorAppBar> {
               AppBarChoice(
                   text: "Questions",
                   onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const QuestionHomepage()));
+                    GoRouter.of(context).go('/instructor/question');
                   }),
             ],
           ),
@@ -210,10 +196,7 @@ class _InstructorAppBarState extends State<InstructorAppBar> {
               onPressed: () {}, icon: const Icon(Icons.chat_bubble_outline)),
           IconButton(
               onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const UserProfilePage()));
+                GoRouter.of(context).go('/instructor/profile');
               },
               icon: const Icon(Icons.person_outline)),
           const SizedBox(
@@ -222,7 +205,7 @@ class _InstructorAppBarState extends State<InstructorAppBar> {
           ElevatedButton(
             onPressed: () async {
               await TokenStorage.deleteToken();
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage()));
+              GoRouter.of(context).go('/login');
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.transparent,
@@ -384,8 +367,7 @@ class _AdminAppBarState extends State<AdminAppBar> {
                 ],
               ),
               onPressed: () {
-                Navigator.push(
-                    context, MaterialPageRoute(builder: (context) => Admin()));
+                GoRouter.of(context).go('/admin');
               },
             ),
             const VerticalD(),
@@ -421,11 +403,7 @@ class _AdminAppBarState extends State<AdminAppBar> {
                   onChanged: (value) {
                     //Do something when selected item is changed.
                     if (value == items[0]) {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  const StudentCreationPage()));
+                      GoRouter.of(context).go('/admin/studentCreate');
                     }
                   },
                   buttonStyleData: const ButtonStyleData(
@@ -482,11 +460,7 @@ class _AdminAppBarState extends State<AdminAppBar> {
                                 },*/
                   onChanged: (value) {
                     if (value == items[0]) {
-                      Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  const StudentCreationPage()));
+                      GoRouter.of(context).go('/admin/studentCreate');
                     }
                   },
                   buttonStyleData: const ButtonStyleData(
@@ -517,7 +491,7 @@ class _AdminAppBarState extends State<AdminAppBar> {
           ElevatedButton(
             onPressed: () async {
               await TokenStorage.deleteToken();
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage()));
+              GoRouter.of(context).go('/login');
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.transparent,

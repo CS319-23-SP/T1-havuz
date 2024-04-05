@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'Widgets/AppBars/app_bars.dart';
+import '../Widgets/AppBars/app_bars.dart';
 import 'package:first_trial/final_variables.dart';
 //import 'package:google_fonts/google_fonts.dart';
 

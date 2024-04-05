@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../Widgets/success_fail.dart';
+import 'package:go_router/go_router.dart';
 
 class AddQuestionPage extends StatefulWidget {
   @override
@@ -195,7 +196,15 @@ class _AddQuestionPageState extends State<AddQuestionPage> {
                 },
                 child: Text('Create Question'),
               ),
-            ],
+              Container(
+                width: 60,
+                child: IconButton(
+                  icon: Icon(Icons.arrow_back),
+                  onPressed: () {
+                    GoRouter.of(context).go('/instructor/question');
+                  },
+                ),
+              ),]
           ),
         ),
       ),
