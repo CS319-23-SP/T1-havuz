@@ -6,6 +6,7 @@ import 'student_create_page.dart';
 import '../../Objects/student.dart';
 import 'dart:convert';
 import 'package:first_trial/token.dart';
+import 'package:go_router/go_router.dart';
 
 class Admin extends StatefulWidget {
   @override
@@ -99,14 +100,7 @@ List<Student> parseStudentsData(dynamic responseData) {
         body: StudentData(students: students, onDelete: deleteStudent),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => StudentCreationPage(),
-              ),
-            ).then((_) {
-              fetchStudents();
-            });
+            GoRouter.of(context).go('/admin/studentCreate');
           },
           backgroundColor: Colors.blue,
           child: const Icon(Icons.add),

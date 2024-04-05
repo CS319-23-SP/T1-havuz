@@ -4,6 +4,7 @@ import 'package:first_trial/final_variables.dart';
 import 'package:first_trial/token.dart';
 import 'package:flutter/material.dart';
 import 'question_create.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -291,13 +292,7 @@ void parseQuestionsData(dynamic responseData) {
                                 ),
                               ),
                               onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => AddQuestionPage()),
-                                ).then((_) {
-                                  fetchQuestions();
-                                });
+                                GoRouter.of(context).go('/instructor/question/create');
                               },
                               child: const Text(
                                 'Add Question',
