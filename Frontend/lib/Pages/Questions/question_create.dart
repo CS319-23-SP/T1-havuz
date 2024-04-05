@@ -1,7 +1,9 @@
+import 'package:first_trial/token.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../Widgets/success_fail.dart';
+import 'package:go_router/go_router.dart';
 
 class AddQuestionPage extends StatefulWidget {
   @override
@@ -35,8 +37,9 @@ class _AddQuestionPageState extends State<AddQuestionPage> {
         .map((topic) => topic.trim())
         .where((topic) => topic.isNotEmpty)
         .toList();
-    final creatorID = int.tryParse(creatorIDController.text);
+    final creatorID = creatorIDController.text;
     final text = textController.text;
+    final toughness = "5";
 
     final url = Uri.parse('http://localhost:8080/question');
 
@@ -44,17 +47,26 @@ class _AddQuestionPageState extends State<AddQuestionPage> {
       'courses': selectedCourses,
       'header': header,
       'topics': topics,
-      'creatorId': creatorID,
+      'creatorID': creatorID,
       'text': text,
+      'toughness': toughness
     };
+
+    String? token = await TokenStorage.getToken();
+      if (token == null) {
+        throw Exception('Token not found');
+      }
 
     final response = await http.post(
       url,
-      headers: {'Content-Type': 'application/json'},
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
       body: json.encode(requestBody),
     );
 
-    if (response.statusCode == 201) {
+    if (response.statusCode == 200) {
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -184,7 +196,15 @@ class _AddQuestionPageState extends State<AddQuestionPage> {
                 },
                 child: Text('Create Question'),
               ),
-            ],
+              Container(
+                width: 60,
+                child: IconButton(
+                  icon: Icon(Icons.arrow_back),
+                  onPressed: () {
+                    GoRouter.of(context).go('/instructor/question');
+                  },
+                ),
+              ),]
           ),
         ),
       ),

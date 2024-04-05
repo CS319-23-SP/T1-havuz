@@ -1,9 +1,12 @@
+import 'package:first_trial/Pages/LoginRelated/login_page.dart';
 import 'package:first_trial/Pages/Widgets/AppBars/app_bars.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'student_create_page.dart';
 import '../../Objects/student.dart';
 import 'dart:convert';
+import 'package:first_trial/token.dart';
+import 'package:go_router/go_router.dart';
 
 class Admin extends StatefulWidget {
   @override
@@ -20,32 +23,60 @@ class _AdminState extends State<Admin> {
   }
 
   Future<void> fetchStudents() async {
-    try {
-      final response = await http.get(Uri.http('localhost:8080', '/student/'));
+  try {
+    String? token = await TokenStorage.getToken();
+    if (token == null) {
+      throw Exception('Token not found');
+    }
 
-      if (response.statusCode == 200) {
+    final response = await http.get(
+      Uri.http('localhost:8080', '/student/'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final responseData = json.decode(response.body);
+      if (responseData['success']) {
         setState(() {
-          students = parseStudentsData(json.decode(response.body));
+          students = parseStudentsData(responseData['students']);
         });
       } else {
         throw Exception('Failed to fetch students data');
       }
-    } catch (e) {
-      print('Error fetching students: $e');
+    } /*else if (response.statusCode == 401) {
+      print('Unauthorized access: Token may be invalid or expired');
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage()));
+    } */else {
+      throw Exception('Failed to fetch students data');
     }
+  } catch (e) {
+    print('Error fetching students: $e');
   }
+}
 
-  List<Student> parseStudentsData(dynamic responseData) {
-    return (responseData as List<dynamic>)
-        .map((studentData) => Student.fromJson(studentData))
-        .toList();
-  }
+List<Student> parseStudentsData(dynamic responseData) {
+  return (responseData as List<dynamic>)
+      .map((studentData) => Student.fromJson(studentData))
+      .toList();
+}
 
   Future<void> deleteStudent(String studentId, int index) async {
     try {
-      print("localhost:3000/student/$studentId");
-      final response =
-          await http.delete(Uri.http('localhost:8080', '/student/$studentId'));
+      String? token = await TokenStorage.getToken();
+      if (token == null) {
+        throw Exception('Token not found');
+      }
+
+      final response = await http.delete(
+        Uri.http('localhost:8080', '/student/$studentId'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+      );
 
       if (response.statusCode == 200) {
         setState(() {
@@ -69,14 +100,7 @@ class _AdminState extends State<Admin> {
         body: StudentData(students: students, onDelete: deleteStudent),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => StudentCreationPage(),
-              ),
-            ).then((_) {
-              fetchStudents();
-            });
+            GoRouter.of(context).go('/admin/studentCreate');
           },
           backgroundColor: Colors.blue,
           child: const Icon(Icons.add),
