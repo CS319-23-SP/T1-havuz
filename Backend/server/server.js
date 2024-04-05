@@ -11,6 +11,7 @@ const authRouter = require("../routes/auth");
 const instructorRouter = require("../routes/instructor");
 const studentRouter = require("../routes/student");
 const questionRouter = require("../routes/question");
+const courseRouter = require("../routes/course");
 
 const { decode } = require('../middlewares/jwt');
 
@@ -29,6 +30,7 @@ app.use("/auth", authRouter);
 app.use("/instructor", decode, instructorRouter);
 app.use("/student", decode, studentRouter);
 app.use("/question", decode, questionRouter);
+app.use("/course", decode, courseRouter);
 
 app.use('*', (req, res) => {
     return res.status(404).json({
