@@ -4,9 +4,11 @@ import 'package:first_trial/Pages/LoginRelated/password_forget_page.dart';
 import 'package:first_trial/Pages/Student/student_homepage.dart';
 import 'package:first_trial/final_variables.dart';
 import 'package:flutter/material.dart';
-import '../course_homepage.dart';
+import '../Instructor/course_homepage.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import "package:first_trial/token.dart";
+import 'package:go_router/go_router.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
@@ -33,6 +35,7 @@ class LoginPageWidget extends StatelessWidget {
   LoginPageWidget({super.key});
 
   Future<void> _login(BuildContext context) async {
+    
     final id = int.tryParse(_usernameController.text);
     if (id == null) {
       print("bad id");
@@ -40,28 +43,26 @@ class LoginPageWidget extends StatelessWidget {
     }
     String password = _passwordController.text;
     String role = "";
-
+    
     try {
       var response = await http.post(
-        Uri.parse('http://localhost:8080/auth/login'),
+        Uri.parse('http://localhost:8080/auth/login/${id}'),
         headers: {"Content-Type": "application/json"},
-        body: jsonEncode({'id': id, 'password': password}),
+        body: jsonEncode({'password': password}),
       );
 
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
         role = data['role'];
+        await TokenStorage.saveToken(data['authorization']);
 
         if (role == "admin") {
-          Navigator.pushReplacement(
-              context, MaterialPageRoute(builder: (context) => Admin()));
+          GoRouter.of(context).go('/admin');
         } else if (role == "student") {
-          Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) => StudentHomepage()));
+          GoRouter.of(context).go('/student');
         }
         else if (role == "instructor") {
-          Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) => CourseHomePage()));
+          GoRouter.of(context).go('/instructor');
         }
       } else {
         print("Login failed: ${response.statusCode}");

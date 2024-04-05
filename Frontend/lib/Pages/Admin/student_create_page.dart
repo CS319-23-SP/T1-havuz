@@ -1,8 +1,10 @@
 import 'package:first_trial/Pages/Widgets/AppBars/app_bars.dart';
 import 'package:first_trial/Pages/Admin/admin_page.dart';
+import 'package:first_trial/token.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:go_router/go_router.dart';
 
 class StudentCreationPage extends StatefulWidget {
   const StudentCreationPage({Key? key}) : super(key: key);
@@ -50,30 +52,31 @@ class _StudentCreationPageState extends State<StudentCreationPage> {
       print("bad id");
       return;
     }
+
+    String? token = await TokenStorage.getToken();
+    if (token == null) {
+      throw Exception('Token not found');
+    }
+
     final response = await http.post(
       url,
-      headers: {'Content-Type': 'application/json'},
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
       body: json.encode({
-        'id': id,
         'firstName': firstName,
         if (middleName.isNotEmpty) 'middleName': middleName,
         'lastName': lastName,
-        'coursesTaken': courses,
         'department': department,
-        'password': password
       }),
     );
-    if (response.statusCode == 201) {
+    if (response.statusCode == 200) {
       print('Student created successfully');
     } else {
       print('Failed to create student: ${response.reasonPhrase}');
     }
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (context) => Admin(),
-      ),
-    );
+    GoRouter.of(context).go('/admin');
   }
 
   @override
@@ -140,6 +143,12 @@ class _StudentCreationPageState extends State<StudentCreationPage> {
                   ),
                   child: const Text('Create Student'),
                 ),
+              ),
+              IconButton(
+                icon: Icon(Icons.arrow_back),
+                onPressed: () {
+                  GoRouter.of(context).go('/admin');
+                },
               ),
             ],
           ),
