@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:first_trial/final_variables.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 const List<String> listforExam = <String>[
   'Create',
@@ -30,72 +31,129 @@ class _StudentAppBarState extends State<StudentAppBar> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    String course = list.first;
+
+    final List<String> items = [
+      'Grades',
+      'Schedule',
+    ];
+
+    String? selectedValue;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: PoolColors.appBarBackground,
         automaticallyImplyLeading: false,
-        title: Expanded(
-          child: Row(
-            children: [
-              const SizedBox(
-                width: 23,
+        title: Row(
+          children: [
+            const SizedBox(
+              width: 23,
+            ),
+            IconButton(
+              icon: Row(
+                children: [
+                  Image.asset(
+                    AssetLocations.bilkentLogo,
+                    width: 35,
+                    height: 35,
+                  ),
+                  const SizedBox(
+                    width: 5,
+                  ),
+                  Text(
+                    "Course Homepage",
+                    style: GoogleFonts.alike(fontSize: 16),
+                  ),
+                ],
               ),
-              IconButton(
-                icon: Row(
-                  children: [
-                    Image.asset(
-                      AssetLocations.bilkentLogo,
-                      width: 35,
-                      height: 35,
-                    ),
-                    const SizedBox(
-                      width: 5,
-                    ),
-                    const Text("Course Homepage"),
-                  ],
-                ),
-                onPressed: () {
-                  GoRouter.of(context).go('/instructor');
-                },
-              ),
-              const VerticalD(),
-              const DropdownButtonChoice(),
-              const VerticalD(),
-              AppBarChoice(
-                text: "Weekly Schedule",
-                onPressed: () {},
-              ),
-              const VerticalD(),
-              AppBarChoice(
-                text: "Attendance",
-                onPressed: () {},
-              ),
-              const VerticalD(),
-              AppBarChoice(
-                  text: "Questions",
-                  onPressed: () {
-                    GoRouter.of(context).go('/instructor/question');
-                  }),
-            ],
-          ),
-        ),
-        actions: <Widget>[
-          const SizedBox(
-            width: 45,
-          ),
-          IconButton(
-              onPressed: () {},
-              icon: const Icon(Icons.notifications_active_outlined)),
-          IconButton(
-              onPressed: () {}, icon: const Icon(Icons.chat_bubble_outline)),
-          IconButton(
               onPressed: () {
-                GoRouter.of(context).go('/instructor/profile');
+                GoRouter.of(context).go('/student');
               },
-              icon: const Icon(Icons.person_outline)),
-          const SizedBox(
-            width: 20,
-          ),
+            ),
+            const VerticalD(),
+            SizedBox(
+              width: 150,
+              child: Form(
+                //key: _addKey,
+                child: DropdownButtonFormField2<String>(
+                  hint: Text(
+                    "Exams",
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.alike(color: PoolColors.black),
+                  ),
+                  decoration: InputDecoration(
+                    focusedBorder: InputBorder.none,
+                    enabledBorder: InputBorder.none,
+                    contentPadding: const EdgeInsets.symmetric(vertical: 16),
+                  ),
+                  items: items
+                      .map((item) => DropdownMenuItem<String>(
+                            value: item,
+                            child: Text(
+                              item,
+                              style: GoogleFonts.alike(
+                                textStyle: TextStyle(
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ),
+                          ))
+                      .toList(),
+                  /* validator: (value) {
+                                  if (value == null) {
+                                    return 'Please select gender.';
+                                  }
+                                  return null;
+                                },*/
+                  onChanged: (value) {
+                    //Do something when selected item is changed.
+                    if (value == items[0]) {
+                      GoRouter.of(context).go('/student');
+                    }
+                  },
+                  buttonStyleData: const ButtonStyleData(
+                    padding: EdgeInsets.only(right: 8),
+                  ),
+                  iconStyleData: const IconStyleData(
+                    icon: Icon(
+                      Icons.arrow_drop_down,
+                      color: Colors.black45,
+                    ),
+                    iconSize: 24,
+                  ),
+                  dropdownStyleData: DropdownStyleData(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                  ),
+                  menuItemStyleData: const MenuItemStyleData(
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                  ),
+                ),
+              ),
+            ),
+            const VerticalD(),
+            AppBarChoice(
+              text: "Weekly Schedule",
+              onPressed: () {},
+            ),
+            const VerticalD(),
+            AppBarChoice(
+              text: "Attendance",
+              onPressed: () {},
+            ),
+            const VerticalD(),
+            AppBarChoice(
+                text: "Assignment",
+                onPressed: () {
+                  GoRouter.of(context).go('/student');
+                }),
+          ],
+        ),
+        actions: [
           ElevatedButton(
             onPressed: () async {
               await TokenStorage.deleteToken();
@@ -119,7 +177,7 @@ class _StudentAppBarState extends State<StudentAppBar> {
       ),
     );
   }
-} 
+}
 
 class InstructorAppBar extends StatefulWidget implements PreferredSizeWidget {
   const InstructorAppBar({super.key});
@@ -225,95 +283,7 @@ class _InstructorAppBarState extends State<InstructorAppBar> {
       ),
     );
   }
-} /*
-
-class StudentAppBar extends StatefulWidget implements PreferredSizeWidget {
-  const StudentAppBar({super.key});
-
-  @override
-  State<StudentAppBar> createState() => _StudentAppBarState();
-
-  @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }
-
-class _StudentAppBarState extends State<StudentAppBar> {
-  @override
-  Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
-
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: PoolColors.appBarBackground,
-        automaticallyImplyLeading: false,
-        title: Expanded(
-          child: Row(
-            children: [
-              /*DropdownButton<String>(
-                alignment: AlignmentDirectional.topStart,
-                icon: const Icon(Icons.menu),
-                elevation: 8,
-                style: const TextStyle(color: Colors.black),
-                onChanged: (String? value) {
-                  // This is called when the user selects an item.
-                  setState(() {
-                    course = value!;
-                  });
-                },
-                items: list.map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-              ),*/
-              const SizedBox(
-                width: 23,
-              ),
-              IconButton(
-                icon: Row(
-                  children: [
-                    Image.asset(
-                      AssetLocations.bilkentLogo,
-                      width: 35,
-                      height: 35,
-                    ),
-                    const SizedBox(
-                      width: 5,
-                    ),
-                    const Text("Course Homepage"),
-                  ],
-                ),
-                onPressed: () {},
-              ),
-              const VerticalD(),
-              const AppBarChoice(text: "Exams"),
-              const VerticalD(),
-              const AppBarChoice(text: "Weekly Schedule"),
-              const VerticalD(),
-              const AppBarChoice(text: "Attendance"),
-              const VerticalD(),
-              const AppBarChoice(text: "Assignments"),
-            ],
-          ),
-        ),
-        actions: <Widget>[
-          IconButton(
-              onPressed: () {},
-              icon: const Icon(Icons.notifications_active_outlined)),
-          IconButton(
-              onPressed: () {}, icon: const Icon(Icons.chat_bubble_outline)),
-          IconButton(onPressed: () {}, icon: const Icon(Icons.person_outline)),
-          const SizedBox(
-            width: 45,
-          ),
-        ],
-      ),
-    );
-  }
-}
-*/
 
 class AdminAppBar extends StatefulWidget implements PreferredSizeWidget {
   const AdminAppBar({super.key});
