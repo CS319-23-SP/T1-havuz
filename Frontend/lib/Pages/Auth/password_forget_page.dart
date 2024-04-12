@@ -1,4 +1,4 @@
-import 'package:first_trial/Pages/LoginRelated/login_page.dart';
+import 'package:first_trial/Pages/Auth/login_page.dart';
 import 'package:first_trial/final_variables.dart';
 import 'package:flutter/material.dart';
 import '../Instructor/course_homepage.dart';

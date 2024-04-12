@@ -1,9 +1,9 @@
 import 'package:first_trial/Pages/Admin/admin_page.dart';
-import 'package:first_trial/Pages/LoginRelated/login_page.dart';
+import 'package:first_trial/Pages/Auth/login_page.dart';
 import 'package:first_trial/Pages/Instructor/course_homepage.dart';
 import 'package:first_trial/Pages/Questions/question_homepage.dart';
 import 'package:first_trial/Pages/Admin/student_create_page.dart';
-import 'package:first_trial/Pages/Instructor/user_profile_page.dart';
+import 'package:first_trial/Pages/UserProfile/user_profile_page.dart';
 import 'package:first_trial/token.dart';
 import 'package:flutter/material.dart';
 import 'package:first_trial/final_variables.dart';
@@ -154,25 +154,22 @@ class _StudentAppBarState extends State<StudentAppBar> {
           ],
         ),
         actions: [
-          ElevatedButton(
+          IconButton(
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const UserProfilePage()));
+              },
+              icon: Icon(Icons.person_2)),
+          IconButton(
             onPressed: () async {
               await TokenStorage.deleteToken();
               GoRouter.of(context).go('/login');
             },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.transparent,
-              foregroundColor: Colors.white,
-              textStyle: const TextStyle(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            child: const MouseRegion(
-              cursor: SystemMouseCursors.click,
-              child: Text(
-                "Log out",
-              ),
-            ),
-          )
+            icon: const MouseRegion(
+                cursor: SystemMouseCursors.click, child: Icon(Icons.logout)),
+          ),
         ],
       ),
     );
@@ -198,50 +195,48 @@ class _InstructorAppBarState extends State<InstructorAppBar> {
       appBar: AppBar(
         backgroundColor: PoolColors.appBarBackground,
         automaticallyImplyLeading: false,
-        title: Expanded(
-          child: Row(
-            children: [
-              const SizedBox(
-                width: 23,
+        title: Row(
+          children: [
+            const SizedBox(
+              width: 23,
+            ),
+            IconButton(
+              icon: Row(
+                children: [
+                  Image.asset(
+                    AssetLocations.bilkentLogo,
+                    width: 35,
+                    height: 35,
+                  ),
+                  const SizedBox(
+                    width: 5,
+                  ),
+                  const Text("Course Homepage"),
+                ],
               ),
-              IconButton(
-                icon: Row(
-                  children: [
-                    Image.asset(
-                      AssetLocations.bilkentLogo,
-                      width: 35,
-                      height: 35,
-                    ),
-                    const SizedBox(
-                      width: 5,
-                    ),
-                    const Text("Course Homepage"),
-                  ],
-                ),
+              onPressed: () {
+                GoRouter.of(context).go('/instructor');
+              },
+            ),
+            const VerticalD(),
+            const DropdownButtonChoice(),
+            const VerticalD(),
+            AppBarChoice(
+              text: "Weekly Schedule",
+              onPressed: () {},
+            ),
+            const VerticalD(),
+            AppBarChoice(
+              text: "Attendance",
+              onPressed: () {},
+            ),
+            const VerticalD(),
+            AppBarChoice(
+                text: "Questions",
                 onPressed: () {
-                  GoRouter.of(context).go('/instructor');
-                },
-              ),
-              const VerticalD(),
-              const DropdownButtonChoice(),
-              const VerticalD(),
-              AppBarChoice(
-                text: "Weekly Schedule",
-                onPressed: () {},
-              ),
-              const VerticalD(),
-              AppBarChoice(
-                text: "Attendance",
-                onPressed: () {},
-              ),
-              const VerticalD(),
-              AppBarChoice(
-                  text: "Questions",
-                  onPressed: () {
-                    GoRouter.of(context).go('/instructor/question');
-                  }),
-            ],
-          ),
+                  GoRouter.of(context).go('/instructor/question');
+                }),
+          ],
         ),
         actions: <Widget>[
           const SizedBox(
@@ -254,7 +249,11 @@ class _InstructorAppBarState extends State<InstructorAppBar> {
               onPressed: () {}, icon: const Icon(Icons.chat_bubble_outline)),
           IconButton(
               onPressed: () {
-                GoRouter.of(context).go('/instructor/profile');
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const UserProfilePage()),
+                );
               },
               icon: const Icon(Icons.person_outline)),
           const SizedBox(

@@ -1,4 +1,4 @@
-import 'package:first_trial/Pages/LoginRelated/login_page.dart';
+import 'package:first_trial/Pages/Auth/login_page.dart';
 import 'package:first_trial/Pages/Widgets/AppBars/app_bars.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -23,45 +23,46 @@ class _AdminState extends State<Admin> {
   }
 
   Future<void> fetchStudents() async {
-  try {
-    String? token = await TokenStorage.getToken();
-    if (token == null) {
-      throw Exception('Token not found');
-    }
-
-    final response = await http.get(
-      Uri.http('localhost:8080', '/student/'),
-      headers: {
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
-      },
-    );
-
-    if (response.statusCode == 200) {
-      final responseData = json.decode(response.body);
-      if (responseData['success']) {
-        setState(() {
-          students = parseStudentsData(responseData['students']);
-        });
-      } else {
-        throw Exception('Failed to fetch students data');
+    try {
+      String? token = await TokenStorage.getToken();
+      if (token == null) {
+        throw Exception('Token not found');
       }
-    } /*else if (response.statusCode == 401) {
+
+      final response = await http.get(
+        Uri.http('localhost:8080', '/student/'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        if (responseData['success']) {
+          setState(() {
+            students = parseStudentsData(responseData['students']);
+          });
+        } else {
+          throw Exception('Failed to fetch students data');
+        }
+      } /*else if (response.statusCode == 401) {
       print('Unauthorized access: Token may be invalid or expired');
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage()));
-    } */else {
-      throw Exception('Failed to fetch students data');
+    } */
+      else {
+        throw Exception('Failed to fetch students data');
+      }
+    } catch (e) {
+      print('Error fetching students: $e');
     }
-  } catch (e) {
-    print('Error fetching students: $e');
   }
-}
 
-List<Student> parseStudentsData(dynamic responseData) {
-  return (responseData as List<dynamic>)
-      .map((studentData) => Student.fromJson(studentData))
-      .toList();
-}
+  List<Student> parseStudentsData(dynamic responseData) {
+    return (responseData as List<dynamic>)
+        .map((studentData) => Student.fromJson(studentData))
+        .toList();
+  }
 
   Future<void> deleteStudent(String studentId, int index) async {
     try {
