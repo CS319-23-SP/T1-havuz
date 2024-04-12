@@ -12,9 +12,6 @@ class StudentHomepage extends StatefulWidget {
 class _StudentHomepageState extends State<StudentHomepage> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: StudentAppBar(),
-      body: LeftBar(),
-    );
+    return Scaffold(appBar: InstructorAppBar(), body: LeftBar());
   }
 }

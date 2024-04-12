@@ -2,8 +2,8 @@ import 'dart:js';
 
 import 'package:first_trial/Pages/Admin/admin_page.dart';
 import 'package:first_trial/Pages/Admin/student_create_page.dart';
-import 'package:first_trial/Pages/Instructor/user_profile_page.dart';
-import 'package:first_trial/Pages/LoginRelated/login_page.dart';
+import 'package:first_trial/Pages/UserProfile/user_profile_page.dart';
+import 'package:first_trial/Pages/Auth/login_page.dart';
 import 'package:first_trial/Pages/Questions/question_create.dart';
 import 'package:first_trial/Pages/Questions/question_homepage.dart';
 import 'package:first_trial/Pages/Student/student_homepage.dart';
@@ -13,7 +13,7 @@ import 'package:go_router/go_router.dart';
 
 class RouteGenerator {
   final String loginRoute = "/login";
-  
+
   final String instructorRoute = "/instructor";
   final String questionHomepageRoute = "/instructor/question";
   final String questionCreateRoute = "/instructor/question/create";
@@ -59,13 +59,13 @@ class RouteGenerator {
               return const CourseHomePage();
             }),
         GoRoute(
-          path: studentRoute,
-          builder: (context, state) {
+            path: studentRoute,
+            builder: (context, state) {
               return const StudentHomepage();
             }),
         GoRoute(
-          path: adminRoute,
-          builder: (context, state) {
+            path: adminRoute,
+            builder: (context, state) {
               return Admin();
             }),
       ],

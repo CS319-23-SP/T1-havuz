@@ -2,6 +2,7 @@ import 'package:first_trial/Pages/Widgets/AppBars/app_bars.dart';
 import 'package:first_trial/Pages/Admin/admin_page.dart';
 import 'package:first_trial/token.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:go_router/go_router.dart';
@@ -95,60 +96,74 @@ class _StudentCreationPageState extends State<StudentCreationPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text('Student ID'),
-              TextFormField(
-                controller: studentIdController,
-                decoration: const InputDecoration(
-                  hintText: 'Enter Student ID',
-                ),
-              ),
-              const SizedBox(height: 16),
-              const Text('Student Name'),
-              TextFormField(
-                controller: studentNameController,
-                decoration: const InputDecoration(
-                  hintText: 'Enter Student Name (be careful about spacing)',
-                ),
-              ),
-              const SizedBox(height: 16),
-              const Text('Courses'),
-              TextFormField(
-                controller: coursesController,
-                decoration: const InputDecoration(
-                  hintText: 'Enter Courses',
-                ),
-              ),
-              const SizedBox(height: 16),
-              const Text('Password'),
-              TextFormField(
-                controller: passwordController,
-                decoration: const InputDecoration(
-                  hintText: 'Enter Password',
-                ),
-              ),
-              const SizedBox(height: 16),
-              const Text('Department'),
-              TextFormField(
-                controller: departmentController,
-                decoration: const InputDecoration(
-                  hintText: 'Enter Department',
-                ),
-              ),
-              const SizedBox(height: 24),
-              Center(
-                child: ElevatedButton(
-                  onPressed: _createStudent,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue,
-                  ),
-                  child: const Text('Create Student'),
-                ),
-              ),
               IconButton(
                 icon: Icon(Icons.arrow_back),
                 onPressed: () {
                   GoRouter.of(context).go('/admin');
                 },
+              ),
+              SizedBox(
+                height: 25,
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Student ID',
+                    ),
+                    TextFormField(
+                      controller: studentIdController,
+                      decoration: const InputDecoration(
+                        hintText: 'Enter Student ID',
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    const Text('Student Name'),
+                    TextFormField(
+                      controller: studentNameController,
+                      decoration: const InputDecoration(
+                        hintText:
+                            'Enter Student Name (be careful about spacing)',
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    const Text('Courses'),
+                    TextFormField(
+                      controller: coursesController,
+                      decoration: const InputDecoration(
+                        hintText: 'Enter Courses',
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    const Text('Password'),
+                    TextFormField(
+                      controller: passwordController,
+                      decoration: const InputDecoration(
+                        hintText: 'Enter Password',
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    const Text('Department'),
+                    TextFormField(
+                      controller: departmentController,
+                      decoration: const InputDecoration(
+                        hintText: 'Enter Department',
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    Center(
+                      child: ElevatedButton(
+                        onPressed: _createStudent,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue,
+                        ),
+                        child: const Text('Create Student'),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
