@@ -75,29 +75,23 @@ class ForgotPageWidget extends StatelessWidget {
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      body: Row(
-        children: [
-          Padding(
-            padding: EdgeInsets.all(screenHeight / 7),
-            child: Row(
-              children: [
-                SizedBox(
-                  width: 8 * (screenWidth / 7) / 14,
-                ),
-                LoginPageContainer(
-                  screenWidth: screenWidth,
-                  screenHeight: screenHeight,
-                  usernameController: usernameController,
-                  newPasswordController: newPasswordController,
-                  onPressed: () => _changePassword(context),
-                ),
-              ],
+      body: Center(
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Image.asset(
+              opacity: const AlwaysStoppedAnimation(.5),
+              AssetLocations.loginDesign,
             ),
-          ),
-          Image.asset(
-            AssetLocations.loginDesign,
-          ),
-        ],
+            LoginPageContainer(
+              screenWidth: screenWidth,
+              screenHeight: screenHeight,
+              usernameController: usernameController,
+              newPasswordController: newPasswordController,
+              onPressed: () => _changePassword(context),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -123,6 +117,7 @@ class LoginPageContainer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: const BoxDecoration(
+          backgroundBlendMode: BlendMode.dst,
           color: PoolColors.cardWhite,
           borderRadius: BorderRadius.all(Radius.circular(15))),
       child: SizedBox(

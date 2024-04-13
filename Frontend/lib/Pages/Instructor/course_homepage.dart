@@ -16,6 +16,7 @@ class CourseHomePage extends StatefulWidget {
 
 class _CourseHomePageState extends State<CourseHomePage> {
   List<Course> courses = [];
+  late final ScrollController _scrollController;
 
   @override
   void initState() {
@@ -69,8 +70,13 @@ class _CourseHomePageState extends State<CourseHomePage> {
     return MaterialApp(
       home: Scaffold(
         appBar: InstructorAppBar(),
-        body: Row(
-          children: [LeftBar(), CourseData(courses: courses)],
+        body: Container(
+          child: Row(
+            children: [
+              LeftBar(),
+              CourseData(courses: courses),
+            ],
+          ),
         ),
       ),
     );
@@ -87,44 +93,131 @@ class CourseData extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GridView.builder(
-      //     shrinkWrap: true, // Add this line to enable shrink wrap
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 10.0,
-        mainAxisSpacing: 10.0,
-        childAspectRatio: 4.0,
+    return Container(
+      width: 500,
+      child: ListView.builder(
+        itemCount: 1,
+        itemBuilder: (context, index) {
+          return CustomTile(title: courses[index].id, gridItems: courses);
+        },
       ),
-      itemCount: courses.length,
+    );
+  }
+}
+
+class CustomTile extends StatelessWidget {
+  final String title;
+  final List<Course> gridItems;
+
+  const CustomTile({Key? key, required this.title, required this.gridItems})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    //print(gridItems.length);
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 3,
+        crossAxisSpacing: 24.0,
+        mainAxisSpacing: 20.0,
+      ),
+      itemCount: gridItems.length,
       itemBuilder: (context, index) {
-        var course = courses[index];
-        return Card(
-          color: PoolColors.cardWhite,
-          margin: EdgeInsets.all(10), // Optional: Adjust margin as needed
-          child: InkWell(
-            borderRadius: BorderRadius.circular(15),
-            splashColor: PoolColors.fairTurkuaz,
-            onTap: () {},
+        Course post = gridItems[index];
+        return ProductCard(post: post);
+      },
+    );
+  }
+}
+
+class ProductCard extends StatefulWidget {
+  final Course post;
+  final Color backgroundColor;
+
+  ProductCard({
+    this.backgroundColor = Colors.white,
+    required this.post,
+  });
+
+  @override
+  _ProductCardState createState() => _ProductCardState();
+}
+
+class _ProductCardState extends State<ProductCard> {
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () {
+        // Navigator.push(
+        //   context,
+        //   MaterialPageRoute(
+        //     builder: (context) => OneItemView(productId: widget.post.id ?? ""),
+        //   ),
+        // );
+      },
+      child: Card(
+        color: widget.backgroundColor,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15.0),
+        ),
+        child: SingleChildScrollView(
+          // Disable scrolling
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
             child: Column(
-              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ListTile(
-                  dense: true, // Reduce vertical size
-                  title: Text('${course.id} '),
+                const SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      // Wrap the title with Expanded
+                      child: Text(
+                        widget.post.id ?? "",
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.amber,
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      padding: const EdgeInsets.all(5.0),
+                      child: Text(
+                        widget.post.term ?? "",
+                        style: const TextStyle(
+                          fontSize: 8,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-                ListTile(
-                  dense: true, // Reduce vertical size
-                  title: Text(course.term),
+                const SizedBox(height: 10),
+                /*Text(
+                  "Date: ${widget.post.sdate}",
+                  style: const TextStyle(fontSize: 12),
                 ),
-                ListTile(
-                  dense: true, // Reduce vertical size
-                  title: Text('${course.sections}'),
+                Text(
+                  "Location: ${widget.post.location}",
+                  style: const TextStyle(fontSize: 12),
                 ),
+                Text(
+                  "Organizer: ${widget.post.organizer}",
+                  style: const TextStyle(fontSize: 12),
+                ),*/
               ],
             ),
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 }
