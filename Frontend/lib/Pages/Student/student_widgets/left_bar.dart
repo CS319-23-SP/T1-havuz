@@ -114,7 +114,7 @@ class _LeftBarState extends State<LeftBar> {
         backgroundColor: PoolColors.appBarBackground,
         togglerTheme: SideNavigationBarTogglerTheme.standard(),
         itemTheme: SideNavigationBarItemTheme(
-          selectedBackgroundColor: PoolColors.fairBlue,
+          selectedBackgroundColor: Colors.transparent,
           unselectedBackgroundColor: Colors.transparent,
           selectedItemColor: PoolColors.black,
           unselectedItemColor: PoolColors.black,

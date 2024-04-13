@@ -4,6 +4,7 @@ import 'package:first_trial/Pages/Auth/password_forget_page.dart';
 import 'package:first_trial/Pages/Student/student_homepage.dart';
 import 'package:first_trial/final_variables.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import '../Instructor/course_homepage.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -114,98 +115,88 @@ class LoginPageWidget extends StatelessWidget {
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      body: Row(
-        children: [
-          Padding(
-            padding: EdgeInsets.all(screenHeight / 7),
-            child: Row(
-              children: [
-                SizedBox(
-                  width: 8 * (screenWidth / 7) / 14,
-                ),
-                Container(
-                  decoration: const BoxDecoration(
-                      color: PoolColors.cardWhite,
-                      borderRadius: BorderRadius.all(Radius.circular(15))),
-                  child: SizedBox(
-                    width: screenWidth / 4,
-                    height: 3 * (screenHeight / 4),
-                    child: Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          LoginPageInputButton(
-                            usernameController: _usernameController,
-                            labelText: "Bilkent ID",
-                            isObscured: false,
-                          ),
-                          const SizedBox(height: 20),
-                          LoginPageInputButton(
-                            usernameController: _passwordController,
-                            labelText: "Password",
-                            isObscured: true,
-                          ),
-                          const SizedBox(height: 30),
-                          SizedBox(
-                            height: screenHeight / 14,
-                            width: 3 * (8 * (screenWidth / 7) / 14) / 2,
-                            child: ElevatedButton(
-                              style: ButtonStyle(
-                                backgroundColor:
-                                    const MaterialStatePropertyAll<Color>(
-                                  PoolColors.fairBlue,
-                                ),
-                                shape: MaterialStateProperty.all<
-                                    RoundedRectangleBorder>(
-                                  RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(15),
-                                  ),
-                                ),
-                              ),
-                              onPressed: () => _login(context),
-                              /*String username = _usernameController.text;
-                                //String password = _passwordController.text;
-                                Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => Admin()));
-                                //TODO
-                              },*/
-                              child: const Text(
-                                'Log in',
-                                style: TextStyle(
-                                    color: PoolColors.black, fontSize: 25),
-                              ),
-                            ),
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          const PasswordForgetPage()));
-                            },
-                            style: TextButton.styleFrom(
-                              foregroundColor: PoolColors.black,
-                              padding: const EdgeInsets.all(20),
-                              textStyle: const TextStyle(fontSize: 15),
-                            ),
-                            child: const Text("Forgot Password?"),
-                          ),
-                        ],
+      body: Center(
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Image.asset(
+              opacity: const AlwaysStoppedAnimation(.5),
+              AssetLocations.loginDesign,
+              //  fit: BoxFit.cover,
+            ),
+            Container(
+              decoration: const BoxDecoration(
+                  backgroundBlendMode: BlendMode.dst,
+                  color: PoolColors.cardWhite,
+                  borderRadius: BorderRadius.all(Radius.circular(15))),
+              child: SizedBox(
+                width: screenWidth / 4,
+                height: 3 * (screenHeight / 4),
+                child: Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      LoginPageInputButton(
+                        usernameController: _usernameController,
+                        labelText: "Bilkent ID",
+                        isObscured: false,
                       ),
-                    ),
+                      const SizedBox(height: 20),
+                      LoginPageInputButton(
+                        usernameController: _passwordController,
+                        labelText: "Password",
+                        isObscured: true,
+                      ),
+                      const SizedBox(height: 30),
+                      SizedBox(
+                        height: screenHeight / 14,
+                        width: 3 * (8 * (screenWidth / 7) / 14) / 2,
+                        child: ElevatedButton(
+                          style: ButtonStyle(
+                            backgroundColor: MaterialStatePropertyAll<Color>(
+                              PoolColors.fairBlue.withOpacity(0.8),
+                            ),
+                            shape: MaterialStateProperty.all<
+                                RoundedRectangleBorder>(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                            ),
+                          ),
+                          onPressed: () => _login(context),
+                          child: FittedBox(
+                            child: Text(
+                              'Log in',
+                              style: TextStyle(
+                                  color: PoolColors.black.withOpacity(0.8),
+                                  fontSize: 24),
+                            ),
+                          ),
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      const PasswordForgetPage()));
+                        },
+                        style: TextButton.styleFrom(
+                          foregroundColor: PoolColors.black,
+                          padding: const EdgeInsets.all(20),
+                          textStyle: const TextStyle(fontSize: 15),
+                        ),
+                        child: FittedBox(child: Text("Forgot Password?")),
+                      ),
+                    ],
                   ),
                 ),
-              ],
+              ),
             ),
-          ),
-          Image.asset(
-            AssetLocations.loginDesign,
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -248,8 +239,14 @@ class _LoginPageInputButtonState extends State<LoginPageInputButton> {
         labelText: widget.labelText,
         suffixIcon: IconButton(
           icon: _isObscured
-              ? const Icon(Icons.visibility_off)
-              : const Icon(Icons.visibility),
+              ? Icon(
+                  Icons.visibility_off,
+                  color: Colors.black12.withOpacity(0.6),
+                )
+              : Icon(
+                  Icons.visibility,
+                  color: Colors.black12.withOpacity(0.6),
+                ),
           onPressed: () {
             setState(() {
               _isObscured = !_isObscured;
@@ -261,7 +258,7 @@ class _LoginPageInputButtonState extends State<LoginPageInputButton> {
     return Container(
       decoration: BoxDecoration(
         border: Border.all(color: PoolColors.black),
-        color: PoolColors.fairTurkuaz,
+        color: PoolColors.fairTurkuaz.withOpacity(0.65),
         borderRadius: const BorderRadius.all(Radius.circular(15)),
       ),
       child: Padding(
