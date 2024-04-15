@@ -2,10 +2,13 @@ import 'package:first_trial/Objects/course.dart';
 import 'package:first_trial/Pages/Student/student_widgets/left_bar.dart';
 import 'package:first_trial/token.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import '../Widgets/AppBars/app_bars.dart';
 import 'package:first_trial/final_variables.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+
+import 'package:calendar_view/calendar_view.dart';
 
 class CourseHomePage extends StatefulWidget {
   const CourseHomePage({super.key});
@@ -20,8 +23,8 @@ class _CourseHomePageState extends State<CourseHomePage> {
 
   @override
   void initState() {
-    super.initState();
     fetchCourses();
+    super.initState();
   }
 
   Future<void> fetchCourses() async {
@@ -67,15 +70,27 @@ class _CourseHomePageState extends State<CourseHomePage> {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
-    return MaterialApp(
-      home: Scaffold(
-        appBar: InstructorAppBar(),
-        body: Container(
-          child: Row(
-            children: [
-              LeftBar(),
-              CourseData(courses: courses),
-            ],
+    return CalendarControllerProvider(
+      controller: EventController(),
+      child: MaterialApp(
+        home: Scaffold(
+          appBar: InstructorAppBar(),
+          body: Container(
+            child: Row(
+              children: [
+                LeftBar(),
+                Container(
+                  height: screenHeight,
+                  width: screenWidth / 2,
+                  child: CourseData(courses: courses),
+                ),
+                Container(
+                  width: screenHeight / 2,
+                  height: screenHeight / 2,
+                  child: MonthView(),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -96,9 +111,11 @@ class CourseData extends StatelessWidget {
     return Container(
       width: 500,
       child: ListView.builder(
+/*        scrollDirection: Axis.vertical,
+        shrinkWrap: true,*/
         itemCount: 1,
         itemBuilder: (context, index) {
-          return CustomTile(title: courses[index].id, gridItems: courses);
+          return CustomTile(gridItems: courses);
         },
       ),
     );
@@ -106,28 +123,28 @@ class CourseData extends StatelessWidget {
 }
 
 class CustomTile extends StatelessWidget {
-  final String title;
   final List<Course> gridItems;
 
-  const CustomTile({Key? key, required this.title, required this.gridItems})
-      : super(key: key);
+  const CustomTile({Key? key, required this.gridItems}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     //print(gridItems.length);
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 3,
-        crossAxisSpacing: 24.0,
-        mainAxisSpacing: 20.0,
+    return Center(
+      child: GridView.builder(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 3,
+          crossAxisSpacing: 24.0,
+          mainAxisSpacing: 20.0,
+        ),
+        itemCount: gridItems.length,
+        itemBuilder: (context, index) {
+          Course post = gridItems[index];
+          return ProductCard(post: post);
+        },
       ),
-      itemCount: gridItems.length,
-      itemBuilder: (context, index) {
-        Course post = gridItems[index];
-        return ProductCard(post: post);
-      },
     );
   }
 }
