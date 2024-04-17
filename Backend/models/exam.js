@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const { v4: uuidv4 } = require("uuid");
+const course = require("./course");
 
 const examSchema = new mongoose.Schema(
     {
@@ -19,8 +20,18 @@ const examSchema = new mongoose.Schema(
     }
 );
 
-examSchema.statics.createExam = async function (id, term, courseID, questions) {
+examSchema.statics.createExam = async function (term, courseID, questions) {
     try {
+        const lastExam = await this.findOne({term: term, courseID: courseID}).sort({ id: -1});
+        let id;
+
+        if (lastExam) {
+            const lastSequentialNumber = parseInt(lastExam.id);
+            id = `${(lastSequentialNumber + 1).toString().padStart(2, '0')}`;
+        } else {
+            id = `01`;
+        }
+
         const exam = await this.create({id, term, courseID, questions});
         return exam;
     } catch (error) {
