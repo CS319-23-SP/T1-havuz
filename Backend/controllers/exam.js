@@ -6,7 +6,6 @@ const onCreateExam = async (req, res) => {
       const validation = makeValidation(types => ({
         payload: req.body,
         checks: {
-          id: { type: types.string },
           term: { type: types.string },
           courseID: { type: types.string },
           questions: { type: types.array },
@@ -14,8 +13,8 @@ const onCreateExam = async (req, res) => {
       }));
       if (!validation.success) return res.status(400).json(validation);
   
-      const { id, term, courseID, questions} = req.body;
-      const exam = await examModel.createExam(id, term, courseID, questions);
+      const { term, courseID, questions} = req.body;
+      const exam = await examModel.createExam(term, courseID, questions);
       return res.status(200).json({ success: true, exam });
     } catch (error) {
       return res.status(500).json({ success: false, error: error })
