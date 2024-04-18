@@ -1,4 +1,5 @@
 import 'package:first_trial/Objects/course.dart';
+import 'package:first_trial/Pages/Course/course_details.dart';
 import 'package:first_trial/Pages/Student/student_widgets/left_bar.dart';
 import 'package:first_trial/token.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +10,9 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 import 'package:calendar_view/calendar_view.dart';
+
+int ind = 0;
+bool showDetails = false;
 
 class CourseHomePage extends StatefulWidget {
   const CourseHomePage({super.key});
@@ -65,10 +69,23 @@ class _CourseHomePageState extends State<CourseHomePage> {
         .toList();
   }
 
+  var selectedIndex = 0;
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
+
+    bool _showDetails = showDetails;
+
+    int _ind = ind;
+
+    Widget page = Placeholder();
+
+    if (_showDetails) {
+      page = Course_Details(course: courses[ind]);
+    } else {
+      page = CourseData(courses: courses);
+    }
 
     return CalendarControllerProvider(
       controller: EventController(),
@@ -82,7 +99,7 @@ class _CourseHomePageState extends State<CourseHomePage> {
                 Container(
                   height: screenHeight,
                   width: screenWidth / 2,
-                  child: CourseData(courses: courses),
+                  child: page,
                 ),
                 Container(
                   width: screenHeight / 2,
@@ -98,7 +115,7 @@ class _CourseHomePageState extends State<CourseHomePage> {
   }
 }
 
-class CourseData extends StatelessWidget {
+class CourseData extends StatefulWidget {
   final List<Course> courses;
 
   const CourseData({
@@ -106,6 +123,11 @@ class CourseData extends StatelessWidget {
     required this.courses,
   }) : super(key: key);
 
+  @override
+  State<CourseData> createState() => _CourseDataState();
+}
+
+class _CourseDataState extends State<CourseData> {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -115,110 +137,71 @@ class CourseData extends StatelessWidget {
         shrinkWrap: true,*/
         itemCount: 1,
         itemBuilder: (context, index) {
-          return CustomTile(gridItems: courses);
-        },
-      ),
-    );
-  }
-}
-
-class CustomTile extends StatelessWidget {
-  final List<Course> gridItems;
-
-  const CustomTile({Key? key, required this.gridItems}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    //print(gridItems.length);
-    return Center(
-      child: GridView.builder(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 3,
-          crossAxisSpacing: 24.0,
-          mainAxisSpacing: 20.0,
-        ),
-        itemCount: gridItems.length,
-        itemBuilder: (context, index) {
-          Course post = gridItems[index];
-          return ProductCard(post: post);
-        },
-      ),
-    );
-  }
-}
-
-class ProductCard extends StatefulWidget {
-  final Course post;
-  final Color backgroundColor;
-
-  ProductCard({
-    this.backgroundColor = Colors.white,
-    required this.post,
-  });
-
-  @override
-  _ProductCardState createState() => _ProductCardState();
-}
-
-class _ProductCardState extends State<ProductCard> {
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () {
-        // Navigator.push(
-        //   context,
-        //   MaterialPageRoute(
-        //     builder: (context) => OneItemView(productId: widget.post.id ?? ""),
-        //   ),
-        // );
-      },
-      child: Card(
-        color: widget.backgroundColor,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(15.0),
-        ),
-        child: SingleChildScrollView(
-          // Disable scrolling
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      // Wrap the title with Expanded
-                      child: Text(
-                        widget.post.id ?? "",
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+          return Center(
+            child: GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 3,
+                crossAxisSpacing: 24.0,
+                mainAxisSpacing: 20.0,
+              ),
+              itemCount: widget.courses.length,
+              itemBuilder: (context, index) {
+                Course post = widget.courses[index];
+                return InkWell(
+                  onTap: () {
+                    print(ind);
+                    print(showDetails);
+                    setState(() {
+                      ind = index;
+                      showDetails = true;
+                    });
+                  },
+                  child: Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15.0),
                     ),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.amber,
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      padding: const EdgeInsets.all(5.0),
-                      child: Text(
-                        widget.post.term ?? "",
-                        style: const TextStyle(
-                          fontSize: 8,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                /*Text(
+                    child: SingleChildScrollView(
+                      // Disable scrolling
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SizedBox(height: 10),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  // Wrap the title with Expanded
+                                  child: Text(
+                                    post.id ?? "",
+                                    style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.amber,
+                                    borderRadius: BorderRadius.circular(10.0),
+                                  ),
+                                  padding: const EdgeInsets.all(5.0),
+                                  child: Text(
+                                    post.term ?? "",
+                                    style: const TextStyle(
+                                      fontSize: 8,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 10),
+                            /*Text(
                   "Date: ${widget.post.sdate}",
                   style: const TextStyle(fontSize: 12),
                 ),
@@ -230,11 +213,52 @@ class _ProductCardState extends State<ProductCard> {
                   "Organizer: ${widget.post.organizer}",
                   style: const TextStyle(fontSize: 12),
                 ),*/
-              ],
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              },
             ),
+          );
+          ;
+        },
+      ),
+    );
+  }
+}
+
+class Course_Details extends StatefulWidget {
+  final Course course;
+
+  // Constructor with required named parameters
+  const Course_Details({Key? key, required this.course}) : super(key: key);
+
+  @override
+  State<Course_Details> createState() => _Course_DetailsState();
+}
+
+class _Course_DetailsState extends State<Course_Details> {
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        ElevatedButton(
+            onPressed: () {
+              print(showDetails);
+              setState(() {
+                showDetails = false;
+              });
+            },
+            child: Icon(Icons.back_hand)),
+        Expanded(
+          child: Center(
+            child: Text(widget.course
+                .coordinatorID), // You can replace this with your actual course details UI
           ),
         ),
-      ),
+      ],
     );
   }
 }
