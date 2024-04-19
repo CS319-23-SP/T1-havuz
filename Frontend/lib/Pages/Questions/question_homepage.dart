@@ -1,5 +1,6 @@
 import 'package:first_trial/Objects/question.dart';
 import 'package:first_trial/Pages/Widgets/AppBars/app_bars.dart';
+import 'package:first_trial/Pages/Widgets/access_denied.dart';
 import 'package:first_trial/final_variables.dart';
 import 'package:first_trial/token.dart';
 import 'package:flutter/material.dart';
@@ -32,10 +33,24 @@ class _QuestionHomepageState extends State<QuestionHomepage> {
 
   List<Question> questions = [];
 
+  String? role = "unknown";    
+
   @override
   void initState() {
     super.initState();
-    fetchQuestions();
+    checkRole();
+  }
+
+  Future<void> checkRole() async {
+    role = await TokenStorage.getRole();
+    if(role == "instructor"){
+      fetchQuestions();
+      setState(() {});
+    }
+    else {
+      return;
+    }
+    
   }
 
   void searchQuestions() async {
@@ -137,9 +152,11 @@ void parseQuestionsData(dynamic responseData) {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
-
+    if (role != 'instructor') {
+      return AccessDeniedPage();
+    }
     //controllers
-    return Scaffold(
+    else {return Scaffold(
       appBar: const InstructorAppBar(),
       body: Row(
         children: [
@@ -496,6 +513,6 @@ void parseQuestionsData(dynamic responseData) {
           )
         ],
       ),
-    );
+    );}
   }
 }

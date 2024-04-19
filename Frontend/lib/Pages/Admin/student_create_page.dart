@@ -1,5 +1,6 @@
 import 'package:first_trial/Pages/Widgets/AppBars/app_bars.dart';
 import 'package:first_trial/Pages/Admin/admin_page.dart';
+import 'package:first_trial/Pages/Widgets/access_denied.dart';
 import 'package:first_trial/token.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -21,12 +22,26 @@ class _StudentCreationPageState extends State<StudentCreationPage> {
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController departmentController = TextEditingController();
 
+  String? role = "unknown";    
+
+  @override
+  void initState() {
+    super.initState();
+    checkRole();
+  }
+
+  Future<void> checkRole() async {
+    role = await TokenStorage.getRole();
+    setState(() {});
+  }
+
   void _createStudent() async {
     final studentId = studentIdController.text;
     List<String> parts = studentNameController.text.split(' ');
     String firstName = "";
     String middleName = "";
     String lastName = "";
+
 
     if (parts.length == 1) {
       print("last name missing");
@@ -82,7 +97,11 @@ class _StudentCreationPageState extends State<StudentCreationPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    if (role != 'admin') {
+      return AccessDeniedPage();
+    }
+    else{
+      return Scaffold(
       appBar: AdminAppBar(),
       body: Center(
         child: Container(
@@ -170,5 +189,7 @@ class _StudentCreationPageState extends State<StudentCreationPage> {
         ),
       ),
     );
+    }
+    
   }
 }
