@@ -1,5 +1,6 @@
 import 'package:first_trial/Objects/course.dart';
 import 'package:first_trial/Pages/Student/student_widgets/left_bar.dart';
+import 'package:first_trial/Pages/Widgets/access_denied.dart';
 import 'package:first_trial/token.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -20,11 +21,21 @@ class CourseHomePage extends StatefulWidget {
 class _CourseHomePageState extends State<CourseHomePage> {
   List<Course> courses = [];
   late final ScrollController _scrollController;
+  String? role = "unknown";    
 
   @override
   void initState() {
-    fetchCourses();
+    checkRole();
     super.initState();
+  }
+
+  Future<void> checkRole() async {
+    role = await TokenStorage.getRole();
+
+    if(role != "instructor"){
+        return;
+    }
+    fetchCourses();
   }
 
   Future<void> fetchCourses() async {
@@ -70,10 +81,13 @@ class _CourseHomePageState extends State<CourseHomePage> {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
+    if (role != 'instructor') {
+      return AccessDeniedPage();
+    }
+
     return CalendarControllerProvider(
       controller: EventController(),
-      child: MaterialApp(
-        home: Scaffold(
+      child: Scaffold(
           appBar: InstructorAppBar(),
           body: Container(
             child: Row(
@@ -93,7 +107,6 @@ class _CourseHomePageState extends State<CourseHomePage> {
             ),
           ),
         ),
-      ),
     );
   }
 }

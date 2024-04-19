@@ -1,6 +1,8 @@
 import 'package:first_trial/Pages/Student/student_widgets/left_bar.dart';
 import 'package:first_trial/Pages/Widgets/AppBars/app_bars.dart';
+import 'package:first_trial/Pages/Widgets/access_denied.dart';
 import 'package:first_trial/final_variables.dart';
+import 'package:first_trial/token.dart';
 import 'package:flutter/material.dart';
 
 class StudentHomepage extends StatefulWidget {
@@ -13,8 +15,24 @@ class StudentHomepage extends StatefulWidget {
 class _StudentHomepageState extends State<StudentHomepage> {
   late final ScrollController _scrollController;
 
+  String? role = "unknown";    
+
+  @override
+  void initState() {
+    super.initState();
+    checkRole();
+  }
+
+  Future<void> checkRole() async {
+    role = await TokenStorage.getRole();
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (role != 'student') {
+      return AccessDeniedPage();
+    }
     return Scaffold(
         appBar: StudentAppBar(),
         body: Row(

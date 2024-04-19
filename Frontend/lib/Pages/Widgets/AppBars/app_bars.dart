@@ -16,6 +16,89 @@ const List<String> listforExam = <String>[
   'List',
 ];
 
+class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
+  final String role;
+
+  const CustomAppBar({Key? key, required this.role}) : super(key: key);
+
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(
+      backgroundColor: PoolColors.appBarBackground,
+      automaticallyImplyLeading: false,
+      title: Row(
+        children: [
+          const SizedBox(width: 23),
+          IconButton(
+            icon: Row(
+              children: [
+                Image.asset(
+                  AssetLocations.bilkentLogo,
+                  width: 35,
+                  height: 35,
+                ),
+                const SizedBox(width: 5),
+                const Text("Course Homepage"),
+              ],
+            ),
+            onPressed: () {
+              GoRouter.of(context).go(_getRouteForRole(role));
+            },
+          ),
+          const VerticalD(),
+          if (role == "admin") ...[
+            // CustomAppBar(role: userRole) mesela
+          ] else if (role == "instructor") ...[
+            
+          ] else if (role == "student") ...[
+            
+          ],
+          //logout
+        ],
+      ),
+      actions: [
+        IconButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const UserProfilePage()),
+            );
+          },
+          icon: const Icon(Icons.person_2),
+        ),
+        IconButton(
+          onPressed: () async {
+            await TokenStorage.deleteToken();
+            GoRouter.of(context).go('/login');
+          },
+          icon: const MouseRegion(
+            cursor: SystemMouseCursors.click,
+            child: Icon(Icons.logout),
+          ),
+        ),
+      ],
+    );
+  }
+
+  String _getRouteForRole(String role) {
+    switch (role) {
+      case "admin":
+        return '/admin';
+      case "instructor":
+        return '/instructor';
+      case "student":
+        return '/student';
+      default:
+        return '/login';
+    }
+  }
+}
+
+
+
 class StudentAppBar extends StatefulWidget implements PreferredSizeWidget {
   const StudentAppBar({super.key});
 
