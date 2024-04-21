@@ -60,6 +60,15 @@ chadRoomSchema.statics.getChatRoomByRoomId = async function (roomId) {
   }
 };
 
+chadRoomSchema.statics.getChatRoomsByUserId = async function (userId) {
+  try {
+    const rooms = await this.find({ userIds: { $in: [userId] } });
+    return rooms;
+  } catch (error) {
+    throw new Error(`Error fetching chat rooms by user ID: ${error.message}`);
+  }
+};
+
 const chadRoom = mongoose.model("chadRoom", chadRoomSchema);
 module.exports = chadRoom;
 
