@@ -8,5 +8,6 @@ router
   .get('/:roomId', chadRoom.getConversationByRoomId)
   .post('/initiate', chadRoom.initiate)
   .post('/:roomId/message', chadRoom.postMessage)
+  .get('/', chadRoom.getConversations)
 
 module.exports = router;

@@ -92,29 +92,31 @@ chadMessageSchema.statics.createPostInChatRoom = async function (
 };
 
 chadMessageSchema.statics.getConversationByRoomId = async function (chatRoomId, options = {}) {
-    try {
-      return await this.aggregate([
-        { $match: { chatRoomId } },
-        { $sort: { createdAt: -1 } },
-        // do a join on another table called users, and 
-        // get me a user whose _id = postedByUser
-        {
-          $lookup: {
-            from: 'users',
-            localField: 'postedByUser',
-            foreignField: '_id',
-            as: 'postedByUser',
-          }
-        },
-        { $unwind: "$postedByUser" },
-        // apply pagination
-        { $skip: options.page * options.limit },
-        { $limit: options.limit },
-        { $sort: { createdAt: 1 } },
-      ]);
-    } catch (error) {
+  try {
+      const pipeline = [
+          { $match: { chatRoomId } }, 
+          { $sort: { createdAt: -1 } },
+         {
+              $lookup: {
+                  from: 'auth',
+                  localField: 'postedByUser',
+                  foreignField: 'id',
+                  as: 'postedByUser',
+              }
+          },
+          { $unwind: "$postedByUser" },
+          { $skip: options.page * options.limit },
+          { $limit: options.limit },
+          { $sort: { createdAt: 1 } },
+      ];
+      const messages = await this.aggregate(pipeline);
+      console.log(messages)
+
+      return messages;
+  } catch (error) {
       throw error;
-    }
-  };
+  }
+};
+
 
 module.exports = mongoose.model("chadMessage", chadMessageSchema);

@@ -75,7 +75,7 @@ getConversationByRoomId = async (req, res) => {
       page: parseInt(req.query.page) || 0,
       limit: parseInt(req.query.limit) || 10,
     };
-
+    //console.log(roomId)
     const conversation = await ChadMessageModel.getConversationByRoomId(roomId, options);
     return res.status(200).json({
       success: true,
@@ -86,10 +86,52 @@ getConversationByRoomId = async (req, res) => {
     return res.status(500).json({ success: false, error });
   }
 }
+
+const getConversations = async (req, res) => {
+  try {
+      const currentLoggedUser = req._id;      
+
+      const userChatRooms = await ChadRoomModel.getChatRoomsByUserId(currentLoggedUser);
+      if (!userChatRooms || userChatRooms.length === 0) {
+          return res.status(200).json({
+              success: true,
+              conversations: [],
+          });
+      }
+
+      const roomIds = userChatRooms.map(room => room._id);
+
+      const conversations = await Promise.all(roomIds.map(async roomId => {
+          const room = await ChadRoomModel.getChatRoomByRoomId(roomId);
+          //const users = await AuthModel.getAuthByIds(room.userIds);
+          const options = {
+              page: parseInt(req.query.page) || 0,
+              limit: parseInt(req.query.limit) || 10,
+          };
+          const conversation = await ChadMessageModel.getConversationByRoomId(roomId, options);
+          return {
+              room,
+              //users,
+              conversation
+          };
+      }));
+
+      return res.status(200).json({
+          success: true,
+          conversations,
+      });
+  } catch (error) {
+      return res.status(500).json({ success: false, error });
+  }
+}
+
+
+
+
 module.exports = {
     initiate,
     postMessage,
-    //getRecentConversation,
+    getConversations,
     getConversationByRoomId,
   };
 
