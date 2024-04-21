@@ -1,3 +1,4 @@
+import 'package:first_trial/Pages/Widgets/AppBars/roles/admin_appbar.dart';
 import 'package:first_trial/Pages/Widgets/AppBars/app_bars.dart';
 import 'package:first_trial/Pages/Admin/admin_page.dart';
 import 'package:first_trial/Pages/Widgets/access_denied.dart';
@@ -22,7 +23,7 @@ class _StudentCreationPageState extends State<StudentCreationPage> {
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController departmentController = TextEditingController();
 
-  String? role = "unknown";    
+  String? role = "unknown";
 
   @override
   void initState() {
@@ -41,7 +42,6 @@ class _StudentCreationPageState extends State<StudentCreationPage> {
     String firstName = "";
     String middleName = "";
     String lastName = "";
-
 
     if (parts.length == 1) {
       print("last name missing");
@@ -99,97 +99,96 @@ class _StudentCreationPageState extends State<StudentCreationPage> {
   Widget build(BuildContext context) {
     if (role != 'admin') {
       return AccessDeniedPage();
-    }
-    else{
+    } else {
       return Scaffold(
-      appBar: AdminAppBar(),
-      body: Center(
-        child: Container(
-          margin: const EdgeInsets.symmetric(horizontal: 200.0, vertical: 20.0),
-          padding: const EdgeInsets.all(20.0),
-          decoration: BoxDecoration(
-            color: Colors.grey[200],
-            borderRadius: BorderRadius.circular(10.0),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              IconButton(
-                icon: Icon(Icons.arrow_back),
-                onPressed: () {
-                  GoRouter.of(context).go('/admin');
-                },
-              ),
-              SizedBox(
-                height: 25,
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Student ID',
-                    ),
-                    TextFormField(
-                      controller: studentIdController,
-                      decoration: const InputDecoration(
-                        hintText: 'Enter Student ID',
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    const Text('Student Name'),
-                    TextFormField(
-                      controller: studentNameController,
-                      decoration: const InputDecoration(
-                        hintText:
-                            'Enter Student Name (be careful about spacing)',
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    const Text('Courses'),
-                    TextFormField(
-                      controller: coursesController,
-                      decoration: const InputDecoration(
-                        hintText: 'Enter Courses',
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    const Text('Password'),
-                    TextFormField(
-                      controller: passwordController,
-                      decoration: const InputDecoration(
-                        hintText: 'Enter Password',
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    const Text('Department'),
-                    TextFormField(
-                      controller: departmentController,
-                      decoration: const InputDecoration(
-                        hintText: 'Enter Department',
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    Center(
-                      child: ElevatedButton(
-                        onPressed: _createStudent,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue,
-                        ),
-                        child: const Text('Create Student'),
-                      ),
-                    ),
-                  ],
+        appBar: AdminAppBar(),
+        body: Center(
+          child: Container(
+            margin:
+                const EdgeInsets.symmetric(horizontal: 200.0, vertical: 20.0),
+            padding: const EdgeInsets.all(20.0),
+            decoration: BoxDecoration(
+              color: Colors.grey[200],
+              borderRadius: BorderRadius.circular(10.0),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                  icon: Icon(Icons.arrow_back),
+                  onPressed: () {
+                    GoRouter.of(context).go('/admin');
+                  },
                 ),
-              ),
-            ],
+                SizedBox(
+                  height: 25,
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Student ID',
+                      ),
+                      TextFormField(
+                        controller: studentIdController,
+                        decoration: const InputDecoration(
+                          hintText: 'Enter Student ID',
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      const Text('Student Name'),
+                      TextFormField(
+                        controller: studentNameController,
+                        decoration: const InputDecoration(
+                          hintText:
+                              'Enter Student Name (be careful about spacing)',
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      const Text('Courses'),
+                      TextFormField(
+                        controller: coursesController,
+                        decoration: const InputDecoration(
+                          hintText: 'Enter Courses',
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      const Text('Password'),
+                      TextFormField(
+                        controller: passwordController,
+                        decoration: const InputDecoration(
+                          hintText: 'Enter Password',
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      const Text('Department'),
+                      TextFormField(
+                        controller: departmentController,
+                        decoration: const InputDecoration(
+                          hintText: 'Enter Department',
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      Center(
+                        child: ElevatedButton(
+                          onPressed: _createStudent,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue,
+                          ),
+                          child: const Text('Create Student'),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
-      ),
-    );
+      );
     }
-    
   }
 }
