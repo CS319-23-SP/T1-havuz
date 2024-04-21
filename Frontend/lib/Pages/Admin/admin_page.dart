@@ -115,7 +115,9 @@ class _AdminState extends State<Admin> {
       return AccessDeniedPage();
     } else {
       return Scaffold(
-        appBar: AdminAppBar(),
+        appBar: CustomAppBar(
+          role: role,
+        ),
         body: StudentData(students: students, onDelete: deleteStudent),
         floatingActionButton: FloatingActionButton(
           onPressed: () {

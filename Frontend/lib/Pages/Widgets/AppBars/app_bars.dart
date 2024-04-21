@@ -1,9 +1,12 @@
 import 'package:first_trial/Pages/Admin/admin_page.dart';
 import 'package:first_trial/Pages/Auth/login_page.dart';
-import 'package:first_trial/Pages/Instructor/course_homepage.dart';
+import 'package:first_trial/Pages/Instructor/instructor_homepage.dart';
 import 'package:first_trial/Pages/Questions/question_homepage.dart';
 import 'package:first_trial/Pages/Admin/student_create_page.dart';
 import 'package:first_trial/Pages/UserProfile/user_profile_page.dart';
+import 'package:first_trial/Pages/Widgets/AppBars/roles/admin_appbar.dart';
+import 'package:first_trial/Pages/Widgets/AppBars/roles/instructor_appbar.dart';
+import 'package:first_trial/Pages/Widgets/AppBars/roles/student_appbar.dart';
 import 'package:first_trial/token.dart';
 import 'package:flutter/material.dart';
 import 'package:first_trial/final_variables.dart';
@@ -17,7 +20,7 @@ const List<String> listforExam = <String>[
 ];
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
-  final String role;
+  final String? role;
 
   const CustomAppBar({Key? key, required this.role}) : super(key: key);
 
@@ -54,15 +57,24 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           ),
           const VerticalD(),
           if (role == "admin") ...[
-            // CustomAppBar(role: userRole) mesela
-          ] else if (role == "instructor")
-            ...[]
-          else if (role == "student")
-            ...[],
+            AdminAppBar(),
+          ] else if (role == "instructor") ...[
+            InstructorAppBar(),
+          ] else if (role == "student") ...[
+            StudentAppBar(),
+          ],
           //logout
         ],
       ),
       actions: [
+        IconButton(
+          onPressed: () {},
+          icon: const Icon(Icons.notifications_active_outlined),
+        ),
+        IconButton(
+          onPressed: () {},
+          icon: Icon(Icons.chat_bubble_outline),
+        ),
         IconButton(
           onPressed: () {
             Navigator.push(
@@ -70,23 +82,20 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               MaterialPageRoute(builder: (context) => const UserProfilePage()),
             );
           },
-          icon: const Icon(Icons.person_2),
+          icon: const Icon(Icons.person_outline),
         ),
         IconButton(
           onPressed: () async {
             await TokenStorage.deleteToken();
             GoRouter.of(context).go('/login');
           },
-          icon: const MouseRegion(
-            cursor: SystemMouseCursors.click,
-            child: Icon(Icons.logout),
-          ),
+          icon: Icon(Icons.logout),
         ),
       ],
     );
   }
 
-  String _getRouteForRole(String role) {
+  String _getRouteForRole(String? role) {
     switch (role) {
       case "admin":
         return '/admin';

@@ -35,7 +35,9 @@ class _StudentHomepageState extends State<StudentHomepage> {
       return AccessDeniedPage();
     }
     return Scaffold(
-        appBar: StudentAppBar(),
+        appBar: CustomAppBar(
+          role: role,
+        ),
         body: Row(
           children: [
             LeftBar(),

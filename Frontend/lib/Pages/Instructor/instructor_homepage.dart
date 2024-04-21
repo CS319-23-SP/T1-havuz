@@ -23,14 +23,27 @@ class CourseHomePage extends StatefulWidget {
 }
 
 class _CourseHomePageState extends State<CourseHomePage> {
-  List<Course> courses = [];
-  late final ScrollController _scrollController;
+  String? role = "unknown";
 
   @override
   void initState() {
-    fetchCourses();
     super.initState();
+    checkRole();
   }
+
+  Future<void> checkRole() async {
+    role = await TokenStorage.getRole();
+
+    if (role != "instructor") {
+      return;
+    } else {
+      fetchCourses();
+      setState(() {});
+    }
+  }
+
+  List<Course> courses = [];
+  late final ScrollController _scrollController;
 
   Future<void> fetchCourses() async {
     try {
@@ -92,7 +105,9 @@ class _CourseHomePageState extends State<CourseHomePage> {
       controller: EventController(),
       child: MaterialApp(
         home: Scaffold(
-          appBar: InstructorAppBar(),
+          appBar: CustomAppBar(
+            role: role,
+          ),
           body: Row(
             children: [
               LeftBar(),
