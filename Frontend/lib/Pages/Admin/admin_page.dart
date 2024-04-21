@@ -1,4 +1,5 @@
 import 'package:first_trial/Pages/Auth/login_page.dart';
+import 'package:first_trial/Pages/Widgets/AppBars/roles/admin_appbar.dart';
 import 'package:first_trial/Pages/Widgets/AppBars/app_bars.dart';
 import 'package:first_trial/Pages/Widgets/access_denied.dart';
 import 'package:flutter/material.dart';
@@ -28,25 +29,21 @@ class _AdminState extends State<Admin> {
   Future<void> checkRole() async {
     role = await TokenStorage.getRole();
 
-    if(role != "admin"){
-        return;
-    }
-    else{
+    if (role != "admin") {
+      return;
+    } else {
       fetchStudents();
       setState(() {});
     }
-    
   }
 
   Future<void> fetchStudents() async {
     try {
       String? token = await TokenStorage.getToken();
-      
+
       if (token == null) {
         throw Exception('Token not found');
       }
-
-      
 
       final response = await http.get(
         Uri.http('localhost:8080', '/student/'),
@@ -116,8 +113,7 @@ class _AdminState extends State<Admin> {
   Widget build(BuildContext context) {
     if (role != 'admin') {
       return AccessDeniedPage();
-    }
-    else{
+    } else {
       return Scaffold(
         appBar: AdminAppBar(),
         body: StudentData(students: students, onDelete: deleteStudent),
@@ -128,7 +124,7 @@ class _AdminState extends State<Admin> {
           backgroundColor: Colors.blue,
           child: const Icon(Icons.add),
         ),
-    );
+      );
     }
   }
 }

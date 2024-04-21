@@ -3,27 +3,34 @@ import 'package:first_trial/Pages/Student/student_widgets/left_bar.dart';
 import 'package:first_trial/Pages/Widgets/AppBars/app_bars.dart';
 import 'package:flutter/material.dart';
 
-class Course_Details extends StatelessWidget {
+class Course_Details extends StatefulWidget {
   final Course course;
+  final VoidCallback onBack;
 
   // Constructor with required named parameters
-  const Course_Details({Key? key, required this.course}) : super(key: key);
+  const Course_Details({
+    Key? key,
+    required this.course,
+    required this.onBack,
+  }) : super(key: key);
 
   @override
+  State<Course_Details> createState() => _Course_DetailsState();
+}
+
+class _Course_DetailsState extends State<Course_Details> {
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: InstructorAppBar(),
-      body: Row(
-        children: [
-          LeftBar(),
-          Expanded(
-            child: Center(
-              child: Text(course
-                  .coordinatorID), // You can replace this with your actual course details UI
-            ),
+    return Row(
+      children: [
+        ElevatedButton(onPressed: widget.onBack, child: Icon(Icons.back_hand)),
+        Expanded(
+          child: Center(
+            child: Text(widget.course
+                .coordinatorID), // You can replace this with your actual course details UI
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

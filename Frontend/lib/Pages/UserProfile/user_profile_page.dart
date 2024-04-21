@@ -1,6 +1,7 @@
 import 'package:first_trial/Pages/Student/student_widgets/left_bar.dart';
 import 'package:first_trial/Pages/UserProfile/Widgets/user_card.dart';
 import 'package:first_trial/Pages/Widgets/AppBars/app_bars.dart';
+import 'package:first_trial/Pages/Widgets/AppBars/roles/student_appbar.dart';
 import 'package:first_trial/final_variables.dart';
 import 'package:flutter/material.dart';
 

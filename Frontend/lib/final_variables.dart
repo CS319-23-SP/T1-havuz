@@ -122,12 +122,14 @@ class AppBarChoice extends StatelessWidget {
   Widget build(BuildContext context) {
     return TextButton(
       onPressed: onPressed,
-      child: Text(
-        text,
-        style: GoogleFonts.alike(
-          textStyle: TextStyle(
-            fontSize: 15,
-            color: PoolColors.black,
+      child: FittedBox(
+        child: Text(
+          text,
+          style: GoogleFonts.alike(
+            textStyle: TextStyle(
+              fontSize: 15,
+              color: PoolColors.black,
+            ),
           ),
         ),
       ),
