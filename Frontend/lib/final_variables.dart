@@ -1,11 +1,13 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/painting/text_style.dart';
-//import 'package:google_fonts/google_fonts.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:flip_card/flip_card.dart';
 
 class PoolColors {
   static const Color white = Colors.white;
+
+  static const Color grey = Color.fromARGB(255, 209, 95, 95);
   static const Color cardWhite = Color.fromARGB(255, 241, 241, 242);
   static const Color fairBlue = Color.fromARGB(255, 32, 146, 240);
   static const Color turkuaz = Color.fromARGB(255, 25, 149, 173);
@@ -20,30 +22,6 @@ class AssetLocations {
   static const String userPhoto = "lib/Assets/user_photo.jpg";
 }
 
-/*
-class PoolFonts {
-  static const TextStyle Function(
-      {Paint? background,
-      Color? backgroundColor,
-      Color? color,
-      TextDecoration? decoration,
-      Color? decorationColor,
-      TextDecorationStyle? decorationStyle,
-      double? decorationThickness,
-      List<FontFeature>? fontFeatures,
-      double? fontSize,
-      FontStyle? fontStyle,
-      FontWeight? fontWeight,
-      Paint? foreground,
-      double? height,
-      double? letterSpacing,
-      Locale? locale,
-      List<Shadow>? shadows,
-      TextBaseline? textBaseline,
-      TextStyle? textStyle,
-      double? wordSpacing}) alike = GoogleFonts.alike;
-}
-*/
 const List<String> examButtonList = <String>[
   'Exams',
   'Create',
@@ -146,7 +124,12 @@ class AppBarChoice extends StatelessWidget {
       onPressed: onPressed,
       child: Text(
         text,
-        style: TextStyle(fontSize: 15),
+        style: GoogleFonts.alike(
+          textStyle: TextStyle(
+            fontSize: 15,
+            color: PoolColors.black,
+          ),
+        ),
       ),
     );
   }

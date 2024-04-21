@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 const authModel = require('../models/auth.js');
 
 const SECRET_KEY = 'some-secret-key';
-const TOKEN_EXPIRATION = '1h'; 
+const TOKEN_EXPIRATION = '2h'; 
 
 const encode = async (req, res, next) => {
   

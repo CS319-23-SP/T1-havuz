@@ -1,3 +1,4 @@
+import 'package:first_trial/Pages/Widgets/access_denied.dart';
 import 'package:first_trial/token.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -19,6 +20,19 @@ class _AddQuestionPageState extends State<AddQuestionPage> {
   final TextEditingController topicsController = TextEditingController();
   final TextEditingController creatorIDController = TextEditingController();
   final TextEditingController textController = TextEditingController();
+
+String? role = "unknown";    
+
+  @override
+  void initState() {
+    super.initState();
+    checkRole();
+  }
+
+  Future<void> checkRole() async {
+    role = await TokenStorage.getRole();
+    setState(() {});
+  }
 
   void clearInputs() {
     setState(() {
@@ -96,6 +110,10 @@ class _AddQuestionPageState extends State<AddQuestionPage> {
 
   @override
   Widget build(BuildContext context) {
+    if (role != 'instructor') {
+      return AccessDeniedPage();
+    }
+    else{
     return Scaffold(
       appBar: AppBar(
         title: Text('Add Question'),
@@ -209,5 +227,5 @@ class _AddQuestionPageState extends State<AddQuestionPage> {
         ),
       ),
     );
-  }
+  }}
 }
