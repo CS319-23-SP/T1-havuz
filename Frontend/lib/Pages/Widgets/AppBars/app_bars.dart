@@ -1,19 +1,103 @@
 import 'package:first_trial/Pages/Admin/admin_page.dart';
-import 'package:first_trial/Pages/LoginRelated/login_page.dart';
+import 'package:first_trial/Pages/Auth/login_page.dart';
 import 'package:first_trial/Pages/Instructor/course_homepage.dart';
 import 'package:first_trial/Pages/Questions/question_homepage.dart';
 import 'package:first_trial/Pages/Admin/student_create_page.dart';
-import 'package:first_trial/Pages/Instructor/user_profile_page.dart';
+import 'package:first_trial/Pages/UserProfile/user_profile_page.dart';
 import 'package:first_trial/token.dart';
 import 'package:flutter/material.dart';
 import 'package:first_trial/final_variables.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 const List<String> listforExam = <String>[
   'Create',
   'List',
 ];
+
+class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
+  final String role;
+
+  const CustomAppBar({Key? key, required this.role}) : super(key: key);
+
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(
+      backgroundColor: PoolColors.appBarBackground,
+      automaticallyImplyLeading: false,
+      title: Row(
+        children: [
+          const SizedBox(width: 23),
+          IconButton(
+            icon: Row(
+              children: [
+                Image.asset(
+                  AssetLocations.bilkentLogo,
+                  width: 35,
+                  height: 35,
+                ),
+                const SizedBox(width: 5),
+                const Text("Course Homepage"),
+              ],
+            ),
+            onPressed: () {
+              GoRouter.of(context).go(_getRouteForRole(role));
+            },
+          ),
+          const VerticalD(),
+          if (role == "admin") ...[
+            // CustomAppBar(role: userRole) mesela
+          ] else if (role == "instructor") ...[
+            
+          ] else if (role == "student") ...[
+            
+          ],
+          //logout
+        ],
+      ),
+      actions: [
+        IconButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const UserProfilePage()),
+            );
+          },
+          icon: const Icon(Icons.person_2),
+        ),
+        IconButton(
+          onPressed: () async {
+            await TokenStorage.deleteToken();
+            GoRouter.of(context).go('/login');
+          },
+          icon: const MouseRegion(
+            cursor: SystemMouseCursors.click,
+            child: Icon(Icons.logout),
+          ),
+        ),
+      ],
+    );
+  }
+
+  String _getRouteForRole(String role) {
+    switch (role) {
+      case "admin":
+        return '/admin';
+      case "instructor":
+        return '/instructor';
+      case "student":
+        return '/student';
+      default:
+        return '/login';
+    }
+  }
+}
+
+
 
 class StudentAppBar extends StatefulWidget implements PreferredSizeWidget {
   const StudentAppBar({super.key});
@@ -30,96 +114,150 @@ class _StudentAppBarState extends State<StudentAppBar> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    String course = list.first;
+
+    final List<String> items = [
+      'Grades',
+      'Schedule',
+    ];
+
+    String? selectedValue;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: PoolColors.appBarBackground,
         automaticallyImplyLeading: false,
-        title: Expanded(
-          child: Row(
-            children: [
-              const SizedBox(
-                width: 23,
+        title: Row(
+          children: [
+            const SizedBox(
+              width: 23,
+            ),
+            IconButton(
+              icon: Row(
+                children: [
+                  Image.asset(
+                    AssetLocations.bilkentLogo,
+                    width: 35,
+                    height: 35,
+                  ),
+                  const SizedBox(
+                    width: 5,
+                  ),
+                  Text(
+                    "Course Homepage",
+                    style: GoogleFonts.alike(fontSize: 16),
+                  ),
+                ],
               ),
-              IconButton(
-                icon: Row(
-                  children: [
-                    Image.asset(
-                      AssetLocations.bilkentLogo,
-                      width: 35,
-                      height: 35,
+              onPressed: () {
+                GoRouter.of(context).go('/student');
+              },
+            ),
+            const VerticalD(),
+            SizedBox(
+              width: 150,
+              child: Form(
+                //key: _addKey,
+                child: DropdownButtonFormField2<String>(
+                  hint: Text(
+                    "Exams",
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.alike(color: PoolColors.black),
+                  ),
+                  decoration: InputDecoration(
+                    focusedBorder: InputBorder.none,
+                    enabledBorder: InputBorder.none,
+                    contentPadding: const EdgeInsets.symmetric(vertical: 16),
+                  ),
+                  items: items
+                      .map((item) => DropdownMenuItem<String>(
+                            value: item,
+                            child: Text(
+                              item,
+                              style: GoogleFonts.alike(
+                                textStyle: TextStyle(
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ),
+                          ))
+                      .toList(),
+                  /* validator: (value) {
+                                  if (value == null) {
+                                    return 'Please select gender.';
+                                  }
+                                  return null;
+                                },*/
+                  onChanged: (value) {
+                    //Do something when selected item is changed.
+                    if (value == items[0]) {
+                      GoRouter.of(context).go('/student');
+                    }
+                  },
+                  buttonStyleData: const ButtonStyleData(
+                    padding: EdgeInsets.only(right: 8),
+                  ),
+                  iconStyleData: const IconStyleData(
+                    icon: Icon(
+                      Icons.arrow_drop_down,
+                      color: Colors.black45,
                     ),
-                    const SizedBox(
-                      width: 5,
+                    iconSize: 24,
+                  ),
+                  dropdownStyleData: DropdownStyleData(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(15),
                     ),
-                    const Text("Course Homepage"),
-                  ],
+                  ),
+                  menuItemStyleData: const MenuItemStyleData(
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                  ),
                 ),
-                onPressed: () {
-                  GoRouter.of(context).go('/instructor');
-                },
               ),
-              const VerticalD(),
-              const DropdownButtonChoice(),
-              const VerticalD(),
-              AppBarChoice(
-                text: "Weekly Schedule",
-                onPressed: () {},
-              ),
-              const VerticalD(),
-              AppBarChoice(
-                text: "Attendance",
-                onPressed: () {},
-              ),
-              const VerticalD(),
-              AppBarChoice(
-                  text: "Questions",
-                  onPressed: () {
-                    GoRouter.of(context).go('/instructor/question');
-                  }),
-            ],
-          ),
-        ),
-        actions: <Widget>[
-          const SizedBox(
-            width: 45,
-          ),
-          IconButton(
+            ),
+            const VerticalD(),
+            AppBarChoice(
+              text: "Weekly Schedule",
               onPressed: () {},
-              icon: const Icon(Icons.notifications_active_outlined)),
-          IconButton(
-              onPressed: () {}, icon: const Icon(Icons.chat_bubble_outline)),
+            ),
+            const VerticalD(),
+            AppBarChoice(
+              text: "Attendance",
+              onPressed: () {},
+            ),
+            const VerticalD(),
+            AppBarChoice(
+                text: "Assignment",
+                onPressed: () {
+                  GoRouter.of(context).go('/student');
+                }),
+          ],
+        ),
+        actions: [
           IconButton(
               onPressed: () {
-                GoRouter.of(context).go('/instructor/profile');
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const UserProfilePage()));
               },
-              icon: const Icon(Icons.person_outline)),
-          const SizedBox(
-            width: 20,
-          ),
-          ElevatedButton(
+              icon: Icon(Icons.person_2)),
+          IconButton(
             onPressed: () async {
               await TokenStorage.deleteToken();
               GoRouter.of(context).go('/login');
             },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.transparent,
-              foregroundColor: Colors.white,
-              textStyle: const TextStyle(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            child: const MouseRegion(
-              cursor: SystemMouseCursors.click,
-              child: Text(
-                "Log out",
-              ),
-            ),
-          )
+            icon: const MouseRegion(
+                cursor: SystemMouseCursors.click, child: Icon(Icons.logout)),
+          ),
         ],
       ),
     );
   }
-} 
+}
 
 class InstructorAppBar extends StatefulWidget implements PreferredSizeWidget {
   const InstructorAppBar({super.key});
@@ -140,11 +278,11 @@ class _InstructorAppBarState extends State<InstructorAppBar> {
       appBar: AppBar(
         backgroundColor: PoolColors.appBarBackground,
         automaticallyImplyLeading: false,
-        leadingWidth: 800,
-        leading: Row(
+
+        title: Row(
           children: [
-            SizedBox(
-              width: 25,
+            const SizedBox(
+              width: 23,
             ),
             IconButton(
               icon: Row(
@@ -161,10 +299,8 @@ class _InstructorAppBarState extends State<InstructorAppBar> {
                 ],
               ),
               onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const CourseHomePage()));
+                GoRouter.of(context).go('/instructor');
+
               },
             ),
             const VerticalD(),
@@ -183,29 +319,9 @@ class _InstructorAppBarState extends State<InstructorAppBar> {
             AppBarChoice(
                 text: "Questions",
                 onPressed: () {
-                  GoRouter.of(context).go('/instructor');
-                },
-              ),
-              const VerticalD(),
-              const DropdownButtonChoice(),
-              const VerticalD(),
-              AppBarChoice(
-                text: "Weekly Schedule",
-                onPressed: () {},
-              ),
-              const VerticalD(),
-              AppBarChoice(
-                text: "Attendance",
-                onPressed: () {},
-              ),
-              const VerticalD(),
-              AppBarChoice(
-                  text: "Questions",
-                  onPressed: () {
-                    GoRouter.of(context).go('/instructor/question');
-                  }),
-            ],
-          ),
+                  GoRouter.of(context).go('/instructor/question');
+                }),
+          ],
         ),
         actions: <Widget>[
           const SizedBox(
@@ -218,7 +334,11 @@ class _InstructorAppBarState extends State<InstructorAppBar> {
               onPressed: () {}, icon: const Icon(Icons.chat_bubble_outline)),
           IconButton(
               onPressed: () {
-                GoRouter.of(context).go('/instructor/profile');
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const UserProfilePage()),
+                );
               },
               icon: const Icon(Icons.person_outline)),
           const SizedBox(
@@ -247,95 +367,7 @@ class _InstructorAppBarState extends State<InstructorAppBar> {
       ),
     );
   }
-} /*
-
-class StudentAppBar extends StatefulWidget implements PreferredSizeWidget {
-  const StudentAppBar({super.key});
-
-  @override
-  State<StudentAppBar> createState() => _StudentAppBarState();
-
-  @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }
-
-class _StudentAppBarState extends State<StudentAppBar> {
-  @override
-  Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
-
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: PoolColors.appBarBackground,
-        automaticallyImplyLeading: false,
-        title: Expanded(
-          child: Row(
-            children: [
-              /*DropdownButton<String>(
-                alignment: AlignmentDirectional.topStart,
-                icon: const Icon(Icons.menu),
-                elevation: 8,
-                style: const TextStyle(color: Colors.black),
-                onChanged: (String? value) {
-                  // This is called when the user selects an item.
-                  setState(() {
-                    course = value!;
-                  });
-                },
-                items: list.map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-              ),*/
-              const SizedBox(
-                width: 23,
-              ),
-              IconButton(
-                icon: Row(
-                  children: [
-                    Image.asset(
-                      AssetLocations.bilkentLogo,
-                      width: 35,
-                      height: 35,
-                    ),
-                    const SizedBox(
-                      width: 5,
-                    ),
-                    const Text("Course Homepage"),
-                  ],
-                ),
-                onPressed: () {},
-              ),
-              const VerticalD(),
-              const AppBarChoice(text: "Exams"),
-              const VerticalD(),
-              const AppBarChoice(text: "Weekly Schedule"),
-              const VerticalD(),
-              const AppBarChoice(text: "Attendance"),
-              const VerticalD(),
-              const AppBarChoice(text: "Assignments"),
-            ],
-          ),
-        ),
-        actions: <Widget>[
-          IconButton(
-              onPressed: () {},
-              icon: const Icon(Icons.notifications_active_outlined)),
-          IconButton(
-              onPressed: () {}, icon: const Icon(Icons.chat_bubble_outline)),
-          IconButton(onPressed: () {}, icon: const Icon(Icons.person_outline)),
-          const SizedBox(
-            width: 45,
-          ),
-        ],
-      ),
-    );
-  }
-}
-*/
 
 class AdminAppBar extends StatefulWidget implements PreferredSizeWidget {
   const AdminAppBar({super.key});
