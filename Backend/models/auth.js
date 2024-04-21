@@ -37,6 +37,18 @@ authSchema.statics.getAuthById = async function (id) {
     }
 }
 
+authSchema.statics.getAuthByIds = async function (ids) {
+    try {
+        //const filteredIds = ids.filter(id => id !== null);
+        const auth = await this.find({ id: { $in: ids } });
+
+        if(!auth) throw ({error: 'Some users with these ids are not found' });
+        return auth;
+    } catch (error) {
+        throw error;
+    }
+  };
+
 authSchema.statics.getAuths = async function () {
     try {
       const auths = await this.find();
