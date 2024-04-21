@@ -15,6 +15,7 @@ const courseRouter = require("../routes/course");
 const examRouter = require("../routes/exam");
 const assignmentRouter = require("../routes/assignment");
 const sectionRouter = require("../routes/section");
+const chadRouter = require("../routes/chad")
 
 const { decode } = require('../middlewares/jwt');
 
@@ -28,6 +29,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cors());
 
+app.use('/profiles', express.static('uploads'))
+
 app.use("/admin", decode, adminRouter);
 app.use("/auth", authRouter);
 app.use("/instructor", decode, instructorRouter);
@@ -37,6 +40,7 @@ app.use("/course", decode, courseRouter);
 app.use("/exam", examRouter);
 app.use("/assignment", assignmentRouter);
 app.use("/section", sectionRouter);
+app.use("/chad", decode, chadRouter);
 
 app.use('*', (req, res) => {
     return res.status(404).json({
@@ -45,7 +49,25 @@ app.use('*', (req, res) => {
     })
   });
 
+
 const server = http.createServer(app);
+
+//bilal's chat configs dont touch
+const io = socketio(server);
+global.io = io;
+io.on('connection', (socket) => {
+  console.log('A user connected');
+
+  socket.on('disconnect', () => {
+    console.log('User disconnected');
+  });
+
+  socket.on('chat message', (msg) => {
+    console.log('Message: ' + msg);
+    io.emit('chat message', msg); 
+  });
+});
+
 
 server.listen(port);
 server.on("listening", () => {
