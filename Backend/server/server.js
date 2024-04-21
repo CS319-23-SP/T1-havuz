@@ -29,6 +29,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cors());
 
+app.use('/profiles', express.static('uploads'))
+
 app.use("/admin", decode, adminRouter);
 app.use("/auth", authRouter);
 app.use("/instructor", decode, instructorRouter);
@@ -47,11 +49,12 @@ app.use('*', (req, res) => {
     })
   });
 
+
 const server = http.createServer(app);
 
+//bilal's chat configs dont touch
 const io = socketio(server);
 global.io = io;
-
 io.on('connection', (socket) => {
   console.log('A user connected');
 
@@ -64,6 +67,7 @@ io.on('connection', (socket) => {
     io.emit('chat message', msg); 
   });
 });
+
 
 server.listen(port);
 server.on("listening", () => {
