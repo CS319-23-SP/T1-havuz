@@ -7,9 +7,12 @@ const authSchema = new mongoose.Schema(
             type: String,
             default: () => uuidv4().replace(/\-/g, ""),
           },
-          id: String,
-          password: String,
+          id: {
+            type: String,
+            unique: true, 
+        },          password: String,
           role: String,
+          profile: String,
     },
     {
         timestamps: true,
@@ -17,14 +20,19 @@ const authSchema = new mongoose.Schema(
     }
 );
 
-authSchema.statics.createAuth = async function (id, password, role) {
+authSchema.statics.createAuth = async function (id, password, role, profile = null) {
     try {
-        const auth = await this.create({id, password, role});
+        const authData = { id, password, role };
+        if (profile) {
+            authData.profile = profile;
+        }
+        const auth = await this.create(authData);
         return auth;
     } catch (error) {
         throw error;
     }
-}
+};
+
 
 authSchema.statics.getAuthById = async function (id) {
     try {

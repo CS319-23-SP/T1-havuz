@@ -1,25 +1,40 @@
 const makeValidation = require('@withvoid/make-validation');
 const authModel = require('../models/auth');
+const path = require('path');
+const fs = require('fs');
 
 const onCreateAuth = async (req, res) => {
-  try {
-    const validation = makeValidation(types => ({
-      payload: req.body,
-      checks: {
-        id: { type: types.string },
-        password: { type: types.string },
-        role: { type: types.string },
+    try {
+      const validation = makeValidation(types => ({
+        payload: req.body,
+        checks: {
+          id: { type: types.string },
+          password: { type: types.string },
+          role: { type: types.string },
+        }
+      }));
+      if (!validation.success) return res.status(400).json(validation);
+  
+      let profile = null;
+      if (req.file) {
+          const fileExt = req.file.originalname.split('.').pop(); 
+          const filename = `${req.body.id}.${fileExt}`; 
+          const newPath = path.join('uploads', filename); 
+  
+          await fs.promises.rename(req.file.path, newPath);
+          profile = newPath; 
       }
-    }));
-    if (!validation.success) return res.status(400).json(validation);
+  
+      const { id, password, role} = req.body;
+      const auth = await authModel.createAuth(id, password, role, profile);
+      return res.status(200).json({ success: true, auth });
+    } catch (error) {
+      console.error(error); // Log any caught errors
+      return res.status(500).json({ success: false, error: error.message });
+    }
+  };
 
-    const { id, password, role} = req.body;
-    const auth = await authModel.createAuth(id, password, role);
-    return res.status(200).json({ success: true, auth });
-  } catch (error) {
-    return res.status(500).json({ success: false, error: error })
-  }
-};
+
 
 const onEditAuthByID = async (req, res) => {
     try {
