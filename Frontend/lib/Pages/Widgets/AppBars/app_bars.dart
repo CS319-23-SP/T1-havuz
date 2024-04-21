@@ -278,6 +278,7 @@ class _InstructorAppBarState extends State<InstructorAppBar> {
       appBar: AppBar(
         backgroundColor: PoolColors.appBarBackground,
         automaticallyImplyLeading: false,
+
         title: Row(
           children: [
             const SizedBox(
@@ -299,6 +300,7 @@ class _InstructorAppBarState extends State<InstructorAppBar> {
               ),
               onPressed: () {
                 GoRouter.of(context).go('/instructor');
+
               },
             ),
             const VerticalD(),
@@ -399,10 +401,11 @@ class _AdminAppBarState extends State<AdminAppBar> {
       appBar: AppBar(
         backgroundColor: PoolColors.appBarBackground,
         automaticallyImplyLeading: false,
-        title: Row(
+        leadingWidth: 800,
+        leading: Row(
           children: [
-            const SizedBox(
-              width: 23,
+            SizedBox(
+              width: 25,
             ),
             IconButton(
               icon: Row(
