@@ -41,7 +41,7 @@ Pool revolutionizes course management in universities by leveraging technology t
 
 **Contributors**
 
-- Abdurrahman Bilal Kar,22003569
+- Abdurrahman Bilal Kar, 22003569
 - Ahmet Memduh Tutuş, 22003153
 - Arda Kırcı, 22002031
 - Berkay Ayçiçek, 22003111
