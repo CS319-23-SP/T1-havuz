@@ -76,12 +76,15 @@ class _UserProfilePageState extends State<UserProfilePage> {
         }
       }
     }
+    print(user);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: StudentAppBar(),
+      appBar: CustomAppBar(
+        role: role,
+      ),
       body: Row(
         children: [
           LeftBar(),
@@ -92,7 +95,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                 SizedBox(
                   height: 150,
                 ),
-                UserCard(),
+                UserCard(user: user),
               ],
             ),
           )
