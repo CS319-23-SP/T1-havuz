@@ -76,11 +76,9 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           icon: Icon(Icons.chat_bubble_outline),
         ),
         IconButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const UserProfilePage()),
-            );
+          onPressed: () async{
+            var id = await TokenStorage.getID();
+            GoRouter.of(context).go('/user/profile/$id');
           },
           icon: const Icon(Icons.person_outline),
         ),

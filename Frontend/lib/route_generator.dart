@@ -14,9 +14,10 @@ class RouteGenerator {
   final String instructorRoute = "/instructor";
   final String questionHomepageRoute = "/instructor/question";
   final String questionCreateRoute = "/instructor/question/create";
-  final String userProfilePageRoute = "/instructor/profile";
 
   final String studentRoute = "/student";
+
+  final String profileRoute = "/user/profile/:userId";
 
   final String adminRoute = "/admin";
   final String studentCreateRoute = "/admin/studentCreate";
@@ -37,9 +38,10 @@ class RouteGenerator {
               return const LoginPage();
             }),
         GoRoute(
-            path: userProfilePageRoute,
+            path: profileRoute,
             builder: (context, state) {
-              return const UserProfilePage();
+              final userId = state.pathParameters['userId'].toString();
+              return UserProfilePage(userId: userId);
             }),
         GoRoute(
             path: questionHomepageRoute,
