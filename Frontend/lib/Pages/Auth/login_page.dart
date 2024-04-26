@@ -54,7 +54,7 @@ class LoginPageWidget extends StatelessWidget {
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
         role = data['role'];
-        await TokenStorage.saveToken(data['authorization'], role);
+        await TokenStorage.saveToken(data['authorization'], role, id.toString());
 
         if (role == "admin") {
           GoRouter.of(context).go('/admin');

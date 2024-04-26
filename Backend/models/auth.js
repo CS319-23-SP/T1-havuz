@@ -10,7 +10,8 @@ const authSchema = new mongoose.Schema(
           id: {
             type: String,
             unique: true, 
-        },          password: String,
+        },          
+          password: String,
           role: String,
           profile: String,
     },
