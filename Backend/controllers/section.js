@@ -60,7 +60,15 @@ const onCreateSection = async (req, res) => {
       }
   }
 
-  
+  const onGetSectionByInstructorIDAndTerm = async (req, res) => {
+    try {
+        const section = await sectionModel.getSectionByInstructorIDAndTerm(req.params.id, req.params.term);
+        return res.status(200).json({ success: true, section });
+    } catch (error) {
+        return res.status(500).json({ success: false, error: error })
+    }
+}
+
   const onGetSection = async (req, res) => {
       try {
           const section = await sectionModel.getSection(req.params.id, req.params.term, req.params.courseID);
@@ -85,5 +93,6 @@ const onCreateSection = async (req, res) => {
     onEditSection,
     onDeleteSection,
     onGetSections,
-    onGetSection
+    onGetSection,
+    onGetSectionByInstructorIDAndTerm
   };

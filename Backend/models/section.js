@@ -70,6 +70,16 @@ sectionSchema.statics.deleteSection = async function (id, term, courseID) {
     }
 }
 
+sectionSchema.statics.getSectionByInstructorIDAndTerm = async function (id, term) {
+    try {
+        const section = await this.find({ instructorID: id, term: term});
+        if(!section) throw ({error: 'No section with this id and term found' });
+        return section;
+    } catch (error) {
+        throw error;
+    }
+}
+
 sectionSchema.statics.editSection = async function (id, term, courseID, quota, students, assignments, instructorID, material) {
     try {
         const sectionUpdates = {
