@@ -10,15 +10,16 @@ class UserCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenwidth = MediaQuery.of(context).size.width;
+    final screenheigth = MediaQuery.of(context).size.height;
+
     return Container(
-      width: 1000,
-      height: 600,
-      decoration: BoxDecoration(color: PoolColors.cardWhite),
-      child: Padding(
-        padding:
-            const EdgeInsets.only(top: 10, left: 10, right: 10, bottom: 10),
-        child: UserInfo(user: user),
-      ),
+      width: screenwidth / 2,
+      height: screenheigth / 2,
+      decoration: BoxDecoration(
+          color: PoolColors.cardWhite, borderRadius: BorderRadius.circular(15)),
+      padding: const EdgeInsets.only(top: 10, left: 10, right: 10, bottom: 10),
+      child: UserInfo(user: user),
     );
   }
 
