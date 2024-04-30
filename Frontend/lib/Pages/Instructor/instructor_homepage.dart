@@ -1,5 +1,7 @@
 import 'package:first_trial/Objects/course.dart';
+import 'package:first_trial/Objects/section.dart';
 import 'package:first_trial/Pages/Course/course_details.dart';
+import 'package:first_trial/Pages/Section/section_details.dart';
 import 'package:first_trial/Pages/Student/student_widgets/left_bar.dart';
 import 'package:first_trial/Pages/Widgets/AppBars/roles/instructor_appbar.dart';
 import 'package:first_trial/token.dart';
@@ -37,23 +39,27 @@ class _CourseHomePageState extends State<CourseHomePage> {
     if (role != "instructor") {
       return;
     } else {
-      fetchCourses();
+      fetchSections();
       setState(() {});
     }
   }
 
-  List<Course> courses = [];
+  List<Section> sections = [];
   late final ScrollController _scrollController;
 
-  Future<void> fetchCourses() async {
+  Future<void> fetchSections() async {
     try {
       String? token = await TokenStorage.getToken();
       if (token == null) {
         throw Exception('Token not found');
       }
+      String? instructorID = await TokenStorage.getID();
+      String? term = '2024 Spring';
+
+      print(instructorID);
 
       final response = await http.get(
-        Uri.http('localhost:8080', '/course/'),
+        Uri.http('localhost:8080', '/section/$instructorID/$term'),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
@@ -63,8 +69,9 @@ class _CourseHomePageState extends State<CourseHomePage> {
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
         if (responseData['success']) {
+          print(responseData);
           setState(() {
-            courses = parseCoursesData(responseData['courses']);
+            sections = parseSectionsData(responseData['section']);
           });
         } else {
           throw Exception('Failed to fetch courses data');
@@ -73,13 +80,13 @@ class _CourseHomePageState extends State<CourseHomePage> {
         throw Exception('Failed to fetch courses data');
       }
     } catch (e) {
-      print('Error fetching courses: $e');
+      print('Error fetching co32322urses: $e');
     }
   }
 
-  List<Course> parseCoursesData(dynamic responseData) {
+  List<Section> parseSectionsData(dynamic responseData) {
     return (responseData as List<dynamic>)
-        .map((CourseData) => Course.fromJson(CourseData))
+        .map((sectionData) => Section.fromJson(sectionData))
         .toList();
   }
 
@@ -118,10 +125,10 @@ class _CourseHomePageState extends State<CourseHomePage> {
                   children: [
                     if (!showDetails)
                       Expanded(
-                        child: CourseData(
-                          courses: courses,
+                        child: SectionData(
+                          sections: sections,
                           onTapCourse: (index) {
-                            print('Course $index tapped');
+                            print('Section $index tapped');
                             setState(() {
                               ind = index;
                               showDetails = true;
@@ -131,8 +138,8 @@ class _CourseHomePageState extends State<CourseHomePage> {
                       ),
                     if (showDetails)
                       Expanded(
-                        child: Course_Details(
-                          course: courses[ind],
+                        child: Section_Details(
+                          section: sections[ind],
                           onBack: () {
                             setState(() {
                               showDetails = false;
@@ -159,21 +166,21 @@ class _CourseHomePageState extends State<CourseHomePage> {
   }
 }
 
-class CourseData extends StatefulWidget {
-  final List<Course> courses;
+class SectionData extends StatefulWidget {
+  final List<Section> sections;
   final void Function(int) onTapCourse;
 
-  const CourseData({
+  const SectionData({
     Key? key,
-    required this.courses,
+    required this.sections,
     required this.onTapCourse,
   }) : super(key: key);
 
   @override
-  State<CourseData> createState() => _CourseDataState();
+  State<SectionData> createState() => _SectionDataState();
 }
 
-class _CourseDataState extends State<CourseData> {
+class _SectionDataState extends State<SectionData> {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -191,9 +198,9 @@ class _CourseDataState extends State<CourseData> {
               crossAxisSpacing: 24.0,
               mainAxisSpacing: 20.0,
             ),
-            itemCount: widget.courses.length,
+            itemCount: widget.sections.length,
             itemBuilder: (context, index) {
-              Course post = widget.courses[index];
+              Section post = widget.sections[index];
               return InkWell(
                 onTap: () {
                   widget.onTapCourse(index);
