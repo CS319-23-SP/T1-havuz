@@ -25,7 +25,7 @@ Pool offers a wide range of features to address the diverse needs of its users, 
   - Performance and trend analytics and reporting
   - ABET table
   - Question database with their solution keys
-  - Support for four different user types
+  - Support for three different user types
   - Exam archive
   - Instructor evaluation
   - Project team, team assignment and team grading
