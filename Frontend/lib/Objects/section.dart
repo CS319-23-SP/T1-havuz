@@ -1,7 +1,7 @@
 class Section {
   String id;
   String term;
-  String courseID;
+  String sectionID;
   String quota;
   List<String> students;
   List<String> assignments;
@@ -11,7 +11,7 @@ class Section {
   Section({
     required this.id,
     required this.term,
-    required this.courseID,
+    required this.sectionID,
     required this.quota,
     required this.students,
     required this.assignments,
@@ -23,7 +23,7 @@ class Section {
     return Section(
       id: json['id'].toString(),
       term: json['term'].toString(),
-      courseID: json['courseID'].toString(),
+      sectionID: json['courseID'].toString(),
       quota: json['quota'].toString(),
       instructorID: json['instructorID'].toString(),
       students: List<String>.from(json['students'] ?? []),

@@ -6,7 +6,7 @@ class Assignment {
   String sectionID;
   String deadline;
   String solutionKey;
-  List<Question> questions;
+  List<String> questions;
 
   Assignment({
     required this.term,
@@ -22,7 +22,7 @@ class Assignment {
       term: json['term'].toString(),
       sectionID: json['sectionID'].toString(),
       deadline: json['deadline'].toString(),
-      questions: List<Question>.from(json['questions'] ?? []),
+      questions: List<String>.from(json['questions'] ?? []),
       solutionKey: json['solutionKey'].toString(),
     );
   }

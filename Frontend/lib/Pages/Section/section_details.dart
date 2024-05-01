@@ -23,10 +23,9 @@ class Section_Details extends StatefulWidget {
 }
 
 class _Section_DetailsState extends State<Section_Details> {
+  String term = "2024 Spring";
   String? role = "unknown";
-  String? id = "unknown";
-  List<Assignment> assignments = [];
-
+  
   @override
   void initState() {
     super.initState();
@@ -35,8 +34,57 @@ class _Section_DetailsState extends State<Section_Details> {
 
   Future<void> checkRole() async {
     role = await TokenStorage.getRole();
-    setState(() {});
+
+    if (role != "instructor") {
+      return;
+    } else {
+      fetchAssignments();
+      setState(() {});
+    }
   }
+
+  List<Assignment> assignments = [];
+
+  Future<void> fetchAssignments() async {
+    try {
+      String? token = await TokenStorage.getToken();
+      if (token == null) {
+        throw Exception('Token not found');
+      }
+      String? instructorID = await TokenStorage.getID();
+      String sectionID = widget.section.id;
+
+      final response = await http.get(
+        Uri.http('localhost:8080', '/assignment/instructor/$term/$sectionID'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        if (responseData['success']) {
+          setState(() {
+            assignments = parseAssignmentData(responseData['assignments']);
+          });
+        } else {
+          throw Exception('Failed to fetch courses data');
+        }
+      } else {
+        throw Exception('Failed to fetch courses data');
+      }
+    } catch (e) {
+      print('Error fetching co3fjgsdh322urses: $e');
+    }
+  }
+
+  List<Assignment> parseAssignmentData(dynamic responseData) {
+    return (responseData as List<dynamic>)
+        .map((assignmentData) => Assignment.fromJson(assignmentData))
+        .toList();
+  }
+
 
   @override
   Widget build(BuildContext context) {
