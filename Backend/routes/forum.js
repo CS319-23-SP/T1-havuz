@@ -1,12 +1,12 @@
 const express = require('express');
-const forum = require('../controllers/forum.js');
+const forumController = require('../controllers/forum.js');
 
 const router = express.Router();
 
 router
-  .post('/', forum.post)
-  .post('/:replid', forum.createForumReply)
-  .get('/:replid', forum.getForumRepliesByReplyId)
-  .get('/', forum.getAll)
+  .post('/', forumController.createForumPost)
+  .post('/:parentReplyId', forumController.createForumReply)
+  .get('/:replId', forumController.getForumRepliesByReplyId)
+  //.get('/', forumController.getAll)
 
 module.exports = router;

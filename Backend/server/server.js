@@ -16,6 +16,7 @@ const examRouter = require("../routes/exam");
 const assignmentRouter = require("../routes/assignment");
 const sectionRouter = require("../routes/section");
 const chadRouter = require("../routes/chad")
+const forumRouter = require("../routes/forum")
 
 const { decode } = require('../middlewares/jwt');
 
@@ -41,6 +42,7 @@ app.use("/exam", examRouter);
 app.use("/assignment", assignmentRouter);
 app.use("/section", sectionRouter);
 app.use("/chad", decode, chadRouter);
+app.use("/forum", decode, forumRouter);
 
 app.use('*', (req, res) => {
     return res.status(404).json({
