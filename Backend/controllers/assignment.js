@@ -80,11 +80,21 @@ const onCreateAssignment = async (req, res) => {
     }
 }
 
+const onGetAssignmentForInstructor = async (req, res) => {
+  try {
+    const assignments = await assignmentModel.getAssignmentsForInstructor(req.params.term, req.params.sectionID);
+    return res.status(200).json({ success: true, assignments });
+} catch (error) {
+    return res.status(500).json({ success: false, error: error })
+}
+}
+
   
   module.exports = {
     onCreateAssignment,
     onEditAssignment,
     onDeleteAssignment,
     onGetAssignment,
-    onGetAssignments
+    onGetAssignments,
+    onGetAssignmentForInstructor
   };

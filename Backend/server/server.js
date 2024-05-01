@@ -37,9 +37,9 @@ app.use("/instructor", decode, instructorRouter);
 app.use("/student", decode, studentRouter);
 app.use("/question", decode, questionRouter);
 app.use("/course", decode, courseRouter);
-app.use("/exam", examRouter);
-app.use("/assignment", assignmentRouter);
-app.use("/section", sectionRouter);
+app.use("/exam", decode, examRouter);
+app.use("/assignment", decode, assignmentRouter);
+app.use("/section", decode, sectionRouter);
 app.use("/chad", decode, chadRouter);
 
 app.use('*', (req, res) => {
