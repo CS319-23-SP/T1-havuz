@@ -1,27 +1,21 @@
 const mongoose = require("mongoose");
-const { required } = require("nodemon/lib/config");
 const { v4: uuidv4 } = require("uuid");
-
 
 const forumPostSchema = new mongoose.Schema(
   {
-    _id: {
-            type: String,
-            default: () => uuidv4().replace(/\-/g, ""),
-          },
     forumInitiator: {
       type: String,
-      required: true
+      required: true,
     },
     title: {
       type: String,
-      required: true
+      required: true,
     },
-    initialPostId: {
+    initialReplyId: {
       type: String,
-      required: true
-    }
-    
+      default: uuidv4,
+      unique: true, 
+    },
   },
   {
     timestamps: true,
@@ -29,55 +23,38 @@ const forumPostSchema = new mongoose.Schema(
   }
 );
 
-forumPostSchema.statics.initiateChat = async function (
-  userIds, chatInitiator
-) {
+forumPostSchema.statics.createForumPost = async function (forumInitiator, title) {
   try {
-    const availableRoom = await this.findOne({
-      userIds: {
-        $size: userIds.length,
-        $all: [...userIds],
-      },
+    const forumPost = await this.create({
+      forumInitiator,
+      title,
     });
-    if (availableRoom) {
-      return {
-        isNew: false,
-        message: 'retrieving an old chat room',
-        chatRoomId: availableRoom._doc._id,
-      };
+    return forumPost;
+  } catch (error) {
+    throw error;
+  }
+};
+
+forumPostSchema.statics.getFirstReplyWithReplies = async function (postId) {
+  try {
+    const forumPost = await this.findById(postId);
+    if (!forumPost) {
+      throw new Error("Forum post not found");
     }
 
-    const newRoom = await this.create({ userIds, chatInitiator });
-    return {
-      isNew: true,
-      message: 'creating a new chatroom',
-      chatRoomId: newRoom._doc._id,
-    };
-  } catch (error) {
-    console.log('error on start chat method', error);
-    throw error;
-  }
-};
+    const firstReply = await ForumReply.findOne({ replyID: forumPost.initialReplyId });
 
+    if (!firstReply) {
+      return [];
+    }
 
-forumPostSchema.statics.getChatRoomByRoomId = async function (roomId) {
-  try {
-    const room = await this.findOne({ _id: roomId });
-    return room;
+    const directReplies = await ForumReply.getDirectRepliesOfReply(firstReply._id);
+
+    return [firstReply, ...directReplies];
   } catch (error) {
     throw error;
   }
 };
 
-forumPostSchema.statics.getChatRoomsByUserId = async function (userId) {
-  try {
-    const rooms = await this.find({ userIds: { $in: [userId] } });
-    return rooms;
-  } catch (error) {
-    throw new Error(`Error fetching chat rooms by user ID: ${error.message}`);
-  }
-};
 
 module.exports = mongoose.model("forumPost", forumPostSchema);
-
-    

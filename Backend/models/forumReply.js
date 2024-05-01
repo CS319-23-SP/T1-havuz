@@ -7,13 +7,10 @@ const MESSAGE_TYPES = {
 
 const forumReplySchema = new mongoose.Schema(
   {
-    _id: {
+    replyID: {
       type: String,
       default: uuidv4,
-    },
-    postId: {
-      type: String,
-      required: true,
+      unique: true,
     },
     message: mongoose.Schema.Types.Mixed,
     type: {
@@ -24,7 +21,7 @@ const forumReplySchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    parentReply: {
+    parentReplyId: {
       type: String, 
       required: true,
     },
@@ -36,17 +33,15 @@ const forumReplySchema = new mongoose.Schema(
 );
 
 forumReplySchema.statics.createForumReply = async function (
-  postId,
   message,
   postedByUser,
-  parentReply,
+  parentReplyId,
 ) {
   try {
     const forumReply = await this.create({
-      postId,
       message,
       postedByUser,
-      parentReply, 
+      parentReplyId, 
     });
     return forumReply;
   } catch (error) {
@@ -54,14 +49,13 @@ forumReplySchema.statics.createForumReply = async function (
   }
 };
 
-
-forumReplySchema.statics.getForumRepliesByPostId = async function (
-  postId,
+forumReplySchema.statics.getForumRepliesByReplyID = async function (
+  replyID,
   options = {}
 ) {
   try {
     const pipeline = [
-      { $match: { postId } },
+      { $match: { replyID } },
       { $sort: { createdAt: -1 } },
       {
         $lookup: {
@@ -83,20 +77,17 @@ forumReplySchema.statics.getForumRepliesByPostId = async function (
   }
 };
 
-
-
-forumReplySchema.statics.getAllRepliesOfReply = async function (replyId) {
+/*forumReplySchema.statics.getAllRepliesOfReply = async function (replyId) {
   try {
-    // Fetch the initial reply
     const initialReply = await this.findById(replyId);
     if (!initialReply) {
       throw new Error("Reply not found");
     }
 
-    const allReplies = await this.find({ postId: initialReply.postId });
+    const allReplies = await this.find({ replyID: initialReply.replyID });
 
     const subReplies = allReplies.filter((reply) => {
-      const isSubReply = reply.message?.parentReplyId === replyId;
+      const isSubReply = reply.message?.parentReplyIdId === replyId;
       return isSubReply;
     });
 
@@ -116,6 +107,39 @@ forumReplySchema.statics.getAllRepliesOfReply = async function (replyId) {
     }, []);
 
     return allRepliesFlat.concat(...recursiveReplies);
+  } catch (error) {
+    throw error;
+  }
+};*/
+
+
+forumReplySchema.statics.getDirectRepliesOfReply = async function (replyId) {
+  try {
+    //console.log(replyId)
+
+    const initialReply =  await this.findOne({ replyID: replyId });
+    if (!initialReply) {
+      throw new Error("Reply not foundd");
+    }
+
+    const directReplies = await this.find({ parentReplyId: replyId });
+    if (!directReplies) {
+      throw new Error("Reply does not seem to havea parent :D?");
+    }
+
+    return directReplies;
+  } catch (error) {
+    throw error;
+  }
+};
+
+forumReplySchema.statics.findById = async function (replyId) {
+  try {
+    const reply = await this.findOne({ replyID: replyId });
+    if (!reply) {
+      throw new Error("Reply not found");
+    }
+    return reply;
   } catch (error) {
     throw error;
   }

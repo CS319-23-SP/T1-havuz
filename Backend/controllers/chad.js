@@ -3,7 +3,7 @@ const ChadMessageModel = require('../models/chadMessage');
 const ChadRoomModel = require('../models/chadRoom');
 const AuthModel = require('../models/auth');
 
-initiate = async (req, res) => {
+const initiate = async (req, res) => {
     try {      
 
       const validation = makeValidation(types => ({
@@ -29,7 +29,6 @@ initiate = async (req, res) => {
       return res.status(500).json({ success: false, error: error })
     }
   }
-
 
 
 const postMessage = async (req, res) => {
@@ -58,8 +57,7 @@ const postMessage = async (req, res) => {
 };
 
 
-
-getConversationByRoomId = async (req, res) => {
+const getConversationByRoomId = async (req, res) => {
   try {
     const { roomId } = req.params;
     const room = await ChadRoomModel.getChatRoomByRoomId(roomId)
@@ -124,9 +122,6 @@ const getConversations = async (req, res) => {
       return res.status(500).json({ success: false, error });
   }
 }
-
-
-
 
 module.exports = {
     initiate,
