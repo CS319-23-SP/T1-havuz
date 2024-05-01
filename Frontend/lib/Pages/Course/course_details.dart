@@ -1,5 +1,5 @@
 import 'package:first_trial/Objects/course.dart';
-import 'package:first_trial/Pages/Student/student_widgets/left_bar.dart';
+import 'package:first_trial/Pages/Widgets/LeftBar/left_bar.dart';
 import 'package:first_trial/Pages/Widgets/AppBars/app_bars.dart';
 import 'package:flutter/material.dart';
 

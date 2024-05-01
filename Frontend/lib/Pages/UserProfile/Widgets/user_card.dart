@@ -12,9 +12,8 @@ class UserCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final screenwidth = MediaQuery.of(context).size.width;
     final screenheigth = MediaQuery.of(context).size.height;
-
     return Container(
-      width: screenwidth / 2,
+      width: 7 * screenwidth / 17,
       height: screenheigth / 2,
       decoration: BoxDecoration(
           color: PoolColors.cardWhite, borderRadius: BorderRadius.circular(15)),
@@ -66,7 +65,7 @@ class _UserInfoState extends State<UserInfo> {
     final department = widget.user["department"] ?? "Unknown";
     List<dynamic>? coursesTaken = widget.user["allTakenCourses"];
     final aboutYourself = "dd";
-
+    final screen = MediaQuery.of(context).size;
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -188,7 +187,7 @@ class _UserInfoState extends State<UserInfo> {
                         ? Expanded(
                             child: Padding(
                               padding:
-                                  const EdgeInsets.symmetric(horizontal: 50.0),
+                                  const EdgeInsets.symmetric(horizontal: 10.0),
                               child: TextField(
                                 textAlignVertical: TextAlignVertical.top,
                                 maxLines: null,
@@ -203,18 +202,22 @@ class _UserInfoState extends State<UserInfo> {
                               ),
                             ),
                           )
-                        : SizedBox(
-                            width: double.infinity, // Adjust width as needed
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 50.0),
-                              child: Text(
-                                _displayText,
-                                style: TextStyle(fontSize: 20.0),
-                                maxLines:
-                                    10, // Limit the number of lines displayed
-                                overflow: TextOverflow
-                                    .ellipsis, // Handle overflow with ellipsis
+                        : SingleChildScrollView(
+                            child: Container(
+                              height: screen.height / 7,
+                              padding: EdgeInsets.only(bottom: 10),
+                              width: double.infinity, // Adjust width as needed
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 10.0),
+                                child: Text(
+                                  _displayText,
+                                  style: TextStyle(fontSize: 20.0),
+                                  maxLines:
+                                      10, // Limit the number of lines displayed
+                                  overflow: TextOverflow
+                                      .ellipsis, // Handle overflow with ellipsis
+                                ),
                               ),
                             ),
                           ),

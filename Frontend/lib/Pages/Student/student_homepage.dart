@@ -1,4 +1,4 @@
-import 'package:first_trial/Pages/Student/student_widgets/left_bar.dart';
+import 'package:first_trial/Pages/Widgets/LeftBar/left_bar.dart';
 import 'package:first_trial/Pages/Widgets/AppBars/app_bars.dart';
 import 'package:first_trial/Pages/Widgets/AppBars/roles/student_appbar.dart';
 import 'package:first_trial/Pages/Widgets/access_denied.dart';
@@ -40,7 +40,9 @@ class _StudentHomepageState extends State<StudentHomepage> {
         ),
         body: Row(
           children: [
-            LeftBar(),
+            LeftBar(
+              role: role,
+            ),
           ],
         ));
   }
