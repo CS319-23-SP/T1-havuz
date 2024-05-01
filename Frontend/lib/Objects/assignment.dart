@@ -1,0 +1,29 @@
+import 'package:first_trial/Objects/question.dart';
+
+class Assignment {
+  String id;
+  String term;
+  String sectionID;
+  String deadline;
+  String solutionKey;
+  List<Question> questions;
+
+  Assignment({
+    required this.term,
+    required this.sectionID,
+    required this.questions,
+    required this.deadline,
+    this.id = "",
+    this.solutionKey = "",
+  });
+  factory Assignment.fromJson(Map<String, dynamic> json) {
+    return Assignment(
+      id: json['id'].toString(),
+      term: json['term'].toString(),
+      sectionID: json['sectionID'].toString(),
+      deadline: json['deadline'].toString(),
+      questions: List<Question>.from(json['questions'] ?? []),
+      solutionKey: json['solutionKey'].toString(),
+    );
+  }
+}
