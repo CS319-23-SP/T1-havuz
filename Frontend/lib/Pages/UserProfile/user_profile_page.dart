@@ -1,4 +1,4 @@
-import 'package:first_trial/Pages/Student/student_widgets/left_bar.dart';
+import 'package:first_trial/Pages/Widgets/LeftBar/left_bar.dart';
 import 'package:first_trial/Pages/UserProfile/Widgets/user_card.dart';
 import 'package:first_trial/Pages/Widgets/AppBars/app_bars.dart';
 import 'package:first_trial/Pages/Widgets/AppBars/roles/student_appbar.dart';
@@ -87,7 +87,9 @@ class _UserProfilePageState extends State<UserProfilePage> {
       ),
       body: Row(
         children: [
-          LeftBar(),
+          LeftBar(
+            role: role,
+          ),
           Padding(
             padding: const EdgeInsets.only(left: 100),
             child: Column(

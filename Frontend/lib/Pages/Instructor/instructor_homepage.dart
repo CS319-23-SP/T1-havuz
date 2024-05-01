@@ -2,7 +2,7 @@ import 'package:first_trial/Objects/course.dart';
 import 'package:first_trial/Objects/section.dart';
 import 'package:first_trial/Pages/Course/course_details.dart';
 import 'package:first_trial/Pages/Section/section_details.dart';
-import 'package:first_trial/Pages/Student/student_widgets/left_bar.dart';
+import 'package:first_trial/Pages/Widgets/LeftBar/left_bar.dart';
 import 'package:first_trial/Pages/Widgets/AppBars/roles/instructor_appbar.dart';
 import 'package:first_trial/token.dart';
 import 'package:flutter/material.dart';
@@ -117,36 +117,37 @@ class _CourseHomePageState extends State<CourseHomePage> {
           ),
           body: Row(
             children: [
-              LeftBar(),
+              LeftBar(
+                role: role,
+              ),
               Expanded(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    if (!showDetails)
-                      Expanded(
-                        child: SectionData(
-                          sections: sections,
-                          onTapCourse: (index) {
-                            print('Section $index tapped');
-                            setState(() {
-                              ind = index;
-                              showDetails = true;
-                            });
-                          },
-                        ),
-                      ),
-                    if (showDetails)
-                      Expanded(
-                        child: Section_Details(
-                          section: sections[ind],
-                          onBack: () {
-                            setState(() {
-                              showDetails = false;
-                            });
-                          },
-                        ),
-                      ),
+                    !showDetails
+                        ? Expanded(
+                            child: SectionData(
+                              sections: sections,
+                              onTapCourse: (index) {
+                                print('Section $index tapped');
+                                setState(() {
+                                  ind = index;
+                                  showDetails = true;
+                                });
+                              },
+                            ),
+                          )
+                        : Expanded(
+                            child: Section_Details(
+                              section: sections[ind],
+                              onBack: () {
+                                setState(() {
+                                  showDetails = false;
+                                });
+                              },
+                            ),
+                          ),
                     Container(
                       width: screenHeight / 2,
                       height: screenHeight / 2,

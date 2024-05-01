@@ -4,25 +4,21 @@ import 'package:first_trial/Objects/course.dart';
 import 'package:first_trial/final_variables.dart';
 import 'package:first_trial/token.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:side_navigation/side_navigation.dart';
 import 'package:http/http.dart' as http;
 
 class LeftBar extends StatefulWidget {
-  const LeftBar({super.key});
+  final String? role;
 
+  const LeftBar({Key? key, required this.role}) : super(key: key);
   @override
   State<LeftBar> createState() => _LeftBarState();
 }
 
 class _LeftBarState extends State<LeftBar> {
   List<Course> courses = [];
-
-  @override
-  void initState() {
-    super.initState();
-    fetchCourses();
-  }
 
   Future<void> fetchCourses() async {
     try {
@@ -66,17 +62,33 @@ class _LeftBarState extends State<LeftBar> {
         .toList();
   }
 
-  List<Widget> views = const [
-    Center(
-      child: Text('Dashboard'),
-    ),
-    Center(
-      child: Text('Account'),
-    ),
-    Center(
-      child: Text('Settings'),
-    ),
-  ];
+  List<Widget> views = [];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchCourses();
+    views = [
+      Center(
+        child: TextButton(
+          child: Text("Dashboard"),
+          onPressed: () {
+            GoRouter.of(context).go(_getRouteForRole(widget.role));
+          },
+        ),
+      ),
+      Center(
+        child: TextButton(
+          child: Text("Account"),
+          onPressed: () async {
+            var id = await TokenStorage.getID();
+            GoRouter.of(context).go('/user/profile/$id');
+          },
+        ),
+      ),
+    ];
+  }
+
   int selectedIndex = 0;
 
   @override
@@ -91,7 +103,7 @@ class _LeftBarState extends State<LeftBar> {
       toggler: SideBarToggler(
           expandIcon: Icons.arrow_circle_right_outlined,
           shrinkIcon: Icons.arrow_circle_left_outlined),
-      items: const [
+      items: [
         SideNavigationBarItem(
           icon: Icons.dashboard,
           label: 'Dashboard',
@@ -100,15 +112,30 @@ class _LeftBarState extends State<LeftBar> {
           icon: Icons.person,
           label: 'Account',
         ),
-        SideNavigationBarItem(
-          icon: Icons.settings,
-          label: 'Settings',
-        ),
+        if (widget.role == "student") ...[
+          SideNavigationBarItem(
+            icon: Icons.ac_unit,
+            label: 'anen',
+          ),
+        ] else if (widget.role == "instructor") ...[
+          SideNavigationBarItem(
+            icon: Icons.ac_unit,
+            label: 'baban',
+          ),
+        ],
       ],
-      onTap: (index) {
+      onTap: (index) async {
         setState(() {
           selectedIndex = index;
         });
+        var id = await TokenStorage.getID();
+        print(selectedIndex);
+        switch (selectedIndex) {
+          case 0:
+            return GoRouter.of(context).go(_getRouteForRole(widget.role));
+          case 1:
+            return GoRouter.of(context).go('/user/profile/$id');
+        }
       },
       theme: SideNavigationBarTheme(
         backgroundColor: PoolColors.appBarBackground,
@@ -131,5 +158,18 @@ class _LeftBarState extends State<LeftBar> {
             showHeaderDivider: true),
       ),
     );
+  }
+
+  String _getRouteForRole(String? role) {
+    switch (role) {
+      case "admin":
+        return '/admin';
+      case "instructor":
+        return '/instructor';
+      case "student":
+        return '/student';
+      default:
+        return '/login';
+    }
   }
 }
