@@ -1,6 +1,8 @@
+import 'package:first_trial/Objects/assignment.dart';
 import 'package:first_trial/Objects/course.dart';
 import 'package:first_trial/Pages/Widgets/LeftBar/left_bar.dart';
 import 'package:first_trial/Pages/Widgets/AppBars/app_bars.dart';
+import 'package:first_trial/token.dart';
 import 'package:flutter/material.dart';
 
 class Course_Details extends StatefulWidget {
@@ -19,6 +21,7 @@ class Course_Details extends StatefulWidget {
 }
 
 class _Course_DetailsState extends State<Course_Details> {
+
   @override
   Widget build(BuildContext context) {
     return Row(

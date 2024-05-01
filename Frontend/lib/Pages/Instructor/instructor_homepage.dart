@@ -56,8 +56,6 @@ class _CourseHomePageState extends State<CourseHomePage> {
       String? instructorID = await TokenStorage.getID();
       String? term = '2024 Spring';
 
-      print(instructorID);
-
       final response = await http.get(
         Uri.http('localhost:8080', '/section/$instructorID/$term'),
         headers: {
@@ -69,7 +67,6 @@ class _CourseHomePageState extends State<CourseHomePage> {
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
         if (responseData['success']) {
-          print(responseData);
           setState(() {
             sections = parseSectionsData(responseData['section']);
           });
@@ -130,7 +127,6 @@ class _CourseHomePageState extends State<CourseHomePage> {
                             child: SectionData(
                               sections: sections,
                               onTapCourse: (index) {
-                                print('Section $index tapped');
                                 setState(() {
                                   ind = index;
                                   showDetails = true;
