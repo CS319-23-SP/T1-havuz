@@ -1,14 +1,15 @@
 const express = require('express');
 const section = require('../controllers/section');
+const roleChecker = require('../middlewares/roleChecker');
 
 const router = express.Router();
 
 router
-  .get('/', section.onGetSections)
-  .post('/', section.onCreateSection)
+  .get('/', roleChecker(['admin'], 'instructor'), section.onGetSections)
+  .post('/', roleChecker(['admin'], 'instructor'), section.onCreateSection)
   .get('/:id/:term/:courseID', section.onGetSection)
-  .get('/:id/:term', section.onGetSectionByInstructorIDAndTerm)
-  .delete('/:id/:term/:courseID', section.onDeleteSection)
-  .patch('/:id/:term/:courseID', section.onEditSection);
+  .get('/:id/:term', roleChecker(['admin'], 'instructor'), section.onGetSectionByInstructorIDAndTerm)
+  .delete('/:id/:term/:courseID', roleChecker(['admin'], 'instructor'), section.onDeleteSection)
+  .patch('/:id/:term/:courseID', roleChecker(['admin'], 'instructor'), section.onEditSection);
 
 module.exports = router;
