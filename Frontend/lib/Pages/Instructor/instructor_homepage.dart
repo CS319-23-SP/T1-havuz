@@ -31,6 +31,7 @@ class _CourseHomePageState extends State<CourseHomePage> {
   void initState() {
     super.initState();
     checkRole();
+    showDetails = false;
   }
 
   Future<void> checkRole() async {
