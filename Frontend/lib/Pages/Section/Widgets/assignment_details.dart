@@ -33,6 +33,11 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
 
   List<Question> questions = [];
 
+  Future<void> getAssignmentAndQuestions() async {
+    await getAssignmentById();
+    await fetchQuestions();
+  }
+
   @override
   void initState() {
     super.initState();
@@ -42,53 +47,41 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
   Future<void> checkRole() async {
     role = await TokenStorage.getRole();
 
-    if (role != "instructor") {
-      return;
-    } else {
-      getAssignmentById();
-      fetchQuestions();
+    if (role == "instructor") {
+      await getAssignmentAndQuestions();
       setState(() {});
-      questions.forEach((element) {print(element.id);});
     }
   }
 
   Future<void> fetchQuestions() async {
     String? token = await TokenStorage.getToken();
-      if (token == null) {
-        throw Exception('Token not found');
-      }
-
-    assignment.questions.forEach((questionID) async{
-      try {
-      final response = await http.get(
-        Uri.http('localhost:8080', '/question/$questionID'),
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Content-Type': 'application/json',
-        },
-      );
-      if (response.statusCode == 200) {
-        setState(() {
-          parseQuestionsData(json.decode(response.body));
-        });
-      } else {
-        throw Exception('Failed to fetch questions data');
-      }
-    } catch (e) {
-      print('Error fetching questions: $e');
+    if (token == null) {
+      throw Exception('Token not found');
     }
+    await Future.forEach(assignment.questions, (questionID) async {
+      try {
+        final response = await http.get(
+          Uri.http('localhost:8080', '/question/$questionID'),
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json',
+          },
+        );
+        if (response.statusCode == 200) {
+          parseQuestionsData(json.decode(response.body));
+        } else {
+          throw Exception('Failed to fetch questions data');
+        }
+      } catch (e) {
+        print('Error fetching questions: $e');
+      }
     });
   }
 
-  void parseQuestionsData(dynamic responseData) {
-    List<Question> parsedQuestions = [];
-    for (var questionData in responseData['questions'] as List<dynamic>) {
-      final question = Question.fromJson(questionData);
-      parsedQuestions.add(question);
-    }
-    setState(() {
-      questions = parsedQuestions;
-    });
+  void parseQuestionsData(dynamic responseData) async {
+    final question = Question.fromJson(responseData['question']);
+    questions.add(question);
+    print(question.text);
   }
 
   Future<void> getAssignmentById() async {
@@ -121,9 +114,8 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
         throw Exception('Failed to fetch courses data');
       }
     } catch (e) {
-      print('Error fetching co3fjgsdh322urses: $e');
+      print('Error fetching courses: $e');
     }
-    Assignment assignments = assignment;
   }
 
   List<Assignment> parseAssignmentData(dynamic responseData) {
@@ -139,13 +131,38 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
       body: Row(
         children: [
           LeftBar(role: role),
-          Column(children: [
-            Text(assignment.id),
-            Text(assignment.sectionID),
-            Text(assignment.solutionKey),
-            Text(assignment.term),
-            Text(assignment.questions.toString()),
-          ])
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text("Assignment Details",
+                    style:
+                        TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                SizedBox(height: 10),
+                Text("ID: ${assignment.id}"),
+                Text("Section ID: ${assignment.sectionID}"),
+                Text("Solution Key: ${assignment.solutionKey}"),
+                Text("Term: ${assignment.term}"),
+                SizedBox(height: 20),
+                Text("Questions:",
+                    style:
+                        TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: questions.length,
+                    itemBuilder: (context, index) {
+                      return ListTile(
+                        title: Text(
+                          questions[index].text,
+                          style: TextStyle(fontSize: 16),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );

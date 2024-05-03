@@ -156,7 +156,9 @@ class _QuestionHomepageState extends State<QuestionHomepage> {
     //controllers
     else {
       return Scaffold(
-        appBar: const InstructorAppBar(),
+        appBar: CustomAppBar(
+          role: role,
+        ),
         body: Row(
           children: [
             Padding(
