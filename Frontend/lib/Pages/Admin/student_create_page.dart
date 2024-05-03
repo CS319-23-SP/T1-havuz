@@ -101,7 +101,9 @@ class _StudentCreationPageState extends State<StudentCreationPage> {
       return AccessDeniedPage();
     } else {
       return Scaffold(
-        appBar: AdminAppBar(),
+        appBar: CustomAppBar(
+          role: role,
+        ),
         body: Center(
           child: Container(
             margin:
