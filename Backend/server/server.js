@@ -1,6 +1,6 @@
 const http = require("http");
 const express = require("express");
-const logger = require("morgan");
+const mogger = require("morgan");
 const cors = require("cors");
 const socketio = require("socket.io"); 
 const roleChecker = require('../middlewares/roleChecker');
@@ -25,14 +25,14 @@ const app = express();
 const port = process.env.PORT || "8080";
 app.set("port", port);
 
-app.use(logger("dev"));
+app.use(mogger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cors());
 
 app.use('/profiles', express.static('uploads'))
 
-app.use("/admin", roleChecker(['admin']), decode, adminRouter);
+app.use("/admin", decode, adminRouter);
 app.use("/auth", authRouter);
 app.use("/instructor", decode, instructorRouter);
 app.use("/student", decode, studentRouter);
