@@ -2,7 +2,7 @@ const express = require('express');
 const auth = require('../controllers/auth');
 const { encode } = require('../middlewares/jwt');
 const { decode } = require('../middlewares/jwt');
-const upload = require('../middlewares/multer')
+const upload = require('../middlewares/multer');
 
 const router = express.Router();
 
