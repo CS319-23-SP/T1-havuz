@@ -4,6 +4,7 @@ import 'package:first_trial/Pages/Widgets/LeftBar/left_bar.dart';
 import 'package:first_trial/Pages/Widgets/AppBars/app_bars.dart';
 import 'package:flutter/material.dart';
 import 'package:first_trial/token.dart';
+import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -25,7 +26,7 @@ class Section_Details extends StatefulWidget {
 class _Section_DetailsState extends State<Section_Details> {
   String term = "2024 Spring";
   String? role = "unknown";
-  
+
   @override
   void initState() {
     super.initState();
@@ -85,13 +86,58 @@ class _Section_DetailsState extends State<Section_Details> {
         .toList();
   }
 
-
   @override
   Widget build(BuildContext context) {
+    var height = MediaQuery.of(context).size.height;
+    var width = MediaQuery.of(context).size.width;
     return Row(
       children: [
         ElevatedButton(onPressed: widget.onBack, child: Icon(Icons.back_hand)),
-        Expanded(child: Column()),
+        Expanded(
+          child: SizedBox(
+            height: 1250,
+            width: 1250,
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // Widget for section details if needed
+                  // e.g., Text(widget.section.title),
+                  ListView.builder(
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    itemCount: assignments.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return SizedBox(
+                        width: width / 6,
+                        child: ListTile(
+                          title: TextButton(
+                            child: Row(
+                              children: [
+                                Icon(Icons.assignment),
+                                SizedBox(width: 15),
+                                Expanded(
+                                  child: Text(
+                                    assignments[index].id,
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            onPressed: () {},
+                          ),
+                          // Add more information about the assignment if needed
+                          // e.g., subtitle: Text(assignments[index].description),
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
       ],
     );
   }
