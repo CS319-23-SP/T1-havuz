@@ -126,45 +126,48 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: CustomAppBar(role: role),
-      body: Row(
-        children: [
-          LeftBar(role: role),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text("Assignment Details",
-                    style:
-                        TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                SizedBox(height: 10),
-                Text("ID: ${assignment.id}"),
-                Text("Section ID: ${assignment.sectionID}"),
-                Text("Solution Key: ${assignment.solutionKey}"),
-                Text("Term: ${assignment.term}"),
-                SizedBox(height: 20),
-                Text("Questions:",
-                    style:
-                        TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: questions.length,
-                    itemBuilder: (context, index) {
-                      return ListTile(
-                        title: Text(
-                          questions[index].text,
-                          style: TextStyle(fontSize: 16),
-                        ),
-                      );
-                    },
+    if (role == "instructor") {
+      return Scaffold(
+        appBar: CustomAppBar(role: role),
+        body: Row(
+          children: [
+            LeftBar(role: role),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text("Assignment Details",
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                  SizedBox(height: 10),
+                  Text("ID: ${assignment.id}"),
+                  Text("Section ID: ${assignment.sectionID}"),
+                  Text("Solution Key: ${assignment.solutionKey}"),
+                  Text("Term: ${assignment.term}"),
+                  SizedBox(height: 20),
+                  Text("Questions:",
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: questions.length,
+                      itemBuilder: (context, index) {
+                        return ListTile(
+                          title: Text(
+                            questions[index].text,
+                            style: TextStyle(fontSize: 16),
+                          ),
+                        );
+                      },
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
-      ),
-    );
+          ],
+        ),
+      );
+    }
+    return Placeholder();
   }
 }

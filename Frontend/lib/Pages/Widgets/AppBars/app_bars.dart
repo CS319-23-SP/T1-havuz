@@ -1,6 +1,6 @@
 import 'package:first_trial/Pages/Admin/admin_page.dart';
 import 'package:first_trial/Pages/Auth/login_page.dart';
-import 'package:first_trial/Pages/Instructor/instructor_homepage.dart';
+import 'package:first_trial/Pages/Homepage/homepage.dart';
 import 'package:first_trial/Pages/Questions/question_homepage.dart';
 import 'package:first_trial/Pages/Admin/student_create_page.dart';
 import 'package:first_trial/Pages/UserProfile/user_profile_page.dart';
@@ -76,7 +76,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           icon: Icon(Icons.chat_bubble_outline),
         ),
         IconButton(
-          onPressed: () async{
+          onPressed: () async {
             var id = await TokenStorage.getID();
             GoRouter.of(context).go('/user/profile/$id');
           },
