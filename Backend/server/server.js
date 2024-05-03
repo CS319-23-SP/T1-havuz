@@ -32,11 +32,11 @@ app.use(cors());
 
 app.use('/profiles', express.static('uploads'))
 
-app.use("/admin", decode, adminRouter);
+app.use("/admin", roleChecker(['admin']), decode, adminRouter);
 app.use("/auth", authRouter);
 app.use("/instructor", decode, instructorRouter);
 app.use("/student", decode, studentRouter);
-app.use("/question", decode, questionRouter);
+app.use("/question", roleChecker(['admin', 'instructor']), decode, questionRouter);
 app.use("/course", decode, courseRouter);
 app.use("/exam", decode, examRouter);
 app.use("/assignment", decode, assignmentRouter);
