@@ -33,6 +33,11 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
 
   List<Question> questions = [];
 
+  Future<void> getAssignmentAndQuestions() async {
+    await getAssignmentById();
+    await fetchQuestions();
+  }
+
   @override
   void initState() {
     super.initState();
@@ -42,23 +47,35 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
   Future<void> checkRole() async {
     role = await TokenStorage.getRole();
 
+<<<<<<< HEAD
     if (role != "instructor") {
       return;
     } else {
       await getAssignmentById();
       await fetchQuestions();
+=======
+    if (role == "instructor") {
+      await getAssignmentAndQuestions();
+>>>>>>> 17504358e959ba5e3346018e313fc8517fd5bc32
       setState(() {});
     }
   }
 
   Future<void> fetchQuestions() async {
     String? token = await TokenStorage.getToken();
+<<<<<<< HEAD
       if (token == null) {
         throw Exception('Token not found');
       }
 
       for (var i = 0; i < assignment.questions.length; i++) {
       var questionID = assignment.questions[i];
+=======
+    if (token == null) {
+      throw Exception('Token not found');
+    }
+    await Future.forEach(assignment.questions, (questionID) async {
+>>>>>>> 17504358e959ba5e3346018e313fc8517fd5bc32
       try {
         final response = await http.get(
           Uri.http('localhost:8080', '/question/$questionID'),
@@ -68,15 +85,20 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
           },
         );
         if (response.statusCode == 200) {
+<<<<<<< HEAD
           setState(() {
             parseQuestionsData(json.decode(response.body));
           });
+=======
+          parseQuestionsData(json.decode(response.body));
+>>>>>>> 17504358e959ba5e3346018e313fc8517fd5bc32
         } else {
           throw Exception('Failed to fetch questions data');
         }
       } catch (e) {
         print('Error fetching questions: $e');
       }
+<<<<<<< HEAD
       }
   }
 
@@ -87,6 +109,15 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
     setState(() {
       questions = parsedQuestions;
     });
+=======
+    });
+  }
+
+  void parseQuestionsData(dynamic responseData) async {
+    final question = Question.fromJson(responseData['question']);
+    questions.add(question);
+    print(question.text);
+>>>>>>> 17504358e959ba5e3346018e313fc8517fd5bc32
   }
 
   Future<void> getAssignmentById() async {
@@ -119,7 +150,7 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
         throw Exception('Failed to fetch courses data');
       }
     } catch (e) {
-      print('Error fetching co3fjgsdh322urses: $e');
+      print('Error fetching courses: $e');
     }
   }
 
@@ -131,6 +162,7 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
 
   @override
   Widget build(BuildContext context) {
+<<<<<<< HEAD
     return Scaffold(
       appBar: CustomAppBar(role: role),
       body: Row(
@@ -171,6 +203,52 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
         ],
   ),
 );
+=======
+    if (role == "instructor") {
+      return Scaffold(
+        appBar: CustomAppBar(role: role),
+        body: Row(
+          children: [
+            LeftBar(role: role),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text("Assignment Details",
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                  SizedBox(height: 10),
+                  Text("ID: ${assignment.id}"),
+                  Text("Section ID: ${assignment.sectionID}"),
+                  Text("Solution Key: ${assignment.solutionKey}"),
+                  Text("Term: ${assignment.term}"),
+                  SizedBox(height: 20),
+                  Text("Questions:",
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: questions.length,
+                      itemBuilder: (context, index) {
+                        return ListTile(
+                          title: Text(
+                            questions[index].text,
+                            style: TextStyle(fontSize: 16),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+    return Placeholder();
+  }
+>>>>>>> 17504358e959ba5e3346018e313fc8517fd5bc32
 }
   
 }

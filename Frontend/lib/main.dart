@@ -1,5 +1,5 @@
 import 'package:first_trial/Pages/Auth/login_page.dart';
-import 'package:first_trial/Pages/Instructor/instructor_homepage.dart';
+import 'package:first_trial/Pages/Homepage/homepage.dart';
 import 'package:flutter/material.dart';
 import 'Pages/Questions/question_homepage.dart';
 import 'Pages/Questions/question_create.dart';
