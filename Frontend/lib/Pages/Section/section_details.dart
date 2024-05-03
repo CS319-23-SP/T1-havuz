@@ -125,7 +125,11 @@ class _Section_DetailsState extends State<Section_Details> {
                                 ),
                               ],
                             ),
-                            onPressed: () {},
+                            onPressed: () {
+                              final String assignmentid = assignments[index].id;
+                              final String sectionid = assignments[index].sectionID;
+                              GoRouter.of(context).go('/instructor/assignment/$sectionid/$assignmentid');
+                            },
                           ),
                           // Add more information about the assignment if needed
                           // e.g., subtitle: Text(assignments[index].description),

@@ -3,6 +3,7 @@ const express = require("express");
 const logger = require("morgan");
 const cors = require("cors");
 const socketio = require("socket.io"); 
+const roleChecker = require('../middlewares/roleChecker');
 
 require("../.config/mongo");
 
@@ -15,7 +16,7 @@ const courseRouter = require("../routes/course");
 const examRouter = require("../routes/exam");
 const assignmentRouter = require("../routes/assignment");
 const sectionRouter = require("../routes/section");
-const chadRouter = require("../routes/chad")
+const chadRouter = require("../routes/chad");
 
 const { decode } = require('../middlewares/jwt');
 
@@ -31,7 +32,7 @@ app.use(cors());
 
 app.use('/profiles', express.static('uploads'))
 
-app.use("/admin", decode, adminRouter);
+app.use("/admin", roleChecker(['admin']), decode, adminRouter);
 app.use("/auth", authRouter);
 app.use("/instructor", decode, instructorRouter);
 app.use("/student", decode, studentRouter);
