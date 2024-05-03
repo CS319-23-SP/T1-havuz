@@ -6,7 +6,7 @@ import 'package:first_trial/Pages/Auth/login_page.dart';
 import 'package:first_trial/Pages/Questions/question_create.dart';
 import 'package:first_trial/Pages/Questions/question_homepage.dart';
 import 'package:first_trial/Pages/Student/student_homepage.dart';
-import 'package:first_trial/Pages/Instructor/instructor_homepage.dart';
+import 'package:first_trial/Pages/Homepage/homepage.dart';
 import 'package:go_router/go_router.dart';
 
 class RouteGenerator {

@@ -54,11 +54,11 @@ class _CourseHomePageState extends State<CourseHomePage> {
       if (token == null) {
         throw Exception('Token not found');
       }
-      String? instructorID = await TokenStorage.getID();
+      String? ID = await TokenStorage.getID();
       String? term = '2024 Spring';
 
       final response = await http.get(
-        Uri.http('localhost:8080', '/section/$instructorID/$term'),
+        Uri.http('localhost:8080', '/section/$ID/$term'),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
@@ -105,7 +105,6 @@ class _CourseHomePageState extends State<CourseHomePage> {
     } else {
       page = CourseData(courses: courses);
     }*/
-
     return CalendarControllerProvider(
       controller: EventController(),
       child: MaterialApp(
