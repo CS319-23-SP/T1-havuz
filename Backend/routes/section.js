@@ -7,7 +7,7 @@ router
   .get('/', section.onGetSections)
   .post('/', section.onCreateSection)
   .get('/:id/:term/:courseID', section.onGetSection)
-  .get('/:id/:term', section.onGetSectionByInstructorIDAndTerm)
+  .get('/:id/:term', section.onGetSectionByIDAndTerm)
   .delete('/:id/:term/:courseID', section.onDeleteSection)
   .patch('/:id/:term/:courseID', section.onEditSection);
 
