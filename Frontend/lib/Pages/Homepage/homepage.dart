@@ -86,7 +86,6 @@ class _CourseHomePageState extends State<CourseHomePage> {
   var selectedIndex = 0;
   @override
   Widget build(BuildContext context) {
-    print(sections);
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
