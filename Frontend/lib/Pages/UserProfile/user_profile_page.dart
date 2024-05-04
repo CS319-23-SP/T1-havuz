@@ -66,7 +66,6 @@ class _UserProfilePageState extends State<UserProfilePage> {
 
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
-        print(response.body);
         if (responseData['success']) {
           setState(() {
             user = responseData["instructor"];
@@ -76,7 +75,6 @@ class _UserProfilePageState extends State<UserProfilePage> {
         }
       }
     }
-    print(user);
   }
 
   @override

@@ -85,7 +85,7 @@ authSchema.statics.editAuthByID = async function (id, password, role, about) {
         about: about
     };
     try {
-        const auth = await this.findOneandUpdate(
+        const auth = await this.findOneAndUpdate(
             { id: id },
             { $set: authUpdates },
             { new: true } 
