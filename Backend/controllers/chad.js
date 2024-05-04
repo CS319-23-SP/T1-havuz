@@ -38,13 +38,13 @@ const postMessage = async (req, res) => {
     const validation = makeValidation(types => ({
       payload: req.body,
       checks: {
-        messageText: { type: types.string },
+        message: { type: types.string },
       }
     }));    
 
     if (!validation.success) return res.status(400).json(validation);
     const messagePayload = {
-      messageText: req.body.messageText,
+      message: req.body.message,
     };
     const currentLoggedUser = req._id;
     const post = await ChadMessageModel.createPostInChatRoom(roomId, messagePayload, currentLoggedUser);

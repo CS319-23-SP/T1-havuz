@@ -72,7 +72,10 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           icon: const Icon(Icons.notifications_active_outlined),
         ),
         IconButton(
-          onPressed: () {},
+          onPressed: () async {
+            var id = await TokenStorage.getID();
+            GoRouter.of(context).go('/chad');
+          },
           icon: Icon(Icons.chat_bubble_outline),
         ),
         IconButton(
