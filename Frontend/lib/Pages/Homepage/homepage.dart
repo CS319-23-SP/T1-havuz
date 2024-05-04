@@ -1,6 +1,5 @@
 import 'package:first_trial/Objects/course.dart';
 import 'package:first_trial/Objects/section.dart';
-import 'package:first_trial/Pages/Course/course_details.dart';
 import 'package:first_trial/Pages/Section/section_details.dart';
 import 'package:first_trial/Pages/Widgets/LeftBar/left_bar.dart';
 import 'package:first_trial/Pages/Widgets/AppBars/roles/instructor_appbar.dart';
@@ -37,12 +36,8 @@ class _CourseHomePageState extends State<CourseHomePage> {
   Future<void> checkRole() async {
     role = await TokenStorage.getRole();
 
-    if (role != "instructor") {
-      return;
-    } else {
-      fetchSections();
-      setState(() {});
-    }
+    fetchSections();
+    setState(() {});
   }
 
   List<Section> sections = [];
@@ -65,6 +60,8 @@ class _CourseHomePageState extends State<CourseHomePage> {
         },
       );
 
+      
+
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
         if (responseData['success']) {
@@ -78,7 +75,7 @@ class _CourseHomePageState extends State<CourseHomePage> {
         throw Exception('Failed to fetch courses data');
       }
     } catch (e) {
-      print('Error fetching co32322urses: $e');
+      print('Error fetching co3asdad22urses: $e');
     }
   }
 

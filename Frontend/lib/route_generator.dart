@@ -21,7 +21,7 @@ class RouteGenerator {
   final String profileRoute = "/user/profile/:userId";
 
   final String assignmentRoute =
-      "/instructor/assignment/:sectionID/:assignmentID";
+      "/:role/assignment/:sectionID/:assignmentID";
 
   final String adminRoute = "/admin";
   final String studentCreateRoute = "/admin/studentCreate";
@@ -47,8 +47,9 @@ class RouteGenerator {
               final sectionID = state.pathParameters['sectionID'].toString();
               final assignmentID =
                   state.pathParameters['assignmentID'].toString();
-              return Assignment_Details(
-                  assignmentID: assignmentID, sectionID: sectionID);
+              final role = state.pathParameters['role'].toString();
+              return Assignment_Details( 
+                role: role, assignmentID: assignmentID, sectionID: sectionID);
             }),
         GoRoute(
             path: profileRoute,
@@ -79,7 +80,7 @@ class RouteGenerator {
         GoRoute(
             path: studentRoute,
             builder: (context, state) {
-              return const StudentHomepage();
+              return const CourseHomePage();
             }),
         GoRoute(
             path: adminRoute,
