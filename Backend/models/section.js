@@ -69,14 +69,22 @@ sectionSchema.statics.deleteSection = async function (id, term, courseID) {
       throw error;
     }
 }
-
-sectionSchema.statics.getSectionByInstructorIDAndTerm = async function (id, term) {
+sectionSchema.statics.getSectionByIDAndTerm = async function (id, term) {
     try {
-        const section = await this.find({ instructorID: id, term: term});
-        if(!section) throw ({error: 'No section with this id and term found' });
+        const section = await this.find({
+            $and: [
+                { term: term },
+                {
+                    $or: [
+                        { instructorID: id }, 
+                        { students: { $in: [id] } }, 
+                    ],
+                },
+            ],
+        });        if(!section) throw ({error: 'No section with this id and term found' });
         return section;
     } catch (error) {
-        throw error;
+        throw error;
     }
 }
 
