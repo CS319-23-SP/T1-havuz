@@ -115,7 +115,9 @@ class _Section_DetailsState extends State<Section_Details> {
       for (int i = 0; i < weeks.length; i++) {
         DateTime deadline = DateTime.parse(assignment.deadline);
 
-        if (deadline.isAfter(weeks[i][0]) && deadline.isBefore(weeks[i][1])) {
+        if ((deadline.isAfter(weeks[i][0]) && deadline.isBefore(weeks[i][1])) ||
+            deadline.isAtSameMomentAs(weeks[i][0]) ||
+            deadline.isAtSameMomentAs(weeks[i][1])) {
           assignmentsByWeek[i].add(assignment);
           break;
         }
