@@ -14,9 +14,10 @@ class Assignment_Details extends StatefulWidget {
     super.key,
     this.assignmentID = "",
     this.sectionID = "",
+    this.role = "",
   });
 
-  final String assignmentID, sectionID;
+  final String assignmentID, sectionID, role;
 
   @override
   State<Assignment_Details> createState() => _Assignment_DetailsState();
@@ -47,35 +48,16 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
   Future<void> checkRole() async {
     role = await TokenStorage.getRole();
 
-<<<<<<< HEAD
-    if (role != "instructor") {
-      return;
-    } else {
-      await getAssignmentById();
-      await fetchQuestions();
-=======
-    if (role == "instructor") {
-      await getAssignmentAndQuestions();
->>>>>>> 17504358e959ba5e3346018e313fc8517fd5bc32
-      setState(() {});
-    }
+    await getAssignmentAndQuestions();
+    setState(() {});
   }
 
   Future<void> fetchQuestions() async {
     String? token = await TokenStorage.getToken();
-<<<<<<< HEAD
-      if (token == null) {
-        throw Exception('Token not found');
-      }
-
-      for (var i = 0; i < assignment.questions.length; i++) {
-      var questionID = assignment.questions[i];
-=======
     if (token == null) {
       throw Exception('Token not found');
     }
     await Future.forEach(assignment.questions, (questionID) async {
->>>>>>> 17504358e959ba5e3346018e313fc8517fd5bc32
       try {
         final response = await http.get(
           Uri.http('localhost:8080', '/question/$questionID'),
@@ -85,39 +67,21 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
           },
         );
         if (response.statusCode == 200) {
-<<<<<<< HEAD
-          setState(() {
-            parseQuestionsData(json.decode(response.body));
-          });
-=======
           parseQuestionsData(json.decode(response.body));
->>>>>>> 17504358e959ba5e3346018e313fc8517fd5bc32
         } else {
           throw Exception('Failed to fetch questions data');
         }
       } catch (e) {
         print('Error fetching questions: $e');
       }
-<<<<<<< HEAD
-      }
+    });
   }
 
   void parseQuestionsData(dynamic responseData) {
-    List<Question> parsedQuestions = questions;
-    final question = Question.fromJson(responseData["question"]);
-    parsedQuestions.add(question);
-    setState(() {
-      questions = parsedQuestions;
-    });
-=======
-    });
-  }
-
-  void parseQuestionsData(dynamic responseData) async {
     final question = Question.fromJson(responseData['question']);
-    questions.add(question);
-    print(question.text);
->>>>>>> 17504358e959ba5e3346018e313fc8517fd5bc32
+    setState(() {
+      questions.add(question);
+    });
   }
 
   Future<void> getAssignmentById() async {
@@ -128,9 +92,11 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
       }
       String? instructorID = await TokenStorage.getID();
       String? sectionID = widget.sectionID;
+      String assID = widget.assignmentID;
+      print('/assignment/$assID/$term/$sectionID');
 
       final response = await http.get(
-        Uri.http('localhost:8080', '/assignment/instructor/$term/$sectionID'),
+        Uri.http('localhost:8080', '/assignment/$assID/$term/$sectionID'),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
@@ -141,7 +107,7 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
         final responseData = json.decode(response.body);
         if (responseData['success']) {
           setState(() {
-            assignment = parseAssignmentData(responseData['assignments'])[0];
+            assignment = parseAssignmentData(responseData['assignment']);
           });
         } else {
           throw Exception('Failed to fetch courses data');
@@ -154,15 +120,19 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
     }
   }
 
-  List<Assignment> parseAssignmentData(dynamic responseData) {
-    return (responseData as List<dynamic>)
-        .map((assignmentData) => Assignment.fromJson(assignmentData))
-        .toList();
-  }
+  Assignment parseAssignmentData(dynamic json) {
+  return Assignment(
+      id: json['id'].toString(),
+      term: json['term'].toString(),
+      sectionID: json['sectionID'].toString(),
+      deadline: json['deadline'].toString(),
+      questions: List<String>.from(json['questions']),
+      solutionKey: json['solutionKey'].toString(),
+  );
+}
 
   @override
   Widget build(BuildContext context) {
-<<<<<<< HEAD
     return Scaffold(
       appBar: CustomAppBar(role: role),
       body: Row(
@@ -201,54 +171,7 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
             ),
           ),
         ],
-  ),
+     ),
 );
-=======
-    if (role == "instructor") {
-      return Scaffold(
-        appBar: CustomAppBar(role: role),
-        body: Row(
-          children: [
-            LeftBar(role: role),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text("Assignment Details",
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                  SizedBox(height: 10),
-                  Text("ID: ${assignment.id}"),
-                  Text("Section ID: ${assignment.sectionID}"),
-                  Text("Solution Key: ${assignment.solutionKey}"),
-                  Text("Term: ${assignment.term}"),
-                  SizedBox(height: 20),
-                  Text("Questions:",
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                  Expanded(
-                    child: ListView.builder(
-                      itemCount: questions.length,
-                      itemBuilder: (context, index) {
-                        return ListTile(
-                          title: Text(
-                            questions[index].text,
-                            style: TextStyle(fontSize: 16),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      );
-    }
-    return Placeholder();
-  }
->>>>>>> 17504358e959ba5e3346018e313fc8517fd5bc32
 }
-  
 }

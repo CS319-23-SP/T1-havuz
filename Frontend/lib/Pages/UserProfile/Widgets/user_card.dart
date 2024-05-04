@@ -1,4 +1,5 @@
 import 'package:first_trial/final_variables.dart';
+import 'package:first_trial/token.dart';
 import 'package:flutter/material.dart';
 
 class UserCard extends StatelessWidget {
@@ -41,6 +42,34 @@ class _UserInfoState extends State<UserInfo> {
   late TextEditingController _textController;
 
   bool _editing = false;
+    @override
+    void initState() {
+      super.initState();
+      getUser();
+    }
+
+    void getUser() async {
+      String? id = await TokenStorage.getID();
+
+      String? token = await TokenStorage.getToken();
+      if (token == null) {
+        throw Exception('Token not found');
+      }
+      
+
+    }
+
+    void editUser() async {
+      String? id = await TokenStorage.getID();
+
+      String? token = await TokenStorage.getToken();
+      if (token == null) {
+        throw Exception('Token not found');
+      }
+      
+
+    }
+    
 
   void _toggleEditing() {
     setState(() {

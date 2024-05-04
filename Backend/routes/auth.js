@@ -10,9 +10,9 @@ const router = express.Router();
 router
   .get('/', roleChecker(['admin']), decode, auth.onGetAllAuths)
   .post('/', roleChecker(['admin']), decode, upload.single('profile'), auth.onCreateAuth)
-  .get('/:id', roleChecker(['admin']), decode, auth.onGetAuthByID)
+  .get('/:id',  decode, auth.onGetAuthByID)
   .delete('/:id', roleChecker(['admin']), decode, auth.onDeleteAuthByID)
-  .patch('/:id', roleChecker(['admin']), decode, auth.onEditAuthByID)
+  .patch('/:id', decode, auth.onEditAuthByID)
   .post('/login/:id', encode, auth.onLogin);
 
 module.exports = router;
