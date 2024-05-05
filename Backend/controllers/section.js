@@ -60,7 +60,7 @@ const onCreateSection = async (req, res) => {
       }
   }
 
-  
+
   const onGetSection = async (req, res) => {
       try {
           const section = await sectionModel.getSection(req.params.id, req.params.term, req.params.courseID);
@@ -78,12 +78,21 @@ const onCreateSection = async (req, res) => {
         return res.status(500).json({ success: false, error: error })
     }
 }
-
+const onGetSectionByIDAndTerm = async (req, res) => {
+  try {
+    console.log(req.params)
+      const section = await sectionModel.getSectionByIDAndTerm(req.params.id, req.params.term);
+      return res.status(200).json({ success: true, section });
+  } catch (error) {
+      return res.status(500).json({ success: false, error: error })
+    }
+}
   
   module.exports = {
     onCreateSection,
     onEditSection,
     onDeleteSection,
     onGetSections,
-    onGetSection
+    onGetSection,
+    onGetSectionByIDAndTerm
   };

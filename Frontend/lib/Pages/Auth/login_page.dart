@@ -1,11 +1,10 @@
 import 'package:first_trial/Pages/Admin/admin_page.dart';
 import 'package:first_trial/Pages/Questions/question_homepage.dart';
 import 'package:first_trial/Pages/Auth/password_forget_page.dart';
-import 'package:first_trial/Pages/Student/student_homepage.dart';
 import 'package:first_trial/final_variables.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import '../Instructor/course_homepage.dart';
+import '../Homepage/homepage.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import "package:first_trial/token.dart";
@@ -54,7 +53,8 @@ class LoginPageWidget extends StatelessWidget {
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
         role = data['role'];
-        await TokenStorage.saveToken(data['authorization'], role);
+        await TokenStorage.saveToken(
+            data['authorization'], role, id.toString());
 
         if (role == "admin") {
           GoRouter.of(context).go('/admin');
