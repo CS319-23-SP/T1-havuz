@@ -1,7 +1,13 @@
+import 'dart:async';
+
+import 'package:first_trial/Pages/Widgets/AppBars/app_bars.dart';
+import 'package:first_trial/Pages/Widgets/LeftBar/left_bar.dart';
 import 'package:first_trial/Pages/Widgets/access_denied.dart';
+import 'package:first_trial/final_variables.dart';
 import 'package:first_trial/token.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:multi_dropdown/multiselect_dropdown.dart';
 import 'dart:convert';
 import '../Widgets/success_fail.dart';
 import 'package:go_router/go_router.dart';
@@ -13,16 +19,27 @@ class AddQuestionPage extends StatefulWidget {
 
 class _AddQuestionPageState extends State<AddQuestionPage> {
   List<String> selectedCourses = [];
-  List<String> courses = ['CS101', 'CS102', 'CS103'];
+  List<String> courses = [
+    'CS101',
+    'CS102',
+    'CS103',
+    'CS104',
+    'CS1053',
+    'CS1062',
+    'CS1203',
+    'CS1032',
+    'CS1403',
+    'CS1502',
+    'CS1303'
+  ];
   bool showCoursesList = false;
 
   final TextEditingController headerController = TextEditingController();
   final TextEditingController topicsController = TextEditingController();
-  final TextEditingController creatorIDController = TextEditingController();
   final TextEditingController textController = TextEditingController();
 
-String? role = "unknown";    
-
+  String? role = "unknown";
+  String? id = "unknown";
   @override
   void initState() {
     super.initState();
@@ -31,6 +48,7 @@ String? role = "unknown";
 
   Future<void> checkRole() async {
     role = await TokenStorage.getRole();
+    id = await TokenStorage.getID();
     setState(() {});
   }
 
@@ -39,7 +57,6 @@ String? role = "unknown";
       selectedCourses.clear();
       headerController.clear();
       topicsController.clear();
-      creatorIDController.clear();
       textController.clear();
     });
   }
@@ -51,7 +68,7 @@ String? role = "unknown";
         .map((topic) => topic.trim())
         .where((topic) => topic.isNotEmpty)
         .toList();
-    final creatorID = creatorIDController.text;
+    final creatorID = id;
     final text = textController.text;
     final toughness = "5";
 
@@ -67,9 +84,9 @@ String? role = "unknown";
     };
 
     String? token = await TokenStorage.getToken();
-      if (token == null) {
-        throw Exception('Token not found');
-      }
+    if (token == null) {
+      throw Exception('Token not found');
+    }
 
     final response = await http.post(
       url,
@@ -108,124 +125,86 @@ String? role = "unknown";
     }
   }
 
+  String dropdownValue = "";
+  late List<ValueItem> courseOptions =
+      courses.map((course) => ValueItem(label: course, value: course)).toList();
+
+  final MultiSelectController _controller = MultiSelectController();
   @override
   Widget build(BuildContext context) {
-    if (role != 'instructor') {
+    if (role == 'student') {
       return AccessDeniedPage();
-    }
-    else{
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Add Question'),
-      ),
-      body: Center(
-        child: Container(
-          margin: EdgeInsets.all(20.0),
-          padding: EdgeInsets.all(20.0),
-          decoration: BoxDecoration(
-            color: Colors.grey[200],
-            borderRadius: BorderRadius.circular(10.0),
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              GestureDetector(
-                onTap: () {
-                  setState(() {
-                    showCoursesList = !showCoursesList;
-                  });
-                },
-                child: Container(
-                  padding: EdgeInsets.all(10.0),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey),
-                    borderRadius: BorderRadius.circular(5.0),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    } else {
+      return Scaffold(
+        appBar: CustomAppBar(role: role),
+        body: Row(
+          children: [
+            LeftBar(role: role),
+            Expanded(
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 50.0),
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
-                        'Select Courses:',
-                        style: TextStyle(
-                            fontSize: 16.0, fontWeight: FontWeight.bold),
+                      MultiSelectDropDown(
+                        onOptionSelected: (List<ValueItem> selectedOptions) {
+                          setState(() {
+                            selectedCourses.clear();
+                            selectedCourses.addAll(selectedOptions
+                                .map((option) => option.value as String));
+                          });
+                        },
+                        options: courseOptions,
+                        controller: _controller,
                       ),
-                      Icon(Icons.arrow_drop_down),
-                    ],
-                  ),
-                ),
+                      SizedBox(height: 20.0),
+                      TextFormField(
+                        controller: headerController,
+                        decoration: InputDecoration(
+                          labelText: 'Question Header',
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                      SizedBox(height: 20.0),
+                      TextFormField(
+                        controller: topicsController,
+                        decoration: InputDecoration(
+                          labelText: 'Question Topics',
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                      SizedBox(height: 20.0),
+                      TextFormField(
+                        controller: textController,
+                        maxLines: null,
+                        keyboardType: TextInputType.multiline,
+                        decoration: InputDecoration(
+                          labelText: 'Question Text',
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                      SizedBox(height: 20.0),
+                      ElevatedButton(
+                        onPressed: () {
+                          createQuestion();
+                        },
+                        child: Text('Create Question'),
+                      ),
+                      Container(
+                        width: 60,
+                        child: IconButton(
+                          icon: Icon(Icons.arrow_back),
+                          onPressed: () {
+                            GoRouter.of(context).go('/instructor/question');
+                          },
+                        ),
+                      ),
+                    ]),
               ),
-              if (showCoursesList)
-                Column(
-                  children: courses.map((course) {
-                    return CheckboxListTile(
-                      title: Text(course),
-                      value: selectedCourses.contains(course),
-                      onChanged: (bool? value) {
-                        setState(() {
-                          if (value != null && value) {
-                            selectedCourses.add(course);
-                          } else {
-                            selectedCourses.remove(course);
-                          }
-                        });
-                      },
-                    );
-                  }).toList(),
-                ),
-              SizedBox(height: 20.0),
-              TextFormField(
-                controller: headerController,
-                decoration: InputDecoration(
-                  labelText: 'Question Header',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              SizedBox(height: 20.0),
-              TextFormField(
-                controller: topicsController,
-                decoration: InputDecoration(
-                  labelText: 'Question Topics',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              SizedBox(height: 20.0),
-              TextFormField(
-                controller: creatorIDController,
-                decoration: InputDecoration(
-                  labelText: 'Creator ID',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              SizedBox(height: 20.0),
-              TextFormField(
-                controller: textController,
-                maxLines: null,
-                keyboardType: TextInputType.multiline,
-                decoration: InputDecoration(
-                  labelText: 'Question Text',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              SizedBox(height: 20.0),
-              ElevatedButton(
-                onPressed: () {
-                  createQuestion();
-                },
-                child: Text('Create Question'),
-              ),
-              Container(
-                width: 60,
-                child: IconButton(
-                  icon: Icon(Icons.arrow_back),
-                  onPressed: () {
-                    GoRouter.of(context).go('/instructor/question');
-                  },
-                ),
-              ),]
-          ),
+            ),
+          ],
         ),
-      ),
-    );
-  }}
+      );
+    }
+  }
 }
