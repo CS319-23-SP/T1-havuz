@@ -180,9 +180,10 @@ class _Section_DetailsState extends State<Section_Details> {
                                     ),
                                   ],
                                 ),
-                                onPressed: () {
+                                onPressed: () async {
                                   final String assignmentid = assignment.id;
                                   final String sectionid = assignment.sectionID;
+                                  String? role = await TokenStorage.getRole();
                                   GoRouter.of(context).go(
                                       '/$role/assignment/$sectionid/$assignmentid');
                                 },
@@ -197,7 +198,7 @@ class _Section_DetailsState extends State<Section_Details> {
             ),
           ),
         ),
-      ],
-    );
-  }
+     ],
+);
+}
 }

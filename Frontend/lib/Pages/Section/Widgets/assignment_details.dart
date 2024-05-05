@@ -14,9 +14,10 @@ class Assignment_Details extends StatefulWidget {
     super.key,
     this.assignmentID = "",
     this.sectionID = "",
+    this.role = "",
   });
 
-  final String assignmentID, sectionID;
+  final String assignmentID, sectionID, role;
 
   @override
   State<Assignment_Details> createState() => _Assignment_DetailsState();
@@ -76,10 +77,11 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
     });
   }
 
-  void parseQuestionsData(dynamic responseData) async {
+  void parseQuestionsData(dynamic responseData) {
     final question = Question.fromJson(responseData['question']);
-    questions.add(question);
-    print(question.text);
+    setState(() {
+      questions.add(question);
+    });
   }
 
   Future<void> getAssignmentById() async {
@@ -90,9 +92,11 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
       }
       String? instructorID = await TokenStorage.getID();
       String? sectionID = widget.sectionID;
+      String assID = widget.assignmentID;
+      print('/assignment/$assID/$term/$sectionID');
 
       final response = await http.get(
-        Uri.http('localhost:8080', '/assignment/instructor/$term/$sectionID'),
+        Uri.http('localhost:8080', '/assignment/$assID/$term/$sectionID'),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
@@ -103,7 +107,7 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
         final responseData = json.decode(response.body);
         if (responseData['success']) {
           setState(() {
-            assignment = parseAssignmentData(responseData['assignments'])[0];
+            assignment = parseAssignmentData(responseData['assignment']);
           });
         } else {
           throw Exception('Failed to fetch courses data');
@@ -116,11 +120,16 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
     }
   }
 
-  List<Assignment> parseAssignmentData(dynamic responseData) {
-    return (responseData as List<dynamic>)
-        .map((assignmentData) => Assignment.fromJson(assignmentData))
-        .toList();
-  }
+  Assignment parseAssignmentData(dynamic json) {
+  return Assignment(
+      id: json['id'].toString(),
+      term: json['term'].toString(),
+      sectionID: json['sectionID'].toString(),
+      deadline: json['deadline'].toString(),
+      questions: List<String>.from(json['questions']),
+      solutionKey: json['solutionKey'].toString(),
+  );
+}
 
   @override
   Widget build(BuildContext context) {
@@ -162,7 +171,7 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
             ),
           ),
         ],
-      ),
-    );
-  }
+     ),
+);
+}
 }

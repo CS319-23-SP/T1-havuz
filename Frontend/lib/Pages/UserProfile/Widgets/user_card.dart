@@ -1,5 +1,9 @@
+import 'dart:convert';
+
 import 'package:first_trial/final_variables.dart';
+import 'package:first_trial/token.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class UserCard extends StatelessWidget {
   const UserCard({
@@ -41,18 +45,91 @@ class _UserInfoState extends State<UserInfo> {
   late TextEditingController _textController;
 
   bool _editing = false;
+  var user;
+  var about;
+    @override
+    void initState() {
+      super.initState();
+      getUser();
+    }
+
+    void getUser() async {
+      String? id = await TokenStorage.getID();
+
+      String? token = await TokenStorage.getToken();
+      if (token == null) {
+        throw Exception('Token not found');
+      }
+
+      var role = await TokenStorage.getRole();
+
+      final response = await http.get(
+        Uri.http('localhost:8080', '/auth/$id'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        if (responseData['success']) {
+          setState(() {
+            user = responseData["auth"];
+            if (user['about'] != null && user['about'].isNotEmpty) {
+              about = user['about'];
+              _displayText = about;
+            }
+
+          });
+        } else {
+          throw Exception('Failed to fetch students data');
+        }
+      }
+      
+
+    }
+
+    void editUser(String newAbout) async {
+      String? id = await TokenStorage.getID();
+
+      String? token = await TokenStorage.getToken();
+      if (token == null) {
+        throw Exception('Token not found');
+      }
+
+      final response = await http.patch(
+        Uri.http('localhost:8080', '/auth/$id'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+        body: json.encode({
+          'id': id,
+        'about': newAbout
+      }),
+      );
+      
+      if (response.statusCode != 200) {
+        print(response.statusCode);
+          throw Exception('Failed to update about');
+      }
+
+    }
+    
 
   void _toggleEditing() {
     setState(() {
       _editing = !_editing;
       if (_editing) {
-        // If editing, set the text field to current display text
+        _displayText = about;
         _textController = TextEditingController(text: _displayText);
       } else {
-        // If not editing, update the display text
-        _displayText = _textController.text;
-        _textController.dispose(); // Dispose the controller
-      }
+        about = _textController.text;
+        editUser(about );
+        _displayText = about;
+        _textController.dispose();
+        }
     });
   }
 
@@ -175,11 +252,18 @@ class _UserInfoState extends State<UserInfo> {
                             decorationThickness: 4,
                           ),
                         ),
-                        IconButton(
-                            onPressed: () {
-                              _toggleEditing();
-                            },
-                            icon: Icon(_editing ? Icons.done : Icons.edit))
+                        _editing
+                            ? IconButton(
+                                onPressed: () {
+                                  _toggleEditing();
+                                },
+                                icon: Icon(Icons.done))
+                            : IconButton(
+                                onPressed: () {
+                                  _toggleEditing();
+                                  setState(() {});
+                                },
+                                icon: Icon(Icons.edit))
                       ],
                     ),
                     SizedBox(height: 10),
