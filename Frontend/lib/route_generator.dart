@@ -20,6 +20,7 @@ class RouteGenerator {
 
   final String profileRoute = "/user/profile/:userId";
 
+
   final String assignmentRoute = "/:role/assignment/:sectionID/:assignmentID";
 
   final String adminRoute = "/admin";
@@ -52,8 +53,9 @@ class RouteGenerator {
               final sectionID = state.pathParameters['sectionID'].toString();
               final assignmentID =
                   state.pathParameters['assignmentID'].toString();
-              return Assignment_Details(
-                  assignmentID: assignmentID, sectionID: sectionID);
+              final role = state.pathParameters['role'].toString();
+              return Assignment_Details( 
+                role: role, assignmentID: assignmentID, sectionID: sectionID);
             }),
         GoRoute(
             path: profileRoute,

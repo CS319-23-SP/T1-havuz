@@ -14,6 +14,7 @@ const authSchema = new mongoose.Schema(
           password: String,
           role: String,
           profile: String,
+          about: String
     },
     {
         timestamps: true,
@@ -76,14 +77,15 @@ authSchema.statics.deleteAuthByID = async function (id) {
     }
 }
 
-authSchema.statics.editAuthByID = async function (id, password, role) {
+authSchema.statics.editAuthByID = async function (id, password, role, about) {
     const authUpdates = {
         id: id,
         password: password,
-        role: role
+        role: role,
+        about: about
     };
     try {
-        const auth = await this.findOneandUpdate(
+        const auth = await this.findOneAndUpdate(
             { id: id },
             { $set: authUpdates },
             { new: true } 
