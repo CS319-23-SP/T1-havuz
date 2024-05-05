@@ -1,5 +1,8 @@
 const makeValidation = require('@withvoid/make-validation');
 const instructorModel = require('../models/instructor');
+const studentModel = require('../models/student');
+const sectionModel = require('../models/section');
+const Attendance = require("../models/attendance");
 
 const onCreateInstructor = async (req, res) => {
   try {
@@ -77,10 +80,79 @@ const onGetInstructorByID = async (req, res) => {
     }
 }
 
+const onGiveAttendance = async (req, res) => {
+    try {
+      // Validate the input data
+      const validation = makeValidation((types) => ({
+        payload: req.body,
+        checks: {
+          attendances: {
+            type: types.array,
+            optional: false,
+            children: {
+              studentID: { type: types.string },
+              sectionID: { type: types.string },
+              date: { type: types.string }, // Expecting a string that represents a date
+              isPresent: { type: types.boolean },
+            },
+          },
+        },
+      }));
+  
+      if (!validation.success) {
+        return res.status(400).json({ success: false, error: "Invalid data" });
+      }
+  
+      const { attendances } = req.body;
+  
+      for (const attendance of attendances) {
+        const { studentID, sectionID, date, isPresent } = attendance;
+  
+        // Parse the date to compare only day, month, year
+        const attendanceDate = new Date(date);
+        attendanceDate.setHours(0, 0, 0, 0); // Normalize to midnight
+  
+        // Check if there's already an attendance record for this student/section/date
+        const existingAttendance = await Attendance.findOne({
+          studentID,
+          sectionID,
+          date: attendanceDate,
+        });
+  
+        if (existingAttendance) {
+          // Increment totalHour
+          await Attendance.updateOne(
+            { _id: existingAttendance._id },
+            {
+              $inc: {
+                totalHour: 1,
+                hour: isPresent ? 1 : 0, // Increment hour only if present
+              },
+            }
+          );
+        } else {
+          // Create a new attendance record
+          await Attendance.create({
+            studentID,
+            sectionID,
+            date: attendanceDate,
+            hour: isPresent ? 1 : 0,
+            totalHour: 1,
+          });
+        }
+      }
+  
+      return res.status(200).json({ success: true, message: "Attendance updated successfully." });
+    } catch (error) {
+      return res.status(500).json({ success: false, error: error.message });
+    }
+  };  
+
 module.exports = {
     onCreateInstructor,
     onEditInstructorByID,
     onDeleteInstructorByID,
     onGetAllInstructors,
-    onGetInstructorByID
+    onGetInstructorByID,
+    onGiveAttendance,
 };

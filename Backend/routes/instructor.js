@@ -8,6 +8,7 @@ router
   .post('/', instructor.onCreateInstructor)
   .get('/:id', instructor.onGetInstructorByID)
   .delete('/:id', instructor.onDeleteInstructorByID)
-  .patch('/:id', instructor.onEditInstructorByID);
+  .patch('/:id', instructor.onEditInstructorByID)
+  .post("/give-attendance", instructor.onGiveAttendance);
 
 module.exports = router;

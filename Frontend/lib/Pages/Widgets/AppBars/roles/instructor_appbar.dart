@@ -37,7 +37,9 @@ class _InstructorAppBarState extends State<InstructorAppBar> {
         const VerticalD(),
         AppBarChoice(
           text: "Attendance",
-          onPressed: () {},
+          onPressed: () {
+            GoRouter.of(context).go('/instructor/give-attendance');
+          },
         ),
         const VerticalD(),
         AppBarChoice(
