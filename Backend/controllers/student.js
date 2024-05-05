@@ -80,10 +80,26 @@ const onGetStudentByID = async (req, res) => {
     }
 }
 
+// const onGetStudentAttendance = async (req, res) => {
+//     try {
+//       const { id } = req.params; // The student ID
+  
+//       const student = await studentModel.findOne({ id });
+//       if (!student) {
+//         return res.status(404).json({ error: "Student not found." });
+//       }
+  
+//       return res.status(200).json({ success: true, attendance: student.attendance });
+//     } catch (error) {
+//       return res.status(500).json({ success: false, error: error.message });
+//     }
+//   };
+
 module.exports = {
     onCreateStudent,
     onEditStudentByID,
     onDeleteStudentByID,
     onGetAllStudents,
-    onGetStudentByID
+    onGetStudentByID,
+    //onGetStudentAttendance
 };

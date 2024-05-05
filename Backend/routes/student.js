@@ -9,5 +9,6 @@ router
   .get('/:id', student.onGetStudentByID)
   .delete('/:id', student.onDeleteStudentByID)
   .patch('/:id', student.onEditStudentByID);
+  // .get("/:id/attendance", student.onGetStudentAttendance);
 
 module.exports = router;

@@ -1,5 +1,6 @@
 const makeValidation = require('@withvoid/make-validation');
 const sectionModel = require('../models/section');
+const studentModel = require('../models/student'); 
 
 const onCreateSection = async (req, res) => {
     try {
@@ -87,12 +88,49 @@ const onGetSectionByIDAndTerm = async (req, res) => {
       return res.status(500).json({ success: false, error: error })
     }
 }
-  
+const onGetStudentsBySectionID = async (req, res) => {
+  try {
+    console.log("ao");
+
+    const { sectionID } = req.params; // Get section ID from route params
+
+    // Find the section by its ID
+    const section = await sectionModel.findOne({ id: sectionID, term: "2024 Spring" });
+    if (!section) {
+      console.log("ao");
+
+      return res.status(404).json({ success: false, error: "Section not found" });
+    }
+console.log("ao");
+    const studentIDs = section.students; // Array of student IDs in the section
+
+    // Find all students with IDs in the section
+    const students = await studentModel.find({ id: { $in: studentIDs } });
+
+    // If no students are found, return an empty array
+    if (!students) {
+      return res.status(404).json({ success: false, error: "No students found" });
+    }
+
+    // Return the student data in the response
+    return res.status(200).json({
+      success: true,
+      students: students.map(student => ({
+        id: student.id,
+        name: `${student.firstName} ${student.middleName ? student.middleName + ' ' : ''}${student.lastName}`, // Full name
+      })),
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, error: error.message });
+  }
+};
+ 
   module.exports = {
     onCreateSection,
     onEditSection,
     onDeleteSection,
     onGetSections,
     onGetSection,
-    onGetSectionByIDAndTerm
+    onGetSectionByIDAndTerm,
+    onGetStudentsBySectionID
   };
