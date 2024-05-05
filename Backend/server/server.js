@@ -1,8 +1,9 @@
 const http = require("http");
 const express = require("express");
-const logger = require("morgan");
+const mogger = require("morgan");
 const cors = require("cors");
 const socketio = require("socket.io"); 
+const roleChecker = require('../middlewares/roleChecker');
 
 require("../.config/mongo");
 
@@ -15,8 +16,10 @@ const courseRouter = require("../routes/course");
 const examRouter = require("../routes/exam");
 const assignmentRouter = require("../routes/assignment");
 const sectionRouter = require("../routes/section");
+
 const chadRouter = require("../routes/chad")
 const forumRouter = require("../routes/forum")
+
 
 const { decode } = require('../middlewares/jwt');
 
@@ -25,22 +28,22 @@ const app = express();
 const port = process.env.PORT || "8080";
 app.set("port", port);
 
-app.use(logger("dev"));
+app.use(mogger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cors());
 
 app.use('/profiles', express.static('uploads'))
 
-app.use("/admin", decode, adminRouter);
+app.use("/admin", roleChecker(['admin']), decode, adminRouter);
 app.use("/auth", authRouter);
 app.use("/instructor", decode, instructorRouter);
 app.use("/student", decode, studentRouter);
 app.use("/question", decode, questionRouter);
 app.use("/course", decode, courseRouter);
-app.use("/exam", examRouter);
-app.use("/assignment", assignmentRouter);
-app.use("/section", sectionRouter);
+app.use("/exam", decode, examRouter);
+app.use("/assignment", decode, assignmentRouter);
+app.use("/section", decode, sectionRouter);
 app.use("/chad", decode, chadRouter);
 app.use("/forum", decode, forumRouter);
 

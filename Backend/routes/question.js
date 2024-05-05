@@ -1,14 +1,15 @@
 const express = require('express');
 const question = require('../controllers/question');
+const roleChecker = require('../middlewares/roleChecker');
 
 const router = express.Router();
 
 router
-  .get('/', question.onGetAllQuestions)
-  .post('/', question.onCreateQuestion)
-  .post('/search', question.onSearchQuestion)
+  .get('/', roleChecker(['admin', 'instructor']), question.onGetAllQuestions)
+  .post('/', roleChecker(['admin', 'instructor']), question.onCreateQuestion)
+  .post('/search', roleChecker(['admin', 'instructor']), question.onSearchQuestion)
   .get('/:id', question.onGetQuestionByID)
-  .delete('/:id', question.onDeleteQuestionByID)
-  .patch('/:id', question.onEditQuestionByID);
+  .delete('/:id', roleChecker(['admin', 'instructor']), question.onDeleteQuestionByID)
+  .patch('/:id', roleChecker(['admin', 'instructor']), question.onEditQuestionByID);
 
 module.exports = router;

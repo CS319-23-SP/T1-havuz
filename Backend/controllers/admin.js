@@ -1,8 +1,13 @@
 const makeValidation = require('@withvoid/make-validation');
 const adminModel = require('../models/admin');
 
+
+
 const onCreateAdmin = async (req, res) => {
   try {
+    if(req.role !== "admin")
+      return res.status(401).json({ success: false, error: "Role must be 'admin'" });
+
     const validation = makeValidation(types => ({
       payload: req.body,
       checks: {
@@ -11,12 +16,12 @@ const onCreateAdmin = async (req, res) => {
         title: { type: types.string },
       }
     }));
-    console.log("3");
+
     if (!validation.success) return res.status(400).json(validation);
-    console.log("31231");
+
     const { firstName, middleName, lastName, title } = req.body;
     const admin = await adminModel.createAdmin(firstName, middleName, lastName, title);
-    console.log("3121342231");
+    
     return res.status(200).json({ success: true, admin });
   } catch (error) {
     return res.status(500).json({ success: false, error: error });
