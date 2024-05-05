@@ -131,17 +131,18 @@ class _Section_DetailsState extends State<Section_Details> {
     var width = MediaQuery.of(context).size.width;
     // Ensure assignments are fetched before rendering
 
-    return Row(
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         ElevatedButton(onPressed: widget.onBack, child: Icon(Icons.arrow_back)),
         Expanded(
           child: Container(
             decoration: BoxDecoration(color: PoolColors.cardWhite),
-            height: 1250,
-            width: 1250,
+            height: 500,
+            width: 1500,
             child: SingleChildScrollView(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
+//                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   for (int i = 0; i < weeks.length; i++)
                     Column(

@@ -6,7 +6,6 @@ import 'package:first_trial/Pages/UserProfile/user_profile_page.dart';
 import 'package:first_trial/Pages/Auth/login_page.dart';
 import 'package:first_trial/Pages/Questions/question_create.dart';
 import 'package:first_trial/Pages/Questions/question_homepage.dart';
-import 'package:first_trial/Pages/Student/student_homepage.dart';
 import 'package:first_trial/Pages/Homepage/homepage.dart';
 import 'package:go_router/go_router.dart';
 
@@ -21,8 +20,7 @@ class RouteGenerator {
 
   final String profileRoute = "/user/profile/:userId";
 
-  final String assignmentRoute =
-      "/instructor/assignment/:sectionID/:assignmentID";
+  final String assignmentRoute = "/:role/assignment/:sectionID/:assignmentID";
 
   final String adminRoute = "/admin";
   final String studentCreateRoute = "/admin/studentCreate";

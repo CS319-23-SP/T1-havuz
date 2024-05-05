@@ -108,46 +108,41 @@ class _CourseHomePageState extends State<CourseHomePage> {
             role: role,
           ),
           body: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               LeftBar(
                 role: role,
               ),
               Expanded(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    !showDetails
-                        ? Expanded(
-                            child: SectionData(
-                              sections: sections,
-                              onTapCourse: (index) {
-                                setState(() {
-                                  ind = index;
-                                  showDetails = true;
-                                });
-                              },
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      !showDetails
+                          ? Expanded(
+                              child: SectionData(
+                                sections: sections,
+                                onTapCourse: (index) {
+                                  setState(() {
+                                    ind = index;
+                                    showDetails = true;
+                                  });
+                                },
+                              ),
+                            )
+                          : Expanded(
+                              child: Section_Details(
+                                section: sections[ind],
+                                onBack: () {
+                                  setState(() {
+                                    showDetails = false;
+                                  });
+                                },
+                              ),
                             ),
-                          )
-                        : Expanded(
-                            child: Section_Details(
-                              section: sections[ind],
-                              onBack: () {
-                                setState(() {
-                                  showDetails = false;
-                                });
-                              },
-                            ),
-                          ),
-                    Container(
-                      width: screenHeight / 2,
-                      height: screenHeight / 2,
-                      child: Padding(
-                        padding: const EdgeInsets.all(20.0),
-                        child: MonthView(),
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ],
@@ -175,102 +170,76 @@ class SectionData extends StatefulWidget {
 class _SectionDataState extends State<SectionData> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 500,
-      child: ListView.builder(
-/*        scrollDirection: Axis.vertical,
-        shrinkWrap: true,*/
-        itemCount: 1,
-        itemBuilder: (context, index) {
-          return GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3,
-              crossAxisSpacing: 24.0,
-              mainAxisSpacing: 20.0,
-            ),
-            itemCount: widget.sections.length,
-            itemBuilder: (context, index) {
-              Section post = widget.sections[index];
-              return InkWell(
-                onTap: () {
-                  widget.onTapCourse(index);
-                },
-                /* onTap: () {
-                    print(ind);
-                    print(showDetails);
-                    setState(() {
-                      ind = index;
-                      showDetails = true;
-                    });
-                  }, */
-                child: Card(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15.0),
-                  ),
-                  child: SingleChildScrollView(
-                    // Disable scrolling
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const SizedBox(height: 10),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Expanded(
-                                // Wrap the title with Expanded
-                                child: Text(
-                                  post.id ?? "",
-                                  style: const TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+    return ListView.builder(
+      itemCount: 1,
+      shrinkWrap: true,
+      itemBuilder: (context, index) {
+        return GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 3,
+            crossAxisSpacing: 20,
+            mainAxisSpacing: 20.0,
+          ),
+          itemCount: widget.sections.length,
+          itemBuilder: (context, index) {
+            Section post = widget.sections[index];
+            return InkWell(
+              focusColor: Colors.transparent,
+              onTap: () {
+                widget.onTapCourse(index);
+              },
+              child: Card(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15.0),
+                ),
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 10),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: Text(
+                                post.id ?? "",
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.amber,
-                                  borderRadius: BorderRadius.circular(10.0),
-                                ),
-                                padding: const EdgeInsets.all(5.0),
-                                child: Text(
-                                  post.term ?? "",
-                                  style: const TextStyle(
-                                    fontSize: 8,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                  ),
+                            ),
+                            Container(
+                              decoration: BoxDecoration(
+                                color: Colors.amber,
+                                borderRadius: BorderRadius.circular(10.0),
+                              ),
+                              padding: const EdgeInsets.all(5.0),
+                              child: Text(
+                                post.term ?? "",
+                                style: const TextStyle(
+                                  fontSize: 8,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
                                 ),
                               ),
-                            ],
-                          ),
-                          const SizedBox(height: 10),
-                          /*Text(
-                  "Date: ${widget.post.sdate}",
-                  style: const TextStyle(fontSize: 12),
-                ),
-                Text(
-                  "Location: ${widget.post.location}",
-                  style: const TextStyle(fontSize: 12),
-                ),
-                Text(
-                  "Organizer: ${widget.post.organizer}",
-                  style: const TextStyle(fontSize: 12),
-                ),*/
-                        ],
-                      ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 10),
+                      ],
                     ),
                   ),
                 ),
-              );
-            },
-          );
-          ;
-        },
-      ),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 }

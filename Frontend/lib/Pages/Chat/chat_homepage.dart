@@ -55,7 +55,7 @@ class Chat_HomepageState extends State<Chat_Homepage> {
         throw Exception('Token not found');
       }
       String? ID = await TokenStorage.getID();
-
+      print("this is ");
       final response = await http.get(
         Uri.http('localhost:8080', '/chad'),
         headers: {
@@ -108,7 +108,7 @@ class Chat_HomepageState extends State<Chat_Homepage> {
           ),
           Expanded(
               child: _chatOn
-                  ? Text(chatRooms[indexx].messages.toString())
+                  ? Text(chatRooms[indexx].roomId.toString())
                   : Placeholder())
         ],
       ),
@@ -130,10 +130,35 @@ class Contacts extends StatefulWidget {
 }
 
 class _ContactsState extends State<Contacts> {
+  late List<ChatRoom> chat;
+  String? ownUserId;
+  @override
+  void initState() {
+    super.initState();
+    chat = widget.chatRoom;
+    getid();
+  }
+
+  void getid() async {
+    ownUserId = await TokenStorage.getID();
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
+
+    // Filter out the user's own ID from the list of chatRoom
+    List<String> otherUserIds = [];
+
+    // Iterate through each chat room's userIds and exclude the user's own ID
+    widget.chatRoom.forEach((chatRoom) {
+      for (var userId in chatRoom.userIds) {
+        if (userId != ownUserId) {
+          otherUserIds.add(userId);
+        }
+      }
+    });
     return Container(
       width: screenWidth / 4,
       decoration: BoxDecoration(color: PoolColors.fairBlue.withOpacity(0.4)),
@@ -144,7 +169,7 @@ class _ContactsState extends State<Contacts> {
               onTap: () {
                 widget.onTapCallback(true, index);
               },
-              title: Text(widget.chatRoom[index].userIds.toString()),
+              title: Text(otherUserIds[index]),
             );
           }),
     );
