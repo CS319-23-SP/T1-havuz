@@ -92,7 +92,7 @@ const onGiveAttendance = async (req, res) => {
             children: {
               studentID: { type: types.string },
               sectionID: { type: types.string },
-              date: { type: types.string }, // Expecting a string that represents a date
+              date: { type: types.date }, // Expecting a string that represents a date
               isPresent: { type: types.boolean },
             },
           },
@@ -109,7 +109,7 @@ const onGiveAttendance = async (req, res) => {
         const { studentID, sectionID, date, isPresent } = attendance;
   
         // Parse the date to compare only day, month, year
-        const attendanceDate = new Date(date);
+        const attendanceDate = date;
         attendanceDate.setHours(0, 0, 0, 0); // Normalize to midnight
   
         // Check if there's already an attendance record for this student/section/date

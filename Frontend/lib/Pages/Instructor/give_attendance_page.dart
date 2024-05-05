@@ -121,7 +121,7 @@ class _GiveAttendancePageState extends State<GiveAttendancePage> {
     try {
       final response = await http.post(
         Uri.parse(
-            'http://10.0.2.2:8080/instructor/give-attendance'), // Adjust as needed
+            'http://localhost:8080/instructor/give-attendance'), // Adjust as needed
         headers: {
           'Content-Type': 'application/json',
         },
