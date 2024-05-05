@@ -239,7 +239,7 @@ class _QuestionHomepageState extends State<QuestionHomepage> {
                                   .map<DropdownMenuEntry<String>>(
                                       (String value) {
                                 return DropdownMenuEntry<String>(
-                                    value: value, label: "  " + value);
+                                    value: value, label: value);
                               }).toList(),
                             ),
                           ),
