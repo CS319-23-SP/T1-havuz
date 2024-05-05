@@ -256,7 +256,7 @@ class _QuestionHomepageState extends State<QuestionHomepage> {
                               controller: _KeywordController,
                               decoration: InputDecoration(
                                 border: InputBorder.none,
-                                labelText: "Keyword",
+                                labelText: "Topics",
                               ),
                             ),
                           ),

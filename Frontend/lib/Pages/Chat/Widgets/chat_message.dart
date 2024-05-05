@@ -21,7 +21,7 @@ class ChatMessage {
       chatRoomId: json['chatRoomId'],
       messageText: json['message']['messageText'],
       messageType: json['type'],
-      postedByUserId: json['message']['postedByUser']['_id'],
+      postedByUserId: json['postedByUser']['id'],
       createdAt: DateTime.parse(json['createdAt']),
     );
   }

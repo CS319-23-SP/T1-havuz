@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'dart:convert';
 
 import 'package:first_trial/Pages/Chat/Widgets/chat_message.dart';
@@ -17,6 +19,7 @@ class Chat_Homepage extends StatefulWidget {
 
 int indexx = 0;
 bool _chatOn = false;
+String? ID = "";
 
 class Chat_HomepageState extends State<Chat_Homepage> {
   String? role = "unknown";
@@ -54,8 +57,7 @@ class Chat_HomepageState extends State<Chat_Homepage> {
       if (token == null) {
         throw Exception('Token not found');
       }
-      String? ID = await TokenStorage.getID();
-      print("this is ");
+      ID = await TokenStorage.getID();
       final response = await http.get(
         Uri.http('localhost:8080', '/chad'),
         headers: {
@@ -69,7 +71,6 @@ class Chat_HomepageState extends State<Chat_Homepage> {
           for (var i = 0; i < responseData['conversations'].length; i++) {
             cr = parseChatRoomData(responseData['conversations'])[i];
             chatRooms.add(cr);
-            print(cr.userIds);
           }
           setState(() {});
         } else {
@@ -89,7 +90,55 @@ class Chat_HomepageState extends State<Chat_Homepage> {
         .toList();
   }
 
-  void updateChatStatus(bool chatOn, int index) {
+  List<List<ChatMessage>> messages = [[], []];
+  Future<void> fetchMessages(String roomId) async {
+    String? token = await TokenStorage.getToken();
+    if (token == null) {
+      throw Exception('Token not found');
+    }
+
+    try {
+      final response = await http.get(
+        Uri.http('localhost:8080', '/chad/${roomId}'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+      );
+      if (response.statusCode == 200) {
+        parseMessagesData(json.decode(response.body), roomId);
+      } else {
+        throw Exception('Failed to fetch questions data');
+      }
+    } catch (e) {
+      print('Error fetching questions: $e');
+    }
+  }
+
+  void parseMessagesData(dynamic responseData, String roomID) async {
+    List<ChatMessage> roomMessages = [];
+    for (var i = 0; i < responseData['conversation'].length; i++) {
+      final message = ChatMessage.fromJson(responseData['conversation'][i]);
+      roomMessages.add(message);
+      print(message.messageText);
+    }
+    int roomIndex = chatRooms.indexWhere((room) => room.roomId == roomID);
+    if (roomIndex != -1) {
+      messages[roomIndex] = roomMessages;
+    }
+  }
+
+  void updateChsatStatus(bool chatOn, int index) {
+    setState(() {
+      _chatOn = chatOn;
+      indexx = index;
+      fetchMessages(chatRooms[indexx].roomId);
+    });
+  }
+
+  void updateChatStatus(bool chatOn, int index) async {
+    await fetchMessages(chatRooms[index].roomId);
+
     setState(() {
       _chatOn = chatOn;
       indexx = index;
@@ -107,9 +156,34 @@ class Chat_HomepageState extends State<Chat_Homepage> {
             chatRoom: chatRooms,
           ),
           Expanded(
-              child: _chatOn
-                  ? Text(chatRooms[indexx].roomId.toString())
-                  : Placeholder())
+            child: _chatOn
+                ? ListView.builder(
+                    itemCount: messages[indexx].length,
+                    itemBuilder: (BuildContext context, int index) {
+                      final bool isMyMessage =
+                          messages[indexx][index].postedByUserId == ID;
+                      return Column(
+                        crossAxisAlignment: isMyMessage
+                            ? CrossAxisAlignment
+                                .end // Align to end if it's my message
+                            : CrossAxisAlignment
+                                .start, // Align to start if it's not my message
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.amber.withOpacity(0.3),
+                            ),
+                            child: Text(messages[indexx][index].messageText),
+                          ),
+                          SizedBox(
+                            height: 15,
+                          ),
+                        ],
+                      );
+                    },
+                  )
+                : Placeholder(),
+          )
         ],
       ),
     );
@@ -152,6 +226,7 @@ class _ContactsState extends State<Contacts> {
     List<String> otherUserIds = [];
 
     // Iterate through each chat room's userIds and exclude the user's own ID
+
     widget.chatRoom.forEach((chatRoom) {
       for (var userId in chatRoom.userIds) {
         if (userId != ownUserId) {
@@ -165,11 +240,26 @@ class _ContactsState extends State<Contacts> {
       child: ListView.builder(
           itemCount: widget.chatRoom.length,
           itemBuilder: (BuildContext context, int index) {
-            return ListTile(
-              onTap: () {
-                widget.onTapCallback(true, index);
-              },
-              title: Text(otherUserIds[index]),
+            return Container(
+              decoration: BoxDecoration(
+                border: Border(
+                  top: BorderSide.none, // Removes the top border
+                  bottom: BorderSide(
+                      color: Colors
+                          .black), // Add or adjust bottom border as needed
+                  left: BorderSide.none, // Add or adjust left border as needed
+                  right:
+                      BorderSide.none, // Add or adjust right border as needed
+                ),
+              ),
+              child: ListTile(
+                onTap: () {
+                  setState(() {
+                    widget.onTapCallback(true, index);
+                  });
+                },
+                title: Text(otherUserIds[index]),
+              ),
             );
           }),
     );
