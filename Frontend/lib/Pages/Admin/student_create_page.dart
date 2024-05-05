@@ -19,8 +19,10 @@ class StudentCreationPage extends StatefulWidget {
 class _StudentCreationPageState extends State<StudentCreationPage> {
   final TextEditingController studentIdController = TextEditingController();
   final TextEditingController studentNameController = TextEditingController();
-  final TextEditingController coursesController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController studentMiddleNameController =
+      TextEditingController();
+  final TextEditingController studentSurNameController =
+      TextEditingController();
   final TextEditingController departmentController = TextEditingController();
 
   String? role = "unknown";
@@ -38,29 +40,11 @@ class _StudentCreationPageState extends State<StudentCreationPage> {
 
   void _createStudent() async {
     final studentId = studentIdController.text;
-    List<String> parts = studentNameController.text.split(' ');
-    String firstName = "";
-    String middleName = "";
-    String lastName = "";
+    String firstName = studentNameController.text;
+    String middleName = studentMiddleNameController.text;
+    String lastName = studentSurNameController.text;
 
-    if (parts.length == 1) {
-      print("last name missing");
-      return;
-    } else if (parts.length == 2) {
-      firstName = parts[0];
-      lastName = parts[1];
-    } else if (parts.length >= 3) {
-      firstName = parts[0];
-      middleName = parts.sublist(1, parts.length - 1).join(' ');
-      lastName = parts.last;
-    }
-
-    final courses = coursesController.text
-        .split(',')
-        .map((course) => course.trim())
-        .toList();
     final department = departmentController.text;
-    final password = passwordController.text;
 
     final url = Uri.parse('http://localhost:8080/student');
     final id = int.tryParse(studentId);
@@ -101,12 +85,12 @@ class _StudentCreationPageState extends State<StudentCreationPage> {
       return AccessDeniedPage();
     } else {
       return Scaffold(
-        appBar: AdminAppBar(),
+        appBar: CustomAppBar(
+          role: role,
+        ),
         body: Center(
           child: Container(
-            margin:
-                const EdgeInsets.symmetric(horizontal: 200.0, vertical: 20.0),
-            padding: const EdgeInsets.all(20.0),
+            margin: const EdgeInsets.all(20.0),
             decoration: BoxDecoration(
               color: Colors.grey[200],
               borderRadius: BorderRadius.circular(10.0),
@@ -139,29 +123,36 @@ class _StudentCreationPageState extends State<StudentCreationPage> {
                         ),
                       ),
                       const SizedBox(height: 16),
-                      const Text('Student Name'),
-                      TextFormField(
-                        controller: studentNameController,
-                        decoration: const InputDecoration(
-                          hintText:
-                              'Enter Student Name (be careful about spacing)',
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      const Text('Courses'),
-                      TextFormField(
-                        controller: coursesController,
-                        decoration: const InputDecoration(
-                          hintText: 'Enter Courses',
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      const Text('Password'),
-                      TextFormField(
-                        controller: passwordController,
-                        decoration: const InputDecoration(
-                          hintText: 'Enter Password',
-                        ),
+                      Text('Student Name'),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextFormField(
+                              controller: studentNameController,
+                              decoration: const InputDecoration(
+                                hintText: 'Enter Name',
+                              ),
+                            ),
+                          ),
+                          SizedBox(width: 10), // Add spacing between fields
+                          Expanded(
+                            child: TextFormField(
+                              controller: studentMiddleNameController,
+                              decoration: const InputDecoration(
+                                hintText: 'Enter Middle Name',
+                              ),
+                            ),
+                          ),
+                          SizedBox(width: 10), // Add spacing between fields
+                          Expanded(
+                            child: TextFormField(
+                              controller: studentSurNameController,
+                              decoration: const InputDecoration(
+                                hintText: 'Enter Surname',
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                       const SizedBox(height: 16),
                       const Text('Department'),

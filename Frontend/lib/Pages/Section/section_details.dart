@@ -184,7 +184,7 @@ class _Section_DetailsState extends State<Section_Details> {
                                   final String assignmentid = assignment.id;
                                   final String sectionid = assignment.sectionID;
                                   GoRouter.of(context).go(
-                                      '/instructor/assignment/$sectionid/$assignmentid');
+                                      '/$role/assignment/$sectionid/$assignmentid');
                                 },
                               ),
                             );
