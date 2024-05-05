@@ -100,6 +100,7 @@ class _LeftBarState extends State<LeftBar> {
         style: GoogleFonts.alike(),
       )),
       selectedIndex: selectedIndex,
+      initiallyExpanded: false,
       toggler: SideBarToggler(
           expandIcon: Icons.arrow_circle_right_outlined,
           shrinkIcon: Icons.arrow_circle_left_outlined),
