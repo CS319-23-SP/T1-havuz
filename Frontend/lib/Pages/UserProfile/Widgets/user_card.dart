@@ -47,76 +47,68 @@ class _UserInfoState extends State<UserInfo> {
   bool _editing = false;
   var user;
   var about;
-    @override
-    void initState() {
-      super.initState();
-      getUser();
+  @override
+  void initState() {
+    super.initState();
+    getUser();
+  }
+
+  void getUser() async {
+    String? id = await TokenStorage.getID();
+
+    String? token = await TokenStorage.getToken();
+    if (token == null) {
+      throw Exception('Token not found');
     }
 
-    void getUser() async {
-      String? id = await TokenStorage.getID();
+    var role = await TokenStorage.getRole();
 
-      String? token = await TokenStorage.getToken();
-      if (token == null) {
-        throw Exception('Token not found');
+    final response = await http.get(
+      Uri.http('localhost:8080', '/auth/$id'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final responseData = json.decode(response.body);
+      if (responseData['success']) {
+        setState(() {
+          user = responseData["auth"];
+          if (user['about'] != null && user['about'].isNotEmpty) {
+            about = user['about'];
+            _displayText = about;
+          }
+        });
+      } else {
+        throw Exception('Failed to fetch students data');
       }
+    }
+  }
 
-      var role = await TokenStorage.getRole();
+  void editUser(String newAbout) async {
+    String? id = await TokenStorage.getID();
 
-      final response = await http.get(
-        Uri.http('localhost:8080', '/auth/$id'),
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Content-Type': 'application/json',
-        },
-      );
-
-      if (response.statusCode == 200) {
-        final responseData = json.decode(response.body);
-        if (responseData['success']) {
-          setState(() {
-            user = responseData["auth"];
-            if (user['about'] != null && user['about'].isNotEmpty) {
-              about = user['about'];
-              _displayText = about;
-            }
-
-          });
-        } else {
-          throw Exception('Failed to fetch students data');
-        }
-      }
-      
-
+    String? token = await TokenStorage.getToken();
+    if (token == null) {
+      throw Exception('Token not found');
     }
 
-    void editUser(String newAbout) async {
-      String? id = await TokenStorage.getID();
+    final response = await http.patch(
+      Uri.http('localhost:8080', '/auth/$id'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+      body: json.encode({'id': id, 'about': newAbout}),
+    );
 
-      String? token = await TokenStorage.getToken();
-      if (token == null) {
-        throw Exception('Token not found');
-      }
-
-      final response = await http.patch(
-        Uri.http('localhost:8080', '/auth/$id'),
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Content-Type': 'application/json',
-        },
-        body: json.encode({
-          'id': id,
-        'about': newAbout
-      }),
-      );
-      
-      if (response.statusCode != 200) {
-        print(response.statusCode);
-          throw Exception('Failed to update about');
-      }
-
+    if (response.statusCode != 200) {
+      print(response.statusCode);
+      throw Exception('Failed to update about');
     }
-    
+  }
 
   void _toggleEditing() {
     setState(() {
@@ -126,10 +118,10 @@ class _UserInfoState extends State<UserInfo> {
         _textController = TextEditingController(text: _displayText);
       } else {
         about = _textController.text;
-        editUser(about );
+        editUser(about);
         _displayText = about;
         _textController.dispose();
-        }
+      }
     });
   }
 
@@ -288,7 +280,7 @@ class _UserInfoState extends State<UserInfo> {
                           )
                         : SingleChildScrollView(
                             child: Container(
-                              height: screen.height / 7,
+                              height: screen.height / 6,
                               padding: EdgeInsets.only(bottom: 10),
                               width: double.infinity, // Adjust width as needed
                               child: Padding(

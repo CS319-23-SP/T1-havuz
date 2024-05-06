@@ -9,7 +9,7 @@ router
   .post('/', roleChecker(['admin', 'instructor']), section.onCreateSection)
   .get('/:id/:term/:courseID', section.onGetSection)
   .get('/:id/:term', section.onGetSectionByIDAndTerm)
-  .get('/sections/:sectionID/students', section.onGetStudentsBySectionID);
+  .get('/sections/:sectionID/students', section.onGetStudentsBySectionID)
   .delete('/:id/:term/:courseID', roleChecker(['admin', 'instructor']), section.onDeleteSection)
   .patch('/:id/:term/:courseID', roleChecker(['admin', 'instructor']), section.onEditSection);
 

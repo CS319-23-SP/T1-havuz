@@ -36,6 +36,7 @@ class _Section_DetailsState extends State<Section_Details> {
     role = await TokenStorage.getRole();
     fetchAssignments();
     setState(() {});
+    print(widget.section.sectionID);
   }
 
   List<Assignment> assignments = [];
@@ -141,7 +142,8 @@ class _Section_DetailsState extends State<Section_Details> {
             if (role == "instructor") ...[
               ElevatedButton(
                   onPressed: () {
-                    GoRouter.of(context).go('/createAssignment');
+                    GoRouter.of(context)
+                        .go('/createAssignment/${widget.section.sectionID}');
                   },
                   child: const Text("Create assignment"))
             ]
