@@ -19,7 +19,14 @@ const studentSchema = new mongoose.Schema(
           yearOfDeparture: Number,
           allTakenCourses: [[String,String,String,String]], // Term - Course - Section - Grade
           totalGrade: Number,
-          totalCredits: Number
+          totalCredits: Number,
+          attendance: [
+            {
+              sectionId: String,
+              date: Date,
+              hours: Number,
+            },
+          ],
     },
     {
         timestamps: true,
