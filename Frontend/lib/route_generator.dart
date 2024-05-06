@@ -28,7 +28,7 @@ class RouteGenerator {
   final String adminRoute = "/admin";
   final String studentCreateRoute = "/admin/studentCreate";
 
-  final String createAssignmentRoute = "/createAssignment";
+  final String createAssignmentRoute = "/createAssignment/:sectionID";
 
   getRouter() {
     return GoRouter(
