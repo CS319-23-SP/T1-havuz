@@ -82,7 +82,6 @@ const onGetInstructorByID = async (req, res) => {
 
 const onGiveAttendance = async (req, res) => {
     try {
-      // Validate the input data
       const validation = makeValidation((types) => ({
         payload: req.body,
         checks: {
@@ -92,8 +91,8 @@ const onGiveAttendance = async (req, res) => {
             children: {
               studentID: { type: types.string },
               sectionID: { type: types.string },
-              date: { type: types.date }, // Expecting a string that represents a date
-              isPresent: { type: types.boolean },
+              date: { type: types.date }, 
+              hour: { type: types.boolean },
             },
           },
         },
@@ -102,17 +101,14 @@ const onGiveAttendance = async (req, res) => {
       if (!validation.success) {
         return res.status(400).json({ success: false, error: "Invalid data" });
       }
-  
       const { attendances } = req.body;
-  
+      
       for (const attendance of attendances) {
-        const { studentID, sectionID, date, isPresent } = attendance;
-  
-        // Parse the date to compare only day, month, year
-        const attendanceDate = date;
-        attendanceDate.setHours(0, 0, 0, 0); // Normalize to midnight
-  
-        // Check if there's already an attendance record for this student/section/date
+        const { studentID, sectionID, date, hour } = attendance;
+
+
+        const attendanceDate = new Date(date);
+        attendanceDate.setDate(attendanceDate.getDate()+1);
         const existingAttendance = await Attendance.findOne({
           studentID,
           sectionID,
@@ -120,23 +116,21 @@ const onGiveAttendance = async (req, res) => {
         });
   
         if (existingAttendance) {
-          // Increment totalHour
           await Attendance.updateOne(
             { _id: existingAttendance._id },
             {
               $inc: {
                 totalHour: 1,
-                hour: isPresent ? 1 : 0, // Increment hour only if present
+                hour: hour ? 1 : 0, 
               },
             }
           );
         } else {
-          // Create a new attendance record
           await Attendance.create({
             studentID,
             sectionID,
             date: attendanceDate,
-            hour: isPresent ? 1 : 0,
+            hour: hour ? 1 : 0,
             totalHour: 1,
           });
         }
