@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:ffi';
 
 import 'package:first_trial/Objects/question.dart';
 import 'package:first_trial/Pages/Widgets/AppBars/app_bars.dart';
@@ -22,14 +21,12 @@ class CreateAssignmentPage extends StatefulWidget {
 
 class _CreateAssignmentPageState extends State<CreateAssignmentPage> {
   final TextEditingController nameController = TextEditingController();
-  final TextEditingController solutionKeyController = TextEditingController();
-  final TextEditingController topicsController = TextEditingController();
-  final TextEditingController textController = TextEditingController();
   final term = "2024 Spring";
   DateTime finalDay = DateTime(2024, 05, 31);
   String? role = "unknown";
   var deadline;
   var sectionId;
+  var courseId;
   @override
   void initState() {
     super.initState();
@@ -40,19 +37,16 @@ class _CreateAssignmentPageState extends State<CreateAssignmentPage> {
     role = await TokenStorage.getRole();
 
     sectionId = widget.sectionID;
+    courseId = sectionId.split('-').first;
 
     fetchQuestions();
-    print("there");
     setState(() {});
   }
 
-  void _createAssignment() async {
-    final assignmentName = nameController.text;
-    String solutionKey = solutionKeyController.text;
-    String topics = topicsController.text;
-    String text = textController.text;
+  void _createAssignment(List<String> questionIDs) async {
+    deadline = deadline.toString().split(' ').first;
 
-    final url = Uri.parse('http://localhost:8080/student');
+    final url = Uri.parse('http://localhost:8080/assignment');
 
     String? token = await TokenStorage.getToken();
     if (token == null) {
@@ -66,23 +60,20 @@ class _CreateAssignmentPageState extends State<CreateAssignmentPage> {
         'Content-Type': 'application/json',
       },
       body: json.encode({
-        'id': assignmentName,
         'term': term,
         'sectionID': sectionId,
-        'deadline': deadline.toString(),
-        'solutionKey': solutionKey,
-        'questions': [],
-        'grades': [
-          {String: String}
-        ]
+        'deadline': deadline,
+        'questions': questionIDs,
+        'name': nameController.text
       }),
     );
     if (response.statusCode == 200) {
-      print('Student created successfully');
+      print('Assignment created successfully');
     } else {
-      print('Failed to create student: ${response.reasonPhrase}');
+      print('Failed to create assignment: ${response.reasonPhrase}');
     }
-    GoRouter.of(context).go('/admin');
+    GoRouter.of(context).go('/instructor');
+    
   }
 
   List<Question> questions = [];
@@ -107,7 +98,6 @@ class _CreateAssignmentPageState extends State<CreateAssignmentPage> {
       if (response.statusCode == 200) {
         setState(() {
           parseQuestionsData(json.decode(response.body));
-          print(questions.toString());
         });
       } else {
         throw Exception('Failed to fetch questions data');
@@ -123,10 +113,9 @@ class _CreateAssignmentPageState extends State<CreateAssignmentPage> {
     for (var questionData in responseData['questions'] as List<dynamic>) {
       final question = Question.fromJson(questionData);
 
-      if (question.courses.contains(sectionId)) {
+      if (question.courses.contains(courseId)) {
         parsedQuestions.add(question);
         parsedQuestionTexts.add(question.text);
-        print(question.text);
       }
     }
     setState(() {
@@ -137,11 +126,14 @@ class _CreateAssignmentPageState extends State<CreateAssignmentPage> {
 
   final MultiSelectController _controller = MultiSelectController();
 
-  late List<ValueItem> questionOptions = questionsText
-      .map((question) => ValueItem(label: question, value: question))
-      .toList();
   @override
   Widget build(BuildContext context) {
+    if (questionsText.isEmpty) {
+      return CircularProgressIndicator(); 
+    }
+    late List<ValueItem> questionOptions = questionsText
+        .map((question) => ValueItem(label: question, value: question))
+        .toList();
     return Scaffold(
       appBar: CustomAppBar(role: role),
       body: Row(
@@ -162,6 +154,17 @@ class _CreateAssignmentPageState extends State<CreateAssignmentPage> {
                           GoRouter.of(context).go('/instructor');
                         },
                       ),
+                    ),
+                    SizedBox(height: 20.0),
+                    TextFormField(
+                      controller: nameController,
+                      decoration: InputDecoration(
+                        labelText: 'Assignment Name',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 20,
                     ),
                     MultiSelectDropDown(
                       onOptionSelected: (List<ValueItem> selectedOptions) {
@@ -187,7 +190,6 @@ class _CreateAssignmentPageState extends State<CreateAssignmentPage> {
                           if (pickedDate != null) {
                             setState(() {
                               deadline = pickedDate;
-                              print(deadline);
                             });
                           }
                         });
@@ -207,51 +209,26 @@ class _CreateAssignmentPageState extends State<CreateAssignmentPage> {
                       ),
                     ),
                     SizedBox(height: 20.0),
-                    TextFormField(
-                      controller: nameController,
-                      decoration: InputDecoration(
-                        labelText: 'Assignment Name',
-                        border: OutlineInputBorder(),
-                      ),
-                    ),
-                    SizedBox(height: 20.0),
-                    TextFormField(
-                      controller: solutionKeyController,
-                      decoration: InputDecoration(
-                        labelText: 'Assignment Solution Key',
-                        border: OutlineInputBorder(),
-                      ),
-                    ),
-                    SizedBox(height: 20),
-                    TextFormField(
-                      controller: topicsController,
-                      decoration: InputDecoration(
-                        labelText: 'Assignment Topics',
-                        border: OutlineInputBorder(),
-                      ),
-                    ),
-                    SizedBox(height: 20.0),
-                    TextFormField(
-                      controller: textController,
-                      maxLines: null,
-                      keyboardType: TextInputType.multiline,
-                      decoration: InputDecoration(
-                        labelText: 'Assignment Text',
-                        border: OutlineInputBorder(),
-                      ),
-                    ),
-                    SizedBox(height: 20.0),
-                    ElevatedButton(
+                    Center(
+                      child: ElevatedButton(
                       onPressed: () {
-                        //createQuestion();
+                        List<String> selectedQuestionIDS = [];
+                        selectedCourses.forEach((questionText) => 
+                          questions.forEach((question) {
+                            if(question.text == questionText)
+                              selectedQuestionIDS.add(question.id);
+                           })
+                        );
+                        _createAssignment(selectedQuestionIDS);
                       },
                       child: Text('Create Assignment'),
                     ),
+                    )
                   ]),
             ),
           ),
         ],
-      ),
-    );
-  }
+    ),
+);
+}
 }

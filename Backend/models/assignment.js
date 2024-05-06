@@ -8,6 +8,7 @@ const assignmentSchema = new mongoose.Schema(
             default: () => uuidv4().replace(/\-/g, ""),
           },
           id: String,
+          name: String,
           term: String,
           sectionID: String,
           deadline: String, 
@@ -21,7 +22,7 @@ const assignmentSchema = new mongoose.Schema(
     }
 );
 
-assignmentSchema.statics.createAssignment = async function (term, sectionID, questions, deadline) {
+assignmentSchema.statics.createAssignment = async function (term, sectionID, questions, deadline, name) {
     try {
         const lastAssignment = await this.findOne({term: term, sectionID: sectionID}).sort({ id: -1});
         let id;
@@ -33,7 +34,7 @@ assignmentSchema.statics.createAssignment = async function (term, sectionID, que
             id = `01`;
         }
 
-        const assignment = await this.create({id, term, sectionID, questions, deadline});
+        const assignment = await this.create({id, term, sectionID, questions, deadline, name});
         return assignment;
     } catch (error) {
         throw error;
@@ -78,13 +79,14 @@ assignmentSchema.statics.deleteAssignment = async function (id, term, sectionID)
     }
 }
 
-assignmentSchema.statics.editAssignment = async function (id, term, sectionID, questions, deadline, grades, solutionKey) {
+assignmentSchema.statics.editAssignment = async function (id, term, sectionID, questions, deadline, grades, solutionKey, name) {
     try {
         const assignmentUpdates = {
             questions: questions,
             grades: grades,
             deadline: deadline,
-            solutionKey: solutionKey
+            solutionKey: solutionKey,
+            name: name
         };
 
         const assignmentUpdated = await this.findOneAndUpdate(
