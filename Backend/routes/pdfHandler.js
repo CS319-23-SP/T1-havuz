@@ -76,7 +76,7 @@ router
   .post('/', handlePDFUpload, upload.single('pdf'), (req, res) => {
     res.status(200).send('Si señor');
   })
-  .get('/download', (req, res) => {
+  .get('/', (req, res) => {
     const { path: urlPath } = req.query;
     
     if (!urlPath)
