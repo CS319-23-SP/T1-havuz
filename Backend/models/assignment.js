@@ -10,7 +10,7 @@ const assignmentSchema = new mongoose.Schema(
           id: String,
           term: String,
           sectionID: String,
-          deadline: String,
+          deadline: String, 
           solutionKey: String,
           questions: [String],
           grades: [{String: String}]

@@ -145,11 +145,52 @@ class Chat_HomepageState extends State<Chat_Homepage> {
     });
   }
 
+  final messageController = TextEditingController();
+  void _createMessage(List<ChatMessage> messages) async {
+    /*final messageText = messageController.text;
+    ChatMessage message = messages[indexx];
+    String chatRoomId = messages[indexx].chatRoomId;
+    String postedById = messages[indexx].postedByUserId;
+
+    final url = Uri.parse('http://localhost:8080/chad');
+    final id = int.tryParse(studentId);
+    if (id == null) {
+      print("bad id");
+      return;
+    }
+
+    String? token = await TokenStorage.getToken();
+    if (token == null) {
+      throw Exception('Token not found');
+    }
+
+    final response = await http.post(
+      url,
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+      body: json.encode({
+        'firstName': firstName,
+        if (middleName.isNotEmpty) 'middleName': middleName,
+        'lastName': lastName,
+        'department': department,
+      }),
+    );
+    if (response.statusCode == 200) {
+      print('Student created successfully');
+    } else {
+      print('Failed to create student: ${response.reasonPhrase}');
+    }
+    GoRouter.of(context).go('/admin');*/
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(role: role),
       body: Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           Contacts(
             onTapCallback: updateChatStatus,
@@ -157,30 +198,84 @@ class Chat_HomepageState extends State<Chat_Homepage> {
           ),
           Expanded(
             child: _chatOn
-                ? ListView.builder(
-                    itemCount: messages[indexx].length,
-                    itemBuilder: (BuildContext context, int index) {
-                      final bool isMyMessage =
-                          messages[indexx][index].postedByUserId == ID;
-                      return Column(
-                        crossAxisAlignment: isMyMessage
-                            ? CrossAxisAlignment
-                                .end // Align to end if it's my message
-                            : CrossAxisAlignment
-                                .start, // Align to start if it's not my message
-                        children: [
-                          Container(
-                            decoration: BoxDecoration(
-                              color: Colors.amber.withOpacity(0.3),
+                ? Column(
+                    children: [
+                      Expanded(
+                        child: Align(
+                          alignment: Alignment.bottomCenter,
+                          child: ListView.builder(
+                            //reverse: true,
+                            shrinkWrap: true,
+                            itemCount: messages[indexx].length,
+                            itemBuilder: (BuildContext context, int index) {
+                              final bool isMyMessage = messages[indexx]
+                                          [messages[indexx].length - index - 1]
+                                      .postedByUserId ==
+                                  ID;
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 20.0),
+                                child: Align(
+                                    alignment: isMyMessage
+                                        ? Alignment.bottomLeft
+                                        // Align to end if it's my message
+                                        : Alignment
+                                            .bottomRight, // Align to start if it's not my message
+                                    child: Container(
+                                      constraints: BoxConstraints(
+                                          maxWidth: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              0.5),
+                                      decoration: BoxDecoration(
+                                          borderRadius: isMyMessage
+                                              ? BorderRadius.only(
+                                                  topLeft: Radius.circular(15),
+                                                  topRight: Radius.circular(15),
+                                                  bottomRight:
+                                                      Radius.circular(15))
+                                              : BorderRadius.only(
+                                                  topLeft: Radius.circular(15),
+                                                  topRight: Radius.circular(15),
+                                                  bottomLeft:
+                                                      Radius.circular(15)),
+                                          color: isMyMessage
+                                              ? PoolColors.recievedText
+                                              : PoolColors.sentText),
+                                      padding: EdgeInsets.all(10),
+                                      margin:
+                                          EdgeInsets.symmetric(vertical: 10),
+                                      child: Text(
+                                          messages[indexx][index].messageText),
+                                    )),
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: TextField(
+                                controller: messageController,
+                                decoration: InputDecoration(
+                                  hintText: 'Type your message...',
+                                  border: OutlineInputBorder(),
+                                ),
+                                // Add your logic to handle sending messages here
+                                // onPressed: () {},
+                              ),
                             ),
-                            child: Text(messages[indexx][index].messageText),
-                          ),
-                          SizedBox(
-                            height: 15,
-                          ),
-                        ],
-                      );
-                    },
+                            IconButton(
+                                icon: Icon(Icons.send),
+                                onPressed: /*_createMessage(messages[indexx])*/
+                                    () {}),
+                          ],
+                        ),
+                      ),
+                    ],
                   )
                 : Placeholder(),
           )
@@ -241,6 +336,7 @@ class _ContactsState extends State<Contacts> {
           itemCount: widget.chatRoom.length,
           itemBuilder: (BuildContext context, int index) {
             return Container(
+              margin: EdgeInsets.symmetric(horizontal: 20),
               decoration: BoxDecoration(
                 border: Border(
                   top: BorderSide.none, // Removes the top border

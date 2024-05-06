@@ -134,7 +134,19 @@ class _Section_DetailsState extends State<Section_Details> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        ElevatedButton(onPressed: widget.onBack, child: Icon(Icons.arrow_back)),
+        Row(
+          children: [
+            ElevatedButton(
+                onPressed: widget.onBack, child: Icon(Icons.arrow_back)),
+            if (role == "instructor") ...[
+              ElevatedButton(
+                  onPressed: () {
+                    GoRouter.of(context).go('/createAssignment');
+                  },
+                  child: const Text("Create assignment"))
+            ]
+          ],
+        ),
         Expanded(
           child: Container(
             decoration: BoxDecoration(color: PoolColors.cardWhite),
@@ -198,7 +210,7 @@ class _Section_DetailsState extends State<Section_Details> {
             ),
           ),
         ),
-     ],
-);
-}
+      ],
+    );
+  }
 }
