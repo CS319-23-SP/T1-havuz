@@ -10,7 +10,7 @@ const assignmentSchema = new mongoose.Schema(
           id: String,
           term: String,
           sectionID: String,
-          deadline: String,
+          deadline: String, 
           solutionKey: String,
           questions: [String],
           grades: [{String: String}]
@@ -42,7 +42,7 @@ assignmentSchema.statics.createAssignment = async function (term, sectionID, que
 
 assignmentSchema.statics.getAssignment = async function (id, term, sectionID) {
     try {
-        const assignment = await this.find({ id: id, term: term, sectionID: sectionID});
+        const assignment = await this.findOne({ id: id, term: term, sectionID: sectionID});
         if(!assignment) throw ({error: 'No assignment with this id, term, or section ID found' });
         return assignment;
     } catch (error) {
