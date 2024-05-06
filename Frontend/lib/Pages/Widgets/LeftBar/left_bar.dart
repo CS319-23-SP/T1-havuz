@@ -1,6 +1,8 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'dart:convert';
 
-import 'package:first_trial/Objects/course.dart';
+import 'package:first_trial/Objects/section.dart';
 import 'package:first_trial/final_variables.dart';
 import 'package:first_trial/token.dart';
 import 'package:flutter/material.dart';
@@ -9,26 +11,50 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:side_navigation/side_navigation.dart';
 import 'package:http/http.dart' as http;
 
+int ind = 0;
+bool showDetails = true;
+
 class LeftBar extends StatefulWidget {
   final String? role;
 
-  const LeftBar({Key? key, required this.role}) : super(key: key);
+  const LeftBar({
+    Key? key,
+    required this.role,
+  }) : super(key: key);
   @override
   State<LeftBar> createState() => _LeftBarState();
 }
 
 class _LeftBarState extends State<LeftBar> {
-  List<Course> courses = [];
+  String? role = "unknown";
 
-  Future<void> fetchCourses() async {
+  @override
+  void initState() {
+    super.initState();
+    checkRole();
+  }
+
+  Future<void> checkRole() async {
+    role = await TokenStorage.getRole();
+
+    fetchSections();
+    setState(() {});
+  }
+
+  List<Section> sections = [];
+  late final ScrollController _scrollController;
+
+  Future<void> fetchSections() async {
     try {
       String? token = await TokenStorage.getToken();
       if (token == null) {
         throw Exception('Token not found');
       }
+      String? ID = await TokenStorage.getID();
+      String? term = '2024 Spring';
 
       final response = await http.get(
-        Uri.http('localhost:8080', '/course/'),
+        Uri.http('localhost:8080', '/section/$ID/$term'),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
@@ -39,54 +65,23 @@ class _LeftBarState extends State<LeftBar> {
         final responseData = json.decode(response.body);
         if (responseData['success']) {
           setState(() {
-            courses = parseCoursesData(responseData['courses']);
+            sections = parseSectionsData(responseData['section']);
           });
         } else {
-          throw Exception('Failed to fetch students data');
+          throw Exception('Failed to fetch courses data');
         }
-      } /*else if (response.statusCode == 401) {
-      print('Unauthorized access: Token may be invalid or expired');
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage()));
-    } */
-      else {
-        throw Exception('Failed to fetch students data');
+      } else {
+        throw Exception('Failed to fetch courses data');
       }
     } catch (e) {
-      print('Error fetching students: $e');
+      print('Error fetching co3asdad22urses: $e');
     }
   }
 
-  List<Course> parseCoursesData(dynamic responseData) {
+  List<Section> parseSectionsData(dynamic responseData) {
     return (responseData as List<dynamic>)
-        .map((courseData) => Course.fromJson(courseData))
+        .map((sectionData) => Section.fromJson(sectionData))
         .toList();
-  }
-
-  List<Widget> views = [];
-
-  @override
-  void initState() {
-    super.initState();
-    fetchCourses();
-    views = [
-      Center(
-        child: TextButton(
-          child: Text("Dashboard"),
-          onPressed: () {
-            GoRouter.of(context).go(_getRouteForRole(widget.role));
-          },
-        ),
-      ),
-      Center(
-        child: TextButton(
-          child: Text("Account"),
-          onPressed: () async {
-            var id = await TokenStorage.getID();
-            GoRouter.of(context).go('/user/profile/$id');
-          },
-        ),
-      ),
-    ];
   }
 
   int selectedIndex = 0;
@@ -113,17 +108,10 @@ class _LeftBarState extends State<LeftBar> {
           icon: Icons.person,
           label: 'Account',
         ),
-        if (widget.role == "student") ...[
-          SideNavigationBarItem(
-            icon: Icons.ac_unit,
-            label: 'anen',
-          ),
-        ] else if (widget.role == "instructor") ...[
-          SideNavigationBarItem(
-            icon: Icons.ac_unit,
-            label: 'baban',
-          ),
-        ],
+        SideNavigationBarItem(
+          icon: Icons.chat,
+          label: 'Chat',
+        ),
       ],
       onTap: (index) async {
         setState(() {
@@ -136,6 +124,8 @@ class _LeftBarState extends State<LeftBar> {
             return GoRouter.of(context).go(_getRouteForRole(widget.role));
           case 1:
             return GoRouter.of(context).go('/user/profile/$id');
+          case 2:
+            return GoRouter.of(context).go('/chad');
         }
       },
       theme: SideNavigationBarTheme(

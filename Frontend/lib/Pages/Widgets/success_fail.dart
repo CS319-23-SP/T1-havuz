@@ -4,7 +4,9 @@ class SuccessWidget extends StatelessWidget {
   final BuildContext context;
   final VoidCallback onDismiss;
 
-  const SuccessWidget({Key? key, required this.context, required this.onDismiss}) : super(key: key);
+  const SuccessWidget(
+      {Key? key, required this.context, required this.onDismiss})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +15,7 @@ class SuccessWidget extends StatelessWidget {
       content: const SingleChildScrollView(
         child: ListBody(
           children: <Widget>[
-            Text('Question added successfully!'),
+            Text('Added successfully!'),
           ],
         ),
       ),
@@ -34,7 +36,8 @@ class FailWidget extends StatelessWidget {
   final BuildContext context;
   final VoidCallback onDismiss;
 
-  const FailWidget({Key? key, required this.context, required this.onDismiss}) : super(key: key);
+  const FailWidget({Key? key, required this.context, required this.onDismiss})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {

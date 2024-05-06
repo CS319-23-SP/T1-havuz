@@ -1,3 +1,7 @@
+// ignore_for_file: prefer_const_constructors
+
+import 'dart:math';
+
 import 'package:first_trial/Objects/course.dart';
 import 'package:first_trial/Objects/section.dart';
 import 'package:first_trial/Pages/Section/section_details.dart';
@@ -60,8 +64,6 @@ class _CourseHomePageState extends State<CourseHomePage> {
         },
       );
 
-      
-
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
         if (responseData['success']) {
@@ -110,7 +112,6 @@ class _CourseHomePageState extends State<CourseHomePage> {
             role: role,
           ),
           body: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               LeftBar(
                 role: role,
@@ -119,6 +120,7 @@ class _CourseHomePageState extends State<CourseHomePage> {
                 child: Padding(
                   padding: const EdgeInsets.all(20.0),
                   child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       !showDetails
@@ -170,6 +172,16 @@ class SectionData extends StatefulWidget {
 }
 
 class _SectionDataState extends State<SectionData> {
+  Color getRandomColor() {
+    Random random = Random();
+    return Color.fromRGBO(
+      random.nextInt(256),
+      random.nextInt(256),
+      random.nextInt(256),
+      1,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
@@ -180,7 +192,7 @@ class _SectionDataState extends State<SectionData> {
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 3,
+            crossAxisCount: 4,
             crossAxisSpacing: 20,
             mainAxisSpacing: 20.0,
           ),
@@ -193,49 +205,37 @@ class _SectionDataState extends State<SectionData> {
                 widget.onTapCourse(index);
               },
               child: Card(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15.0),
-                ),
-                child: SingleChildScrollView(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SizedBox(height: 10),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              child: Text(
-                                post.id ?? "",
-                                style: const TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                            Container(
-                              decoration: BoxDecoration(
-                                color: Colors.amber,
-                                borderRadius: BorderRadius.circular(10.0),
-                              ),
-                              padding: const EdgeInsets.all(5.0),
-                              child: Text(
-                                post.term ?? "",
-                                style: const TextStyle(
-                                  fontSize: 8,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 10),
-                      ],
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Design area with random color
+                    Container(
+                      decoration: BoxDecoration(
+                          color: getRandomColor(),
+                          borderRadius: BorderRadius.circular(15)),
+                      height: 0.7 *
+                          (MediaQuery.of(context).size.width - 200) /
+                          4, // 70% of card height
                     ),
-                  ),
+                    // ID display area
+                    Container(
+                      height:
+                          0.3 * (MediaQuery.of(context).size.width - 150) / 4,
+                      padding: EdgeInsets.all(8.0),
+                      alignment: Alignment.center,
+                      child: FittedBox(
+                        fit: BoxFit.cover,
+                        child: Text(
+                          post.id,
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             );

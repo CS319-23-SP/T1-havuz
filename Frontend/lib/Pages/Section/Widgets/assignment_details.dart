@@ -1,5 +1,8 @@
 import 'dart:convert';
+import 'package:file_picker/file_picker.dart';
 
+import 'dart:io';
+import 'package:dio/dio.dart';
 import 'package:first_trial/Objects/assignment.dart';
 import 'package:first_trial/Objects/question.dart';
 import 'package:first_trial/Pages/Widgets/AppBars/app_bars.dart';
@@ -26,7 +29,7 @@ class Assignment_Details extends StatefulWidget {
 class _Assignment_DetailsState extends State<Assignment_Details> {
   String term = "2024 Spring";
   Assignment assignment = Assignment(
-    name: "nonigga",
+      name: "nonigga",
       term: "term",
       sectionID: "sectionID",
       questions: ["questions"],
@@ -122,7 +125,7 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
   }
 
   Assignment parseAssignmentData(dynamic json) {
-  return Assignment(
+    return Assignment(
       name: json['name'],
       id: json['id'].toString(),
       term: json['term'].toString(),
@@ -130,8 +133,23 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
       deadline: json['deadline'].toString(),
       questions: List<String>.from(json['questions']),
       solutionKey: json['solutionKey'].toString(),
-  );
-}
+    );
+  }
+
+  List<String> uploadedFiles = [];
+
+  void _uploadFile() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles();
+
+    if (result != null) {
+      File file = File(result.files.single.path!);
+      // Upload the file to server or save locally
+      // For simplicity, let's just add it to the list
+      setState(() {
+        uploadedFiles.add(file.path);
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -152,6 +170,19 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
                 Text("Section ID: ${assignment.sectionID}"),
                 Text("Solution Key: ${assignment.solutionKey}"),
                 Text("Term: ${assignment.term}"),
+                if (role == "student") ...[
+                  TextButton(
+                    onPressed: () {
+                      _uploadFile();
+                    },
+                    child: Row(
+                      children: [
+                        Icon(Icons.upload),
+                        Text("Upload File"),
+                      ],
+                    ),
+                  )
+                ],
                 SizedBox(height: 20),
                 Text("Questions:",
                     style:
@@ -169,11 +200,39 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
                     },
                   ),
                 ),
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: uploadedFiles.length,
+                    itemBuilder: (context, index) {
+                      return ListTile(
+                        title: Text(uploadedFiles[index]),
+                      );
+                    },
+                  ),
+                )
               ],
             ),
           ),
         ],
-     ),
-);
-}
+      ),
+    );
+  }
+
+  /*Future uploadPdf() async {
+    var dio = Dio();
+    FilePickerResult? result = await FilePicker.platform.pickFiles();
+
+    if (result != null) {
+      File file = File(result.files.single.path ?? " ");
+
+      String filename = file.path.split("/").last;
+      String filepath = file.path;
+
+      FormData data = FormData.fromMap({
+        'x-api-key': 'apikey',
+        'file': await MultipartFile.fromFile(filepath, filename: filename),
+      });
+      var response = dio.post("")
+    }
+  }*/
 }
