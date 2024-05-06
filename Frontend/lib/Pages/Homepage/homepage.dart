@@ -60,6 +60,8 @@ class _CourseHomePageState extends State<CourseHomePage> {
         },
       );
 
+      
+
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
         if (responseData['success']) {
@@ -73,7 +75,7 @@ class _CourseHomePageState extends State<CourseHomePage> {
         throw Exception('Failed to fetch courses data');
       }
     } catch (e) {
-      print('Error fetching co32322urses: $e');
+      print('Error fetching co3asdad22urses: $e');
     }
   }
 

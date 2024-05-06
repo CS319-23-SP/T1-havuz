@@ -134,7 +134,19 @@ class _Section_DetailsState extends State<Section_Details> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        ElevatedButton(onPressed: widget.onBack, child: Icon(Icons.arrow_back)),
+        Row(
+          children: [
+            ElevatedButton(
+                onPressed: widget.onBack, child: Icon(Icons.arrow_back)),
+            if (role == "instructor") ...[
+              ElevatedButton(
+                  onPressed: () {
+                    GoRouter.of(context).go('/createAssignment');
+                  },
+                  child: const Text("Create assignment"))
+            ]
+          ],
+        ),
         Expanded(
           child: Container(
             decoration: BoxDecoration(color: PoolColors.cardWhite),
@@ -180,11 +192,12 @@ class _Section_DetailsState extends State<Section_Details> {
                                     ),
                                   ],
                                 ),
-                                onPressed: () {
+                                onPressed: () async {
                                   final String assignmentid = assignment.id;
                                   final String sectionid = assignment.sectionID;
+                                  String? role = await TokenStorage.getRole();
                                   GoRouter.of(context).go(
-                                      '/instructor/assignment/$sectionid/$assignmentid');
+                                      '/$role/assignment/$sectionid/$assignmentid');
                                 },
                               ),
                             );

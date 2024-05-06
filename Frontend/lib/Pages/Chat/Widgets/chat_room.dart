@@ -22,7 +22,6 @@ class ChatRoom {
         ),
       );
     }
-    print(messages.toString());
     return ChatRoom(
       roomId: json['room']['_id'],
       userIds:

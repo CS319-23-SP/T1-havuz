@@ -2,6 +2,7 @@ import 'package:first_trial/Pages/Admin/admin_page.dart';
 import 'package:first_trial/Pages/Admin/student_create_page.dart';
 import 'package:first_trial/Pages/Chat/chat_homepage.dart';
 import 'package:first_trial/Pages/Section/Widgets/assignment_details.dart';
+import 'package:first_trial/Pages/Section/Widgets/create_assignment.dart';
 import 'package:first_trial/Pages/UserProfile/user_profile_page.dart';
 import 'package:first_trial/Pages/Auth/login_page.dart';
 import 'package:first_trial/Pages/Student/attendance.dart';
@@ -26,6 +27,8 @@ class RouteGenerator {
 
   final String adminRoute = "/admin";
   final String studentCreateRoute = "/admin/studentCreate";
+
+  final String createAssignmentRoute = "/createAssignment";
 
   getRouter() {
     return GoRouter(
@@ -62,14 +65,21 @@ class RouteGenerator {
               final sectionID = state.pathParameters['sectionID'].toString();
               final assignmentID =
                   state.pathParameters['assignmentID'].toString();
+              final role = state.pathParameters['role'].toString();
               return Assignment_Details(
-                  assignmentID: assignmentID, sectionID: sectionID);
+                  role: role, assignmentID: assignmentID, sectionID: sectionID);
             }),
         GoRoute(
             path: profileRoute,
             builder: (context, state) {
               final userId = state.pathParameters['userId'].toString();
               return UserProfilePage(userId: userId);
+            }),
+        GoRoute(
+            path: createAssignmentRoute,
+            builder: (context, state) {
+              final section = state.pathParameters['sectionID'].toString();
+              return CreateAssignmentPage(sectionID: section);
             }),
         GoRoute(
             path: questionHomepageRoute,

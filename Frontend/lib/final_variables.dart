@@ -14,6 +14,9 @@ class PoolColors {
   static const Color appBarBackground = Color.fromARGB(64, 49, 110, 202);
   static const Color black = Color.fromARGB(255, 0, 0, 0);
   static const Color fairTurkuaz = Color.fromARGB(255, 161, 214, 226);
+
+  static const Color sentText = Color.fromARGB(255, 92, 172, 209);
+  static const Color recievedText = Color.fromARGB(255, 198, 87, 226);
 }
 
 class AssetLocations {

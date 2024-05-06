@@ -46,8 +46,8 @@ const onEditAuthByID = async (req, res) => {
         }));
         if (!validation.success) return res.status(400).json(validation);
 
-        const { id, password, role} = req.body;
-        const auth = await authModel.editAuthByID( id, password, role);
+        const { id, password, role, about} = req.body;
+        const auth = await authModel.editAuthByID( id, password, role, about);
         return res.status(200).json({ success: true, auth });
     } catch (error) {
         return res.status(500).json({ success: false, error: error })

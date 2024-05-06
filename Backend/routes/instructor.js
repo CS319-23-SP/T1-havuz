@@ -1,14 +1,15 @@
 const express = require('express');
 const instructor = require('../controllers/instructor');
+const roleChecker = require('../middlewares/roleChecker');
 
 const router = express.Router();
 
 router
-  .get('/', instructor.onGetAllInstructors)
-  .post('/', instructor.onCreateInstructor)
+  .get('/', roleChecker(['admin']), instructor.onGetAllInstructors)
+  .post('/', roleChecker(['admin']), instructor.onCreateInstructor)
   .get('/:id', instructor.onGetInstructorByID)
-  .delete('/:id', instructor.onDeleteInstructorByID)
-  .patch('/:id', instructor.onEditInstructorByID)
   .post("/give-attendance", instructor.onGiveAttendance);
+  .delete('/:id', roleChecker(['admin']), instructor.onDeleteInstructorByID)
+  .patch('/:id', roleChecker(['admin', 'instructor']), instructor.onEditInstructorByID);
 
 module.exports = router;
