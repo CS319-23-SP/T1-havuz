@@ -36,7 +36,6 @@ class _Section_DetailsState extends State<Section_Details> {
     role = await TokenStorage.getRole();
     fetchAssignments();
     setState(() {});
-    print(widget.section.sectionID);
   }
 
   List<Assignment> assignments = [];
@@ -143,7 +142,7 @@ class _Section_DetailsState extends State<Section_Details> {
               ElevatedButton(
                   onPressed: () {
                     GoRouter.of(context)
-                        .go('/createAssignment/${widget.section.sectionID}');
+                        .go('/createAssignment/${widget.section.id}');
                   },
                   child: const Text("Create assignment"))
             ]
@@ -187,7 +186,7 @@ class _Section_DetailsState extends State<Section_Details> {
                                     SizedBox(width: 15),
                                     Expanded(
                                       child: Text(
-                                        "${assignment.id} (Due: ${DateFormat('MMM dd').format(deadline)})",
+                                        "${assignment.name} (Due: ${DateFormat('MMM dd').format(deadline)})",
                                         overflow: TextOverflow.ellipsis,
                                         maxLines: 1,
                                       ),

@@ -26,6 +26,7 @@ class Assignment_Details extends StatefulWidget {
 class _Assignment_DetailsState extends State<Assignment_Details> {
   String term = "2024 Spring";
   Assignment assignment = Assignment(
+    name: "nonigga",
       term: "term",
       sectionID: "sectionID",
       questions: ["questions"],
@@ -122,6 +123,7 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
 
   Assignment parseAssignmentData(dynamic json) {
   return Assignment(
+      name: json['name'],
       id: json['id'].toString(),
       term: json['term'].toString(),
       sectionID: json['sectionID'].toString(),
