@@ -80,6 +80,10 @@ class _UserInfoState extends State<UserInfo> {
             about = user['about'];
             _displayText = about;
           }
+          else{
+            about = "Enter something interesting about you";
+            _displayText = about;
+          }
         });
       } else {
         throw Exception('Failed to fetch students data');
