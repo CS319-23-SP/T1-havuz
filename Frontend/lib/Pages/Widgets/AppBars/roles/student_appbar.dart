@@ -23,6 +23,17 @@ class StudentAppBar extends StatefulWidget implements PreferredSizeWidget {
 
 class _StudentAppBarState extends State<StudentAppBar> {
   final TextEditingController iconController = TextEditingController();
+  dynamic studentID;
+
+  @override
+  void initState() {
+    super.initState();
+    checkRole();
+  }
+
+  Future<void> checkRole() async {
+    studentID = await TokenStorage.getID();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +60,9 @@ class _StudentAppBarState extends State<StudentAppBar> {
         const VerticalD(),
         AppBarChoice(
           text: "Attendance",
-          onPressed: () {},
+          onPressed: () {
+            GoRouter.of(context).go('/student/attendance/$studentID');
+          },
         ),
         const VerticalD(),
         AppBarChoice(

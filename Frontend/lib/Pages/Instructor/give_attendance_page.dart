@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:first_trial/Objects/section.dart';
 import 'package:first_trial/Objects/student.dart';
 import 'package:first_trial/Pages/Homepage/homepage.dart';
+import 'package:go_router/go_router.dart';
 import 'package:first_trial/token.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -75,28 +76,24 @@ class _GiveAttendancePageState extends State<GiveAttendancePage> {
   }
 
   void _loadStudentsForSection(String sectionID) {
-    // Find the section with the given sectionID from the existing sections list
     final Section? selectedSection = sections.firstWhere(
       (section) => section.id == sectionID,
     );
 
     if (selectedSection != null) {
-      // If the section is found, set the students based on the section's student list
       setState(() {
         students = selectedSection.students.map((studentID) {
-          // Create a Student object from a student ID
           return Student(
             id: studentID,
-            name: studentID, // Placeholder name, update as needed
-            courses: [], // Placeholder, if you have more course data, you can populate this
+            name: studentID,
+            courses: [],
           );
         }).toList();
 
-        // Initialize the studentAttendance map with default false (not present)
         studentAttendance = Map.fromIterable(
           students,
           key: (student) => student.id,
-          value: (student) => false, // Default to absent
+          value: (student) => false,
         );
       });
     } else {
@@ -117,30 +114,41 @@ class _GiveAttendancePageState extends State<GiveAttendancePage> {
         "totalHour": 1,
       };
     }).toList();
-    print(attendanceData);
     try {
+      String? token = await TokenStorage.getToken();
+      if (token == null) {
+        throw Exception('Token not found');
+      }
       final response = await http.post(
-        Uri.parse(
-            'http://localhost:8080/instructor/give-attendance'), // Adjust as needed
+        Uri.parse('http://localhost:8080/instructor/give-attendance'),
         headers: {
+          'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
         },
         body: json.encode({"attendances": attendanceData}),
       );
-
       if (response.statusCode == 200) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Attendance submitted successfully.")),
+          SnackBar(
+            content: Text("Attendance submitted successfully."),
+            duration: const Duration(seconds: 1),
+          ),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Failed to submit attendance.")),
+          SnackBar(
+            content: Text("Failed to submit attendance."),
+            duration: const Duration(seconds: 1),
+          ),
         );
       }
     } catch (e) {
-      print("Error during submission: $e"); // Log any exceptions
+      print("Error during submission: $e");
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error during submission.")),
+        SnackBar(
+          content: Text("Error during submission."),
+          duration: const Duration(seconds: 1),
+        ),
       );
     }
   }
@@ -150,6 +158,13 @@ class _GiveAttendancePageState extends State<GiveAttendancePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text("Give Attendance"),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            GoRouter.of(context)
+                .go('/instructor'); // Navigate back to instructor's page
+          },
+        ),
       ),
       body: Column(
         children: [
@@ -166,12 +181,10 @@ class _GiveAttendancePageState extends State<GiveAttendancePage> {
             onChanged: (value) {
               setState(() {
                 selectedSection = value;
-                _loadStudentsForSection(
-                    value!); // Load students for the selected section
+                _loadStudentsForSection(value!);
               });
             },
           ),
-          // Date selector
           TextButton(
             onPressed: () async {
               final selected = await showDatePicker(
@@ -188,7 +201,6 @@ class _GiveAttendancePageState extends State<GiveAttendancePage> {
             },
             child: Text("Select Date"),
           ),
-          // Student list with checkboxes
           Expanded(
             child: ListView.builder(
               itemCount: students.length,
@@ -206,10 +218,13 @@ class _GiveAttendancePageState extends State<GiveAttendancePage> {
               },
             ),
           ),
-          // Submit button
-          ElevatedButton(
-            onPressed: _submitAttendance, // Call to submit attendance
-            child: Text("Submit"),
+          Padding(
+            padding: const EdgeInsets.only(
+                bottom: 48.0), // Move button up by adding space
+            child: ElevatedButton(
+              onPressed: _submitAttendance,
+              child: Text("Submit"),
+            ),
           ),
         ],
       ),

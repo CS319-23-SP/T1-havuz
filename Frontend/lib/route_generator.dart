@@ -4,6 +4,7 @@ import 'package:first_trial/Pages/Chat/chat_homepage.dart';
 import 'package:first_trial/Pages/Section/Widgets/assignment_details.dart';
 import 'package:first_trial/Pages/UserProfile/user_profile_page.dart';
 import 'package:first_trial/Pages/Auth/login_page.dart';
+import 'package:first_trial/Pages/Student/attendance.dart';
 import 'package:first_trial/Pages/Questions/question_create.dart';
 import 'package:first_trial/Pages/Questions/question_homepage.dart';
 import 'package:first_trial/Pages/Homepage/homepage.dart';
@@ -30,6 +31,10 @@ class RouteGenerator {
     return GoRouter(
       initialLocation: loginRoute,
       routes: [
+        GoRoute(
+          path: '/student/attendance/:studentID',
+          builder: (context, state) => StudentAttendancePage(), // New page
+        ),
         GoRoute(
           path: '/instructor/give-attendance',
           builder: (context, state) => GiveAttendancePage(), // New page

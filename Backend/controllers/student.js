@@ -1,5 +1,6 @@
 const makeValidation = require('@withvoid/make-validation');
 const studentModel = require('../models/student');
+const Attendance = require("../models/attendance");
 
 const onCreateStudent = async (req, res) => {
   try {
@@ -80,20 +81,21 @@ const onGetStudentByID = async (req, res) => {
     }
 }
 
-// const onGetStudentAttendance = async (req, res) => {
-//     try {
-//       const { id } = req.params; // The student ID
+const onGetStudentAttendance = async (req, res) => {
+    try {
+      const { studentID } = req.params; 
+      const attendanceRecords = await Attendance.find({ studentID });
   
-//       const student = await studentModel.findOne({ id });
-//       if (!student) {
-//         return res.status(404).json({ error: "Student not found." });
-//       }
+      if (!attendanceRecords || attendanceRecords.length === 0) {
+        return res.status(404).json({ success: false, error: "No attendance records found for this student." });
+      }
   
-//       return res.status(200).json({ success: true, attendance: student.attendance });
-//     } catch (error) {
-//       return res.status(500).json({ success: false, error: error.message });
-//     }
-//   };
+      return res.status(200).json({ success: true, attendance: attendanceRecords });
+    } catch (error) {
+      console.error("Error retrieving attendance:", error);
+      return res.status(500).json({ success: false, error: "Failed to retrieve attendance." });
+    }
+  };
 
 module.exports = {
     onCreateStudent,
@@ -101,5 +103,5 @@ module.exports = {
     onDeleteStudentByID,
     onGetAllStudents,
     onGetStudentByID,
-    //onGetStudentAttendance
+    onGetStudentAttendance
 };

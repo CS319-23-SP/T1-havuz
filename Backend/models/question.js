@@ -103,20 +103,3 @@ questionSchema.statics.editQuestionByID = async function (id, courses, header, t
 }
 
 module.exports = mongoose.model("Question", questionSchema);
-// router.get('/attendance/:sectionId', async (req, res) => {
-//   const { sectionId } = req.params;
-//   const { studentId } = req.query; // Assuming student ID is passed in the query parameters
-
-//   try {
-//     const student = await Student.findOne({ id: studentId });
-//     if (!student) {
-//       return res.status(404).json({ success: false, message: 'Student not found' });
-//     }
-
-//     const attendanceRecords = student.attendance.filter(record => record.sectionId === sectionId);
-
-//     return res.status(200).json({ success: true, attendanceRecords });
-//   } catch (error) {
-//     return res.status(500).json({ success: false, error: error.message });
-//   }
-// });
