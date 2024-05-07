@@ -43,6 +43,7 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
       questions: ["questions"],
       deadline: "deadline");
   String? role = "unknown";
+  bool isSolutionKeyUploaded = false;
 
   List<Question> questions = [];
 
@@ -154,7 +155,7 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
   Uint8List? _selectedFileBytes;
   String? _selectedFileName;
 
-  Future<void> _uploadFile() async {
+  Future<void> _uploadFile(isSolutionKey) async {
     FilePickerResult? result = await FilePicker.platform.pickFiles();
 
     if (result != null) {
@@ -171,7 +172,19 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
     String fileExtension = _selectedFileName!.split('.').last;
     String newFileName = '${id.toString()}.$fileExtension';
 
-    var path = "$term/${widget.sectionID}/${assignment.id}";
+    var answer = "";
+
+    if(!isSolutionKey){
+      answer = "/answers";
+    }
+    else{
+      setState(() {
+        isSolutionKeyUploaded = true;
+      });
+    }
+      
+
+    var path = "$term/${widget.sectionID}/${assignment.id}$answer";
     var url = Uri.parse('http://localhost:8080/document?path=$path');
 
     var request = http.MultipartRequest('POST', url)
@@ -204,10 +217,10 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
 
   Future<void> fetchStudentList() async {
   try {
-    var path = "$term/${widget.sectionID}/${assignment.id}";
+    var path = "$term/${widget.sectionID}/${assignment.id}/answers";
     var url = Uri.parse('http://localhost:8080/document/list?path=$path');
 
-    final response = await http.get(url);
+    var response = await http.get(url);
 
     if (response.statusCode == 200) {
       final List<dynamic> fileList = json.decode(response.body);
@@ -222,6 +235,25 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
           students.add(filenameStr);
         });
       });
+
+      path = "$term/${widget.sectionID}/${assignment.id}";
+      url = Uri.parse('http://localhost:8080/document/list?path=$path');
+
+      response = await http.get(url);
+
+       if (response.statusCode == 200) {
+        final List<dynamic> fileList = json.decode(response.body);
+        print(fileList);
+        if (fileList.contains("$id.pdf")) {
+          setState(() {
+            isSolutionKeyUploaded = true;
+          });
+        }
+      } else {
+        throw Exception('Failed to fetch student list');
+      }
+
+
     } else {
       throw Exception('Failed to fetch student list');
     }
@@ -230,25 +262,28 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
   }
 }
 
-  Future<void> downloadFile(filename) async {
+  Future<void> downloadFile(filename,isSolutionKey) async {
     try {
-    var path = "$term/${widget.sectionID}/${assignment.id}";
-    var url = Uri.parse('http://localhost:8080/document?path=$path/$filename');
+      var answer = "";
+      if(!isSolutionKey)
+        answer = "/answers";
+      var path = "$term/${widget.sectionID}/${assignment.id}$answer";
+      var url = Uri.parse('http://localhost:8080/document?path=$path/$filename');
 
-    var response = await http.get(url);
+      var response = await http.get(url);
 
-    if (response.statusCode == 200) {
-      Directory appDocDir = await getApplicationDocumentsDirectory();
-      String appDocPath = appDocDir.path;
-      File file = File('$appDocPath/$filename');
-      await file.writeAsBytes(response.bodyBytes);
-      print('File downloaded and saved locally at: ${file.path}');
-    } else {
-      print('Failed to download file: ${response.reasonPhrase}');
+      if (response.statusCode == 200) {
+        Directory appDocDir = await getApplicationDocumentsDirectory();
+        String appDocPath = appDocDir.path;
+        File file = File('$appDocPath/$filename');
+        await file.writeAsBytes(response.bodyBytes);
+        print('File downloaded and saved locally at: ${file.path}');
+      } else {
+        print('Failed to download file: ${response.reasonPhrase}');
+      }
+    } catch (e) {
+      print('Error downloading file: $e');
     }
-  } catch (e) {
-    print('Error downloading file: $e');
-  }
   }
 
   @override
@@ -268,12 +303,40 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
                 SizedBox(height: 10),
                 Text("ID: ${assignment.id}"),
                 Text("Section ID: ${assignment.sectionID}"),
-                Text("Solution Key: ${assignment.solutionKey}"),
+                role == "instructor"
+                    ? isSolutionKeyUploaded
+                        ? Row(
+                            children: [
+                              TextButton(
+                                onPressed: () => downloadFile("$id.pdf", true),
+                                child: Text("Solution key: $id.pdf"),
+                              ),
+                              TextButton(
+                                onPressed: () =>_uploadFile(true),
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.upload),
+                                    Text("update File"),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          )
+                        : TextButton(
+                            onPressed: () => _uploadFile(true),
+                            child: Row(
+                              children: [
+                                Icon(Icons.upload),
+                                Text("select File"),
+                              ],
+                            ),
+                          )
+                  :Container(),
                 Text("Term: ${assignment.term}"),
                 if (role == "student") ...[
                   SizedBox(height: 20),
                   TextButton(
-                    onPressed: _uploadFile,
+                    onPressed: () => _uploadFile(false),
                     child: Row(
                       children: [
                         Icon(Icons.upload),
@@ -287,7 +350,7 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
                   // Dynamic list of download buttons
                   ...students.map((filename) {
                     return TextButton(
-                      onPressed: () => downloadFile(filename),
+                      onPressed: () => downloadFile(filename, false),
                       child: Text(filename),
                     );
                   }).toList(),
