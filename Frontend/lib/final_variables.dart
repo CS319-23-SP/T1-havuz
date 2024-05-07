@@ -5,7 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flip_card/flip_card.dart';
 
 class PoolColors {
-  static const Color white = Colors.white;
+  static const Color white = Color.fromRGBO(255, 255, 255, 1);
 
   static const Color grey = Color.fromARGB(255, 209, 95, 95);
   static const Color cardWhite = Color.fromARGB(255, 241, 241, 242);

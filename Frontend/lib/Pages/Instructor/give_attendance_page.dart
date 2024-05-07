@@ -1,7 +1,10 @@
+import 'package:first_trial/Pages/Widgets/AppBars/app_bars.dart';
+import 'package:first_trial/Pages/Widgets/LeftBar/left_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:first_trial/Objects/section.dart';
 import 'package:first_trial/Objects/student.dart';
 import 'package:first_trial/Pages/Homepage/homepage.dart';
+import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 import 'package:first_trial/token.dart';
 import 'package:http/http.dart' as http;
@@ -110,8 +113,8 @@ class _GiveAttendancePageState extends State<GiveAttendancePage> {
         "studentID": entry.key,
         "sectionID": selectedSection,
         "date": selectedDate.toIso8601String(),
-        "hour": entry.value ? 1 : 0,
-        "totalHour": 1,
+        "hour": entry.value ? 2 : 0,
+        "totalHour": 2,
       };
     }).toList();
     try {
@@ -156,74 +159,128 @@ class _GiveAttendancePageState extends State<GiveAttendancePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Give Attendance"),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () {
-            GoRouter.of(context)
-                .go('/instructor'); // Navigate back to instructor's page
-          },
-        ),
-      ),
-      body: Column(
+      appBar: CustomAppBar(role: role),
+      body: Row(
         children: [
-          // Section selection
-          DropdownButton<String>(
-            hint: Text("Select Section"),
-            value: selectedSection,
-            items: sections.map((section) {
-              return DropdownMenuItem(
-                child: Text(section.sectionID),
-                value: section.id,
-              );
-            }).toList(),
-            onChanged: (value) {
-              setState(() {
-                selectedSection = value;
-                _loadStudentsForSection(value!);
-              });
-            },
-          ),
-          TextButton(
-            onPressed: () async {
-              final selected = await showDatePicker(
-                context: context,
-                initialDate: selectedDate,
-                firstDate: DateTime(2020),
-                lastDate: DateTime(2100),
-              );
-              if (selected != null) {
-                setState(() {
-                  selectedDate = selected;
-                });
-              }
-            },
-            child: Text("Select Date"),
-          ),
+          LeftBar(role: role),
           Expanded(
-            child: ListView.builder(
-              itemCount: students.length,
-              itemBuilder: (context, index) {
-                final student = students[index];
-                return CheckboxListTile(
-                  title: Text(student.name),
-                  value: studentAttendance[student.id],
-                  onChanged: (value) {
-                    setState(() {
-                      studentAttendance[student.id] = value!;
-                    });
-                  },
-                );
-              },
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(
-                bottom: 48.0), // Move button up by adding space
-            child: ElevatedButton(
-              onPressed: _submitAttendance,
-              child: Text("Submit"),
+            child: Row(
+              children: [
+                SizedBox(
+                  width: 50,
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    DropdownButton<String>(
+                      hint: Text("Select Section"),
+                      value: selectedSection,
+                      items: sections.map((section) {
+                        return DropdownMenuItem(
+                          child: Text(section.sectionID),
+                          value: section.id,
+                        );
+                      }).toList(),
+                      onChanged: (value) {
+                        setState(() {
+                          selectedSection = value;
+                          _loadStudentsForSection(value!);
+                        });
+                      },
+                    ),
+                    TextButton(
+                      onPressed: () async {
+                        final selected = await showDatePicker(
+                          context: context,
+                          initialDate: selectedDate,
+                          firstDate: DateTime(2020),
+                          lastDate: DateTime(2100),
+                        );
+                        if (selected != null) {
+                          setState(() {
+                            selectedDate = selected;
+                          });
+                        }
+                      },
+                      child: Row(
+                        children: [
+                          Icon(Icons.calendar_month),
+                          Text("Select Date"),
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(
+                          bottom: 48.0), // Move button up by adding space
+                      child: ElevatedButton(
+                        onPressed: _submitAttendance,
+                        child: Text("Submit"),
+                      ),
+                    ),
+                  ],
+                ),
+                Expanded(
+                  child: Container(
+                    padding: EdgeInsets.all(50),
+                    margin: EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                        border: Border.all(color: Colors.black),
+                        borderRadius: BorderRadius.circular(15)),
+                    child: Column(
+                      children: [
+                        const ListTile(
+                          title: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  "Student ID",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                child: Align(
+                                  alignment: Alignment.centerRight,
+                                  child: Text(
+                                    "Present",
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                        Expanded(
+                          child: ListView.builder(
+                            itemCount: students.length,
+                            itemBuilder: (context, index) {
+                              final student = students[index];
+                              return Container(
+                                decoration: BoxDecoration(
+                                    border: Border.all(color: Colors.black)),
+                                child: CheckboxListTile(
+                                  title: Text(student.name),
+                                  value: studentAttendance[student.id],
+                                  onChanged: (value) {
+                                    setState(() {
+                                      studentAttendance[student.id] = value!;
+                                    });
+                                  },
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ],

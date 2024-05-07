@@ -1,6 +1,7 @@
 import 'package:first_trial/Pages/Admin/admin_page.dart';
 import 'package:first_trial/Pages/Admin/student_create_page.dart';
 import 'package:first_trial/Pages/Chat/chat_homepage.dart';
+import 'package:first_trial/Pages/Chat/create_contact.dart';
 import 'package:first_trial/Pages/Section/Widgets/assignment_details.dart';
 import 'package:first_trial/Pages/Section/Widgets/create_assignment.dart';
 import 'package:first_trial/Pages/UserProfile/user_profile_page.dart';
@@ -30,6 +31,7 @@ class RouteGenerator {
   final String studentCreateRoute = "/admin/studentCreate";
 
   final String createAssignmentRoute = "/createAssignment/:sectionID";
+  final String contactRoute = "/chad/createContact";
 
   getRouter() {
     return GoRouter(
@@ -115,6 +117,11 @@ class RouteGenerator {
             path: adminRoute,
             builder: (context, state) {
               return Admin();
+            }),
+        GoRoute(
+            path: contactRoute,
+            builder: (context, state) {
+              return CreateContactPage();
             }),
       ],
     );
