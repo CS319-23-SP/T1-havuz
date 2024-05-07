@@ -1,114 +1,103 @@
 import 'package:flutter/material.dart';
 import 'package:first_trial/Objects/section.dart';
-import 'package:first_trial/Objects/assignment.dart';
 import 'package:first_trial/token.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:go_router/go_router.dart';
 
-class StudentGradePage extends StatefulWidget {
-  const StudentGradePage({Key? key}) : super(key: key);
+class StudentSectionGradePage extends StatefulWidget {
+  const StudentSectionGradePage({Key? key}) : super(key: key);
 
   @override
-  _StudentGradePageState createState() => _StudentGradePageState();
+  _StudentSectionGradePageState createState() =>
+      _StudentSectionGradePageState();
 }
 
-class _StudentGradePageState extends State<StudentGradePage> {
+class _StudentSectionGradePageState extends State<StudentSectionGradePage> {
   List<Section> sections = [];
-  Map<String, List<Assignment>> assignmentsBySection =
-      {}; // Store assignments by section
-  bool isLoading = true; // Track loading status
+  Map<String, List<dynamic>> sectionAssignments = {};
+  String? studentID;
+  final String term = "2024 Spring"; // Term is fixed
 
   @override
   void initState() {
     super.initState();
-    _loadSections(); // Fetch sections on initialization
+    _loadStudentSections();
   }
 
-  Future<void> _loadSections() async {
+  Future<void> _loadStudentSections() async {
     try {
-      final studentID = await TokenStorage.getID();
-      String? token = await TokenStorage.getToken();
-      if (token == null) {
-        throw Exception('Token not found');
+      studentID = await TokenStorage.getID();
+      final token = await TokenStorage.getToken();
+      if (token == null || studentID == null) {
+        throw Exception('Token or Student ID not found');
       }
 
       final response = await http.get(
         Uri.parse('http://localhost:8080/student/grade/$studentID'),
         headers: {
-          'Authorization': 'Bearer ' + token,
+          'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
         },
       );
 
       if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        final sectionsData =
-            (data['sections'] as List<dynamic>).map((sectionData) {
-          return Section.fromJson(sectionData);
-        }).toList();
+        final responseData = json.decode(response.body);
+        if (responseData['success']) {
+          final sectionData = responseData['sections']; // Extract sections data
 
-        setState(() {
-          sections = sectionsData;
-        });
+          if (sectionData is List) {
+            sections = sectionData
+                .map((section) => Section.fromJson(section))
+                .toList();
+          } else {
+            throw Exception("Invalid data format for sections");
+          }
 
-        await _loadAssignmentsForSections(); // Fetch assignments for the sections
+          // Fetch assignments for each section
+          for (var section in sections) {
+            await _fetchAssignmentsForSection(section, token);
+          }
+
+          setState(() {}); // Refresh UI with updated data
+        } else {
+          throw Exception("Failed to fetch sections");
+        }
       } else {
-        throw Exception("Failed to load sections");
+        throw Exception("Failed to fetch sections");
       }
     } catch (e) {
-      print("Error loading sections: $e");
-      setState(() {
-        isLoading = false;
-      });
+      print('Error fetching sections: $e');
     }
   }
 
-  Future<void> _loadAssignmentsForSections() async {
+  Future<void> _fetchAssignmentsForSection(
+      Section section, String token) async {
     try {
-      const term = "2024 Spring";
-      String? token = await TokenStorage.getToken();
-      if (token == null) {
-        throw Exception('Token not found');
-      }
+      List<dynamic> assignments = [];
 
-      for (final section in sections) {
-        final sectionID = section.id;
-        final assignments = <Assignment>[];
+      for (var assignmentID in section.assignments) {
+        final response = await http.get(
+          Uri.parse(
+              'http://localhost:8080/assignment/$assignmentID/$term/${section.id}'),
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json',
+          },
+        );
 
-        for (final assignmentID in section.assignments) {
-          final response = await http.get(
-            Uri.parse(
-                'http://localhost:8080/assignment/$assignmentID/$term/$sectionID'),
-            headers: {
-              'Authorization': 'Bearer ' + token,
-              'Content-Type': 'application/json',
-            },
-          );
-
-          if (response.statusCode == 200) {
-            final assignmentData = json.decode(response.body);
-            final assignment = Assignment.fromJson(assignmentData);
-            assignments.add(assignment);
-          } else {
-            throw Exception("Failed to load assignment with ID $assignmentID");
-          }
+        if (response.statusCode == 200) {
+          final responseData = json.decode(response.body);
+          assignments.add(responseData['assignment']); // Extract assignment map
+        } else {
+          throw Exception("Failed to fetch assignment with ID $assignmentID");
         }
-
-        setState(() {
-          assignmentsBySection[sectionID] =
-              assignments; // Store assignments by section
-        });
       }
 
-      setState(() {
-        isLoading = false;
-      });
+      sectionAssignments[section.id] =
+          assignments; // Store assignments for the section
     } catch (e) {
-      print("Error loading assignments: $e");
-      setState(() {
-        isLoading = false;
-      });
+      print("Error fetching assignments for section ${section.id}: $e");
     }
   }
 
@@ -116,62 +105,79 @@ class _StudentGradePageState extends State<StudentGradePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Grades"),
+        title: const Text("Grades"),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            GoRouter.of(context).go('/student');
+            GoRouter.of(context).go('/student'); // Navigate back
           },
         ),
       ),
-      body: isLoading
-          ? Center(
-              child: CircularProgressIndicator(),
-            )
-          : ListView(
-              children: sections.map((section) {
-                return Card(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          section.id.substring(0, section.id.length - 2),
-                          style: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                      ..._buildAssignmentList(section.id),
-                    ],
+      body: ListView(
+        padding: const EdgeInsets.all(16.0), // Adding padding for the list
+        children: sections.map((section) {
+          final assignments = sectionAssignments[section.id] ?? [];
+
+          return Card(
+            elevation: 4, // Add a shadow effect
+            child: Padding(
+              padding:
+                  const EdgeInsets.all(12.0), // Add padding inside the card
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    section.sectionID,
+                    style: const TextStyle(
+                        fontSize: 24, fontWeight: FontWeight.bold),
                   ),
-                );
-              }).toList(),
+                  const Divider(),
+                  ...assignments.asMap().entries.map((entry) {
+                    final assignment = entry.value;
+                    final assignmentData = assignment as Map<String, dynamic>;
+                    print(assignmentData);
+
+                    final assignmentName =
+                        assignmentData['name'] ?? 'Unknown Assignment';
+
+                    int? grade;
+
+                    for (var map in assignmentData['grades']) {
+                      if (map.containsKey(studentID)) {
+                        grade = map[studentID];
+                        break;
+                      }
+                    }
+
+                    final studentGrade =
+                        grade ?? 'N/A'; // If grade is null, display 'N/A'
+
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 8.0), // Vertical spacing
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            assignmentName,
+                            style: const TextStyle(fontSize: 18),
+                          ),
+                          Text(
+                            studentGrade
+                                .toString(), // Convert to string for display
+                            style: const TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                    );
+                  }).toList(),
+                ],
+              ),
             ),
+          );
+        }).toList(),
+      ),
     );
-  }
-
-  List<Widget> _buildAssignmentList(String sectionID) {
-    final assignments = assignmentsBySection[sectionID] ?? [];
-
-    return assignments.map((assignment) {
-      final assignmentName = assignment.name;
-      final studentID = TokenStorage.getID();
-      final grade = assignment.grades[studentID];
-      return Column(
-        children: [
-          ListTile(
-            title: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text("Assignment: $assignmentName"),
-                Text("Grade: $grade"),
-              ],
-            ),
-          ),
-          Divider(),
-        ],
-      );
-    }).toList();
   }
 }

@@ -8,7 +8,6 @@ class Assignment {
   String name;
   String solutionKey;
   List<String> questions;
-  Map<String, String> grades;
 
   Assignment({
     required this.term,
@@ -18,7 +17,6 @@ class Assignment {
     required this.name,
     this.id = "",
     this.solutionKey = "",
-    required this.grades,
   });
   factory Assignment.fromJson(Map<String, dynamic> json) {
     return Assignment(
@@ -27,7 +25,6 @@ class Assignment {
         sectionID: json['sectionID'].toString(),
         deadline: json['deadline'].toString(),
         questions: List<String>.from(json['questions'] ?? []),
-        grades: Map<String, String>.from(json['grades'] ?? {}),
         solutionKey: json['solutionKey'].toString(),
         name: json['name'] ?? "mewing");
   }
