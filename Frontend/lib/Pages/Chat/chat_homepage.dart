@@ -5,9 +5,12 @@ import 'dart:convert';
 import 'package:first_trial/Pages/Chat/Widgets/chat_message.dart';
 import 'package:first_trial/Pages/Chat/Widgets/chat_room.dart';
 import 'package:first_trial/Pages/Widgets/AppBars/app_bars.dart';
+import 'package:first_trial/Pages/Widgets/success_fail.dart';
 import 'package:first_trial/final_variables.dart';
 import 'package:first_trial/token.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 
 class Chat_Homepage extends StatefulWidget {
@@ -19,7 +22,10 @@ class Chat_Homepage extends StatefulWidget {
 
 int indexx = 0;
 bool _chatOn = false;
+bool addContact = false;
 String? ID = "";
+
+String? addContactSt = "22000004";
 
 class Chat_HomepageState extends State<Chat_Homepage> {
   String? role = "unknown";
@@ -90,7 +96,75 @@ class Chat_HomepageState extends State<Chat_Homepage> {
         .toList();
   }
 
-  List<List<ChatMessage>> messages = [[], []];
+  List<List<ChatMessage>> messages = [
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    []
+  ];
   Future<void> fetchMessages(String roomId) async {
     String? token = await TokenStorage.getToken();
     if (token == null) {
@@ -120,7 +194,6 @@ class Chat_HomepageState extends State<Chat_Homepage> {
     for (var i = 0; i < responseData['conversation'].length; i++) {
       final message = ChatMessage.fromJson(responseData['conversation'][i]);
       roomMessages.add(message);
-      print(message.messageText);
     }
     int roomIndex = chatRooms.indexWhere((room) => room.roomId == roomID);
     if (roomIndex != -1) {
@@ -146,43 +219,39 @@ class Chat_HomepageState extends State<Chat_Homepage> {
   }
 
   final messageController = TextEditingController();
-  void _createMessage(List<ChatMessage> messages) async {
-    /*final messageText = messageController.text;
-    ChatMessage message = messages[indexx];
-    String chatRoomId = messages[indexx].chatRoomId;
-    String postedById = messages[indexx].postedByUserId;
-
-    final url = Uri.parse('http://localhost:8080/chad');
-    final id = int.tryParse(studentId);
-    if (id == null) {
-      print("bad id");
-      return;
-    }
-
+  void _createMessage(String message, String roomID) async {
     String? token = await TokenStorage.getToken();
     if (token == null) {
       throw Exception('Token not found');
     }
 
-    final response = await http.post(
-      url,
-      headers: {
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
-      },
-      body: json.encode({
-        'firstName': firstName,
-        if (middleName.isNotEmpty) 'middleName': middleName,
-        'lastName': lastName,
-        'department': department,
-      }),
-    );
-    if (response.statusCode == 200) {
-      print('Student created successfully');
-    } else {
-      print('Failed to create student: ${response.reasonPhrase}');
+    try {
+      final response = await http.post(
+        Uri.http('localhost:8080', '/chad/${roomID}'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({'messageText': message}),
+      );
+      print(response.statusCode);
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        setState(() {});
+      } else {
+        print('Failed to create: ${response.reasonPhrase}');
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return FailWidget(
+              context: context,
+              onDismiss: () {},
+            );
+          },
+        );
+      }
+    } catch (e) {
+      print('Error fetching questions: $e');
     }
-    GoRouter.of(context).go('/admin');*/
   }
 
   @override
@@ -204,23 +273,21 @@ class Chat_HomepageState extends State<Chat_Homepage> {
                         child: Align(
                           alignment: Alignment.bottomCenter,
                           child: ListView.builder(
-                            //reverse: true,
+                            reverse: false,
                             shrinkWrap: true,
                             itemCount: messages[indexx].length,
                             itemBuilder: (BuildContext context, int index) {
-                              final bool isMyMessage = messages[indexx]
-                                          [messages[indexx].length - index - 1]
-                                      .postedByUserId ==
-                                  ID;
+                              final bool isMyMessage =
+                                  messages[indexx][index].postedByUserId == ID;
                               return Padding(
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 20.0),
                                 child: Align(
                                     alignment: isMyMessage
-                                        ? Alignment.bottomLeft
+                                        ? Alignment.bottomRight
                                         // Align to end if it's my message
                                         : Alignment
-                                            .bottomRight, // Align to start if it's not my message
+                                            .bottomLeft, // Align to start if it's not my message
                                     child: Container(
                                       constraints: BoxConstraints(
                                           maxWidth: MediaQuery.of(context)
@@ -245,8 +312,14 @@ class Chat_HomepageState extends State<Chat_Homepage> {
                                       padding: EdgeInsets.all(10),
                                       margin:
                                           EdgeInsets.symmetric(vertical: 10),
-                                      child: Text(
-                                          messages[indexx][index].messageText),
+                                      child: Column(
+                                        children: [
+                                          Text(messages[indexx][index]
+                                              .postedByUserId),
+                                          Text(messages[indexx][index]
+                                              .messageText),
+                                        ],
+                                      ),
                                     )),
                               );
                             },
@@ -264,14 +337,17 @@ class Chat_HomepageState extends State<Chat_Homepage> {
                                   hintText: 'Type your message...',
                                   border: OutlineInputBorder(),
                                 ),
-                                // Add your logic to handle sending messages here
-                                // onPressed: () {},
                               ),
                             ),
                             IconButton(
                                 icon: Icon(Icons.send),
-                                onPressed: /*_createMessage(messages[indexx])*/
-                                    () {}),
+                                onPressed: () {
+                                  setState(() {
+                                    _createMessage(messageController.text,
+                                        chatRooms[indexx].roomId);
+                                    messageController.clear();
+                                  });
+                                }),
                           ],
                         ),
                       ),
@@ -318,46 +394,112 @@ class _ContactsState extends State<Contacts> {
     final screenHeight = MediaQuery.of(context).size.height;
 
     // Filter out the user's own ID from the list of chatRoom
-    List<String> otherUserIds = [];
+    List<List<String>> otherUserIds = [
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      []
+    ];
 
     // Iterate through each chat room's userIds and exclude the user's own ID
-
+    int index = 0;
     widget.chatRoom.forEach((chatRoom) {
       for (var userId in chatRoom.userIds) {
         if (userId != ownUserId) {
-          otherUserIds.add(userId);
+          otherUserIds[index].add(userId);
         }
       }
+      index++;
     });
     return Container(
       width: screenWidth / 4,
       decoration: BoxDecoration(color: PoolColors.fairBlue.withOpacity(0.4)),
-      child: ListView.builder(
-          itemCount: widget.chatRoom.length,
-          itemBuilder: (BuildContext context, int index) {
-            return Container(
-              margin: EdgeInsets.symmetric(horizontal: 20),
-              decoration: BoxDecoration(
-                border: Border(
-                  top: BorderSide.none, // Removes the top border
-                  bottom: BorderSide(
-                      color: Colors
-                          .black), // Add or adjust bottom border as needed
-                  left: BorderSide.none, // Add or adjust left border as needed
-                  right:
-                      BorderSide.none, // Add or adjust right border as needed
-                ),
-              ),
-              child: ListTile(
-                onTap: () {
-                  setState(() {
-                    widget.onTapCallback(true, index);
-                  });
-                },
-                title: Text(otherUserIds[index]),
-              ),
-            );
-          }),
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(top: 8.0),
+            child: Container(
+                decoration: BoxDecoration(
+                    border: Border.all(color: Colors.black),
+                    borderRadius: BorderRadius.circular(45)),
+                child: IconButton(
+                    onPressed: () {
+                      setState(() {
+                        GoRouter.of(context).go("/chad/createContact");
+                      });
+                    },
+                    icon: Icon(Icons.add))),
+          ),
+          Expanded(
+            child: ListView.builder(
+                itemCount: widget.chatRoom.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return Container(
+                    margin: EdgeInsets.symmetric(horizontal: 20),
+                    decoration: BoxDecoration(
+                      border: Border(
+                        top: BorderSide.none, // Removes the top border
+                        bottom: BorderSide(
+                            color: Colors
+                                .black), // Add or adjust bottom border as needed
+                        left: BorderSide
+                            .none, // Add or adjust left border as needed
+                        right: BorderSide
+                            .none, // Add or adjust right border as needed
+                      ),
+                    ),
+                    child: ListTile(
+                      onTap: () {
+                        setState(() {
+                          widget.onTapCallback(true, index);
+                        });
+                      },
+                      title: Text(otherUserIds[index].toString()),
+                    ),
+                  );
+                }),
+          ),
+        ],
+      ),
     );
   }
 }
