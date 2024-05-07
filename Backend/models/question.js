@@ -13,6 +13,8 @@ const questionSchema = new mongoose.Schema(
           text: String,
           topics: [String],
           toughness: String,
+          history: [{String: Number}],
+          point: Number,
           pastExams: [String], // Exam ID + Course ID + Term
           creatorID: String,
     },
