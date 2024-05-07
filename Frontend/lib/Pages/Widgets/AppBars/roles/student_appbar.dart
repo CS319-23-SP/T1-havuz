@@ -54,8 +54,10 @@ class _StudentAppBarState extends State<StudentAppBar> {
         const DropdownButtonChoice(),
         const VerticalD(),
         AppBarChoice(
-          text: "Weekly Schedule",
-          onPressed: () {},
+          text: "Grade",
+          onPressed: () {
+            GoRouter.of(context).go('/student/grade/$studentID');
+          },
         ),
         const VerticalD(),
         AppBarChoice(
