@@ -9,7 +9,7 @@ const createForumReply = async (req, res) => {
         const validation = makeValidation(types => ({
             payload: req.body,
             checks: {
-                message: { type: types.string },
+                messageText: { type: types.string },
             },
         }));
         if (!validation.success) return res.status(400).json({ ...validation });
@@ -38,9 +38,10 @@ const getForumRepliesByReplyId = async (req, res) => {
 
         //console.log(replId)
 
-        const forumReplies = await ForumReply.getDirectRepliesOfReply(replId);
+        const repliesOfPost = await ForumReply.getDirectRepliesOfReply(replId);
+        const post = await ForumReply.findById(replId);
 
-        return res.json({ forumReplies });
+        return res.json({ repliesOfPost: repliesOfPost, post });
     } catch (error) {
         console.error('Error getting forum replies:', error);
         return res.status(500).json({ error: 'Internal server error' });
