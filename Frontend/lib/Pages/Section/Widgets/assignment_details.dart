@@ -1,5 +1,10 @@
 import 'dart:convert';
+import 'dart:typed_data';
 import 'package:file_picker/file_picker.dart';
+import 'package:open_file/open_file.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:path_provider/path_provider.dart';
+import 'dart:html' as html;
 
 import 'dart:io';
 import 'package:dio/dio.dart';
@@ -136,18 +141,40 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
     );
   }
 
-  List<String> uploadedFiles = [];
+  Uint8List? _selectedFileBytes;
+  Uint8List? _uploadedFileBytes;
+  String? _selectedFileName;
+  String? _selectedFileType;
 
-  void _uploadFile() async {
+  Future<void> _pickFile() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles();
-
     if (result != null) {
-      File file = File(result.files.single.path!);
-      // Upload the file to server or save locally
-      // For simplicity, let's just add it to the list
       setState(() {
-        uploadedFiles.add(file.path);
+        _selectedFileBytes = result.files.single.bytes;
+        _uploadedFileBytes = null; // Reset uploaded file
+        _selectedFileName = result.files.single.name;
+        _selectedFileType = result.files.single.extension;
       });
+      print(_selectedFileName);
+    }
+  }
+
+  Future<void> _uploadFile() async {
+    if (_selectedFileBytes != null) {
+      setState(() {
+        _uploadedFileBytes = Uint8List.fromList(_selectedFileBytes!);
+      });
+    }
+  }
+
+  Future<void> _openFile() async {
+    if (_selectedFileBytes != null && _selectedFileName != null) {
+      final blob = html.Blob([_selectedFileBytes!]);
+      final url = html.Url.createObjectUrlFromBlob(blob);
+      final anchor = html.AnchorElement(href: url)
+        ..setAttribute("download", _selectedFileName!);
+      anchor.click();
+      html.Url.revokeObjectUrl(url);
     }
   }
 
@@ -172,18 +199,26 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
                 Text("Term: ${assignment.term}"),
                 if (role == "student") ...[
                   TextButton(
-                    onPressed: () {
-                      _uploadFile();
-                    },
+                    onPressed: _pickFile,
                     child: Row(
                       children: [
                         Icon(Icons.upload),
-                        Text("Upload File"),
+                        Text("select File"),
                       ],
                     ),
                   )
                 ],
                 SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: _uploadFile,
+                  child: Text('Upload File'),
+                ),
+                SizedBox(height: 20),
+                if (_uploadedFileBytes != null)
+                  ElevatedButton(
+                    onPressed: _openFile,
+                    child: Text('Open Uploaded File'),
+                  ),
                 Text("Questions:",
                     style:
                         TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
@@ -200,16 +235,6 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
                     },
                   ),
                 ),
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: uploadedFiles.length,
-                    itemBuilder: (context, index) {
-                      return ListTile(
-                        title: Text(uploadedFiles[index]),
-                      );
-                    },
-                  ),
-                )
               ],
             ),
           ),
@@ -233,6 +258,6 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
         'file': await MultipartFile.fromFile(filepath, filename: filename),
       });
       var response = dio.post("")
-    }
-  }*/
+    }
+  }*/
 }
