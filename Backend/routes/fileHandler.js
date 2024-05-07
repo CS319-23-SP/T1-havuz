@@ -67,6 +67,10 @@ function downloadFile(filePath, res) {
   
 }
 
+function listFilesInDirectory(directoryPath) {
+  return fs.readdirSync(directoryPath);
+}
+
 router
   .post('/', handleFileUpload, upload.single('file'), (req, res) => {
     res.status(200).send('Si señor');
@@ -83,6 +87,22 @@ router
       return res.status(400).send('Invalid file path');
 
     downloadFile(filePath, res);
+  })
+  .get('/list', (req, res) => {
+    const { path: urlPath } = req.query;
+  
+    if (!urlPath) {
+      return res.status(400).send('Path parameter is missing');
+    }
+  
+    const directoryPath = createFilePath(urlPath);
+  
+    try {
+      const files = listFilesInDirectory(directoryPath);
+      res.json(files);
+    } catch (error) {
+      res.status(500).send('Error listing files in directory');
+    }
   });
 
 module.exports = router;
