@@ -37,11 +37,14 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
   String term = "2024 Spring";
   String? id = "";
   Assignment assignment = Assignment(
+
+
       name: "nonigga",
       term: "term",
       sectionID: "sectionID",
       questions: ["questions"],
       deadline: "deadline");
+
   String? role = "unknown";
   bool isSolutionKeyUploaded = false;
 
@@ -151,6 +154,8 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
       solutionKey: json['solutionKey'].toString(),
     );
   }
+
+
 
   Uint8List? _selectedFileBytes;
   String? _selectedFileName;
@@ -263,6 +268,7 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
 }
 
   Future<void> downloadFile(filename,isSolutionKey) async {
+
     try {
       var answer = "";
       if(!isSolutionKey)
@@ -385,6 +391,8 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
     );
   }
 
+
+
   /*Future uploadPdf() async {
     var dio = Dio();
     FilePickerResult? result = await FilePicker.platform.pickFiles();
@@ -402,4 +410,5 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
       var response = dio.post("")
     }
   }*/
+
 }

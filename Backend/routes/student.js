@@ -10,6 +10,7 @@ router
   .get('/:id', student.onGetStudentByID)
   .get("/attendance/:studentID", student.onGetStudentAttendance)
   .delete('/:id', roleChecker(['admin']), student.onDeleteStudentByID)
-  .patch('/:id', roleChecker(['admin', 'student']), student.onEditStudentByID);
-
+  .patch('/:id', roleChecker(['admin', 'student']), student.onEditStudentByID)
+  .get("/grade/:studentID", student.onGetSectionsByStudentID);
+  
 module.exports = router;
