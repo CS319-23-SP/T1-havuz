@@ -4,6 +4,7 @@ const mogger = require("morgan");
 const cors = require("cors");
 const socketio = require("socket.io"); 
 const roleChecker = require('../middlewares/roleChecker');
+const bodyParser = require('body-parser');
 
 require("../.config/mongo");
 
@@ -18,7 +19,7 @@ const assignmentRouter = require("../routes/assignment");
 const sectionRouter = require("../routes/section");
 const chadRouter = require("../routes/chad");
 const forumRouter = require("../routes/forum");
-const pdfUploadRouter = require("../routes/pdfHandler");
+const fileRouter = require("../routes/fileHandler");
 
 
 const { decode } = require('../middlewares/jwt');
@@ -32,6 +33,8 @@ app.use(mogger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cors());
+app.use(bodyParser.json({ limit: '50mb' }));
+app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
 app.use('/profiles', express.static('uploads'))
 
@@ -46,7 +49,7 @@ app.use("/assignment", decode, assignmentRouter);
 app.use("/section", decode, sectionRouter);
 app.use("/chad", decode, chadRouter);
 app.use("/forum", decode, forumRouter);
-app.use("/document", pdfUploadRouter);
+app.use("/document", fileRouter);
 
 app.use('*', (req, res) => {
     return res.status(404).json({

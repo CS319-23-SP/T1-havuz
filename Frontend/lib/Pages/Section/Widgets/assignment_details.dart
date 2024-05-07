@@ -5,7 +5,7 @@ import 'package:open_file/open_file.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:html' as html;
-
+import 'dart:convert';
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:first_trial/Objects/assignment.dart';
@@ -33,6 +33,7 @@ class Assignment_Details extends StatefulWidget {
 
 class _Assignment_DetailsState extends State<Assignment_Details> {
   String term = "2024 Spring";
+  String? id = "";
   Assignment assignment = Assignment(
       name: "nonigga",
       term: "term",
@@ -56,6 +57,7 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
 
   Future<void> checkRole() async {
     role = await TokenStorage.getRole();
+    id = await TokenStorage.getID();
 
     await getAssignmentAndQuestions();
     setState(() {});
@@ -142,28 +144,40 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
   }
 
   Uint8List? _selectedFileBytes;
-  Uint8List? _uploadedFileBytes;
   String? _selectedFileName;
-  String? _selectedFileType;
-
-  Future<void> _pickFile() async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles();
-    if (result != null) {
-      setState(() {
-        _selectedFileBytes = result.files.single.bytes;
-        _uploadedFileBytes = null; // Reset uploaded file
-        _selectedFileName = result.files.single.name;
-        _selectedFileType = result.files.single.extension;
-      });
-      print(_selectedFileName);
-    }
-  }
 
   Future<void> _uploadFile() async {
-    if (_selectedFileBytes != null) {
+    FilePickerResult? result = await FilePicker.platform.pickFiles();
+
+    if (result != null) {
       setState(() {
-        _uploadedFileBytes = Uint8List.fromList(_selectedFileBytes!);
+        _selectedFileBytes = result.files.single.bytes!;
+        _selectedFileName = result.files.single.name;
       });
+    }
+
+    String fileExtension = _selectedFileName!.split('.').last;
+    String newFileName = '${id.toString()}.$fileExtension';
+
+    if (_selectedFileBytes == null || _selectedFileName == null) {
+      return;
+    }
+
+    var path = "$term/${widget.sectionID}/${assignment.id}";
+    var url = Uri.parse('http://localhost:8080/document?path=$path');
+
+    var request = http.MultipartRequest('POST', url)
+      ..files.add(http.MultipartFile.fromBytes('file', _selectedFileBytes!, filename: newFileName!));
+
+    try {
+      var response = await request.send();
+      if (response.statusCode == 200) {
+        print('File uploaded successfully');
+      } else {
+        print('Error uploading file: ${response.reasonPhrase}');
+      }
+    } catch (e) {
+      print('Erroro uploading file: $e');
     }
   }
 
@@ -198,8 +212,9 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
                 Text("Solution Key: ${assignment.solutionKey}"),
                 Text("Term: ${assignment.term}"),
                 if (role == "student") ...[
+                  SizedBox(height: 20),
                   TextButton(
-                    onPressed: _pickFile,
+                    onPressed: _uploadFile,
                     child: Row(
                       children: [
                         Icon(Icons.upload),
@@ -209,12 +224,7 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
                   )
                 ],
                 SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: _uploadFile,
-                  child: Text('Upload File'),
-                ),
-                SizedBox(height: 20),
-                if (_uploadedFileBytes != null)
+                if (_selectedFileBytes != null)
                   ElevatedButton(
                     onPressed: _openFile,
                     child: Text('Open Uploaded File'),

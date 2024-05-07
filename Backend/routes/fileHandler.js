@@ -15,16 +15,12 @@ const storage = multer.diskStorage({
   }
 });
 
-function fileFilter(req, file, cb) {
-  if (file.mimetype !== 'application/pdf') {
-      return cb(new Error('Only PDF files are allowed'));
-  }
-  cb(null, true);
-}
 
 const upload = multer({ 
   storage: storage,
-  fileFilter: fileFilter
+  limits: {
+    fileSize: 10 * 1024 * 1024
+  }
 });
 
 function createFolders(urlPath) {
@@ -41,7 +37,7 @@ function createFolders(urlPath) {
     return currentPath;
 }
 
-function handlePDFUpload(req, res, next) {
+function handleFileUpload(req, res, next) {
     const { path: urlPath } = req.query;
     if (!urlPath) {
         return res.status(400).send('Path parameter is missing');
@@ -61,19 +57,18 @@ function createFilePath(urlPath) {
   return path.join(documentsPath, ...folders);
 }
 
-function downloadPDF(pdfPath, res) {
-  const filename = path.basename(pdfPath);
+function downloadFile(filePath, res) {
+  const filename = path.basename(filePath);
 
   res.setHeader('Content-disposition', 'attachment; filename=' + filename);
-  res.setHeader('Content-type', 'application/pdf');
 
-  const file = fs.createReadStream(pdfPath);
-  file.pipe(res);
+  const fileStream = fs.createReadStream(filePath);
+  fileStream.pipe(res);
   
 }
 
 router
-  .post('/', handlePDFUpload, upload.single('pdf'), (req, res) => {
+  .post('/', handleFileUpload, upload.single('file'), (req, res) => {
     res.status(200).send('Si señor');
   })
   .get('/', (req, res) => {
@@ -82,12 +77,12 @@ router
     if (!urlPath)
         return res.status(400).send('Path parameter is missing');
 
-    const pdfPath = createFilePath(urlPath);
+    const filePath = createFilePath(urlPath);
 
-    if (!isValidFilePath(pdfPath))
-      return res.status(400).send('Invalid PDF path');
+    if (!isValidFilePath(filePath))
+      return res.status(400).send('Invalid file path');
 
-    downloadPDF(pdfPath, res);
+    downloadFile(filePath, res);
   });
 
 module.exports = router;
