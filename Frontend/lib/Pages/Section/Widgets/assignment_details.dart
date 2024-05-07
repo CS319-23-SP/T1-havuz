@@ -16,6 +16,8 @@ import 'package:first_trial/token.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
+
 
 class Assignment_Details extends StatefulWidget {
   const Assignment_Details({
@@ -47,6 +49,8 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
   Future<void> getAssignmentAndQuestions() async {
     await getAssignmentById();
     await fetchQuestions();
+
+    
   }
 
   @override
@@ -60,6 +64,10 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
     id = await TokenStorage.getID();
 
     await getAssignmentAndQuestions();
+
+    if(role == "instructor") {
+      await fetchStudentList();
+    }
     setState(() {});
   }
 
@@ -156,12 +164,12 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
       });
     }
 
-    String fileExtension = _selectedFileName!.split('.').last;
-    String newFileName = '${id.toString()}.$fileExtension';
-
     if (_selectedFileBytes == null || _selectedFileName == null) {
       return;
     }
+
+    String fileExtension = _selectedFileName!.split('.').last;
+    String newFileName = '${id.toString()}.$fileExtension';
 
     var path = "$term/${widget.sectionID}/${assignment.id}";
     var url = Uri.parse('http://localhost:8080/document?path=$path');
@@ -190,6 +198,57 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
       anchor.click();
       html.Url.revokeObjectUrl(url);
     }
+  }
+
+  List<String> students = [];
+
+  Future<void> fetchStudentList() async {
+  try {
+    var path = "$term/${widget.sectionID}/${assignment.id}";
+    var url = Uri.parse('http://localhost:8080/document/list?path=$path');
+
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final List<dynamic> fileList = json.decode(response.body);
+
+      setState(() {
+        students.clear();
+      });
+
+      fileList.forEach((filename) {
+        String filenameStr = filename.toString();
+        setState(() {
+          students.add(filenameStr);
+        });
+      });
+    } else {
+      throw Exception('Failed to fetch student list');
+    }
+  } catch (e) {
+    print('Error fetching student list: $e');
+  }
+}
+
+  Future<void> downloadFile(filename) async {
+    try {
+    var path = "$term/${widget.sectionID}/${assignment.id}";
+    var url = Uri.parse('http://localhost:8080/document?path=$path/$filename');
+
+    var response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      Directory appDocDir = await getApplicationDocumentsDirectory();
+      String appDocPath = appDocDir.path;
+      File file = File('$appDocPath/$filename');
+      await file.writeAsBytes(response.bodyBytes);
+      print('File downloaded and saved locally at: ${file.path}');
+    } else {
+      print('Failed to download file: ${response.reasonPhrase}');
+    }
+  } catch (e) {
+    print('Error downloading file: $e');
+  }
   }
 
   @override
@@ -222,6 +281,16 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
                       ],
                     ),
                   )
+                ],
+                if (role == "instructor") ...[
+                  SizedBox(height: 20),
+                  // Dynamic list of download buttons
+                  ...students.map((filename) {
+                    return TextButton(
+                      onPressed: () => downloadFile(filename),
+                      child: Text(filename),
+                    );
+                  }).toList(),
                 ],
                 SizedBox(height: 20),
                 if (_selectedFileBytes != null)
