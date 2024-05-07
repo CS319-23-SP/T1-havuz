@@ -14,7 +14,7 @@ const assignmentSchema = new mongoose.Schema(
           deadline: String, 
           solutionKey: String,
           questions: [String],
-          grades: [{String: String}]
+          grades: [{String: Number}]
     },
     {
         timestamps: true,
@@ -101,5 +101,6 @@ assignmentSchema.statics.editAssignment = async function (id, term, sectionID, q
         throw error;
     }
 }
+
 
 module.exports = mongoose.model("Assignment", assignmentSchema);

@@ -37,11 +37,14 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
   String term = "2024 Spring";
   String? id = "";
   Assignment assignment = Assignment(
+
+
       name: "nonigga",
       term: "term",
       sectionID: "sectionID",
       questions: ["questions"],
       deadline: "deadline");
+
   String? role = "unknown";
 
   List<Question> questions = [];
@@ -151,6 +154,8 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
     );
   }
 
+
+
   Uint8List? _selectedFileBytes;
   String? _selectedFileName;
 
@@ -229,6 +234,7 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
     print('Error fetching student list: $e');
   }
 }
+
 
   Future<void> downloadFile(filename) async {
     try {
@@ -322,6 +328,8 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
     );
   }
 
+
+
   /*Future uploadPdf() async {
     var dio = Dio();
     FilePickerResult? result = await FilePicker.platform.pickFiles();
@@ -339,4 +347,5 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
       var response = dio.post("")
     }
   }*/
+
 }

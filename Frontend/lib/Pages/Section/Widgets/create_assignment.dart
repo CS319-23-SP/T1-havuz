@@ -73,7 +73,6 @@ class _CreateAssignmentPageState extends State<CreateAssignmentPage> {
       print('Failed to create assignment: ${response.reasonPhrase}');
     }
     GoRouter.of(context).go('/instructor');
-    
   }
 
   List<Question> questions = [];
@@ -129,7 +128,7 @@ class _CreateAssignmentPageState extends State<CreateAssignmentPage> {
   @override
   Widget build(BuildContext context) {
     if (questionsText.isEmpty) {
-      return CircularProgressIndicator(); 
+      return CircularProgressIndicator();
     }
     late List<ValueItem> questionOptions = questionsText
         .map((question) => ValueItem(label: question, value: question))
@@ -211,24 +210,23 @@ class _CreateAssignmentPageState extends State<CreateAssignmentPage> {
                     SizedBox(height: 20.0),
                     Center(
                       child: ElevatedButton(
-                      onPressed: () {
-                        List<String> selectedQuestionIDS = [];
-                        selectedCourses.forEach((questionText) => 
-                          questions.forEach((question) {
-                            if(question.text == questionText)
-                              selectedQuestionIDS.add(question.id);
-                           })
-                        );
-                        _createAssignment(selectedQuestionIDS);
-                      },
-                      child: Text('Create Assignment'),
-                    ),
+                        onPressed: () {
+                          List<String> selectedQuestionIDS = [];
+                          selectedCourses.forEach(
+                              (questionText) => questions.forEach((question) {
+                                    if (question.text == questionText)
+                                      selectedQuestionIDS.add(question.id);
+                                  }));
+                          _createAssignment(selectedQuestionIDS);
+                        },
+                        child: Text('Create Assignment'),
+                      ),
                     )
                   ]),
             ),
           ),
         ],
-    ),
-);
-}
+      ),
+    );
+  }
 }
