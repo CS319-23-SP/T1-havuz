@@ -5,7 +5,7 @@ import 'package:open_file/open_file.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:html' as html;
-
+import 'dart:convert';
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:first_trial/Objects/assignment.dart';
@@ -16,6 +16,8 @@ import 'package:first_trial/token.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
+
 
 class Assignment_Details extends StatefulWidget {
   const Assignment_Details({
@@ -33,6 +35,7 @@ class Assignment_Details extends StatefulWidget {
 
 class _Assignment_DetailsState extends State<Assignment_Details> {
   String term = "2024 Spring";
+  String? id = "";
   Assignment assignment = Assignment(
       name: "nonigga",
       term: "term",
@@ -46,6 +49,8 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
   Future<void> getAssignmentAndQuestions() async {
     await getAssignmentById();
     await fetchQuestions();
+
+    
   }
 
   @override
@@ -56,8 +61,13 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
 
   Future<void> checkRole() async {
     role = await TokenStorage.getRole();
+    id = await TokenStorage.getID();
 
     await getAssignmentAndQuestions();
+
+    if(role == "instructor") {
+      await fetchStudentList();
+    }
     setState(() {});
   }
 
@@ -142,28 +152,40 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
   }
 
   Uint8List? _selectedFileBytes;
-  Uint8List? _uploadedFileBytes;
   String? _selectedFileName;
-  String? _selectedFileType;
-
-  Future<void> _pickFile() async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles();
-    if (result != null) {
-      setState(() {
-        _selectedFileBytes = result.files.single.bytes;
-        _uploadedFileBytes = null; // Reset uploaded file
-        _selectedFileName = result.files.single.name;
-        _selectedFileType = result.files.single.extension;
-      });
-      print(_selectedFileName);
-    }
-  }
 
   Future<void> _uploadFile() async {
-    if (_selectedFileBytes != null) {
+    FilePickerResult? result = await FilePicker.platform.pickFiles();
+
+    if (result != null) {
       setState(() {
-        _uploadedFileBytes = Uint8List.fromList(_selectedFileBytes!);
+        _selectedFileBytes = result.files.single.bytes!;
+        _selectedFileName = result.files.single.name;
       });
+    }
+
+    if (_selectedFileBytes == null || _selectedFileName == null) {
+      return;
+    }
+
+    String fileExtension = _selectedFileName!.split('.').last;
+    String newFileName = '${id.toString()}.$fileExtension';
+
+    var path = "$term/${widget.sectionID}/${assignment.id}";
+    var url = Uri.parse('http://localhost:8080/document?path=$path');
+
+    var request = http.MultipartRequest('POST', url)
+      ..files.add(http.MultipartFile.fromBytes('file', _selectedFileBytes!, filename: newFileName!));
+
+    try {
+      var response = await request.send();
+      if (response.statusCode == 200) {
+        print('File uploaded successfully');
+      } else {
+        print('Error uploading file: ${response.reasonPhrase}');
+      }
+    } catch (e) {
+      print('Erroro uploading file: $e');
     }
   }
 
@@ -176,6 +198,57 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
       anchor.click();
       html.Url.revokeObjectUrl(url);
     }
+  }
+
+  List<String> students = [];
+
+  Future<void> fetchStudentList() async {
+  try {
+    var path = "$term/${widget.sectionID}/${assignment.id}";
+    var url = Uri.parse('http://localhost:8080/document/list?path=$path');
+
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final List<dynamic> fileList = json.decode(response.body);
+
+      setState(() {
+        students.clear();
+      });
+
+      fileList.forEach((filename) {
+        String filenameStr = filename.toString();
+        setState(() {
+          students.add(filenameStr);
+        });
+      });
+    } else {
+      throw Exception('Failed to fetch student list');
+    }
+  } catch (e) {
+    print('Error fetching student list: $e');
+  }
+}
+
+  Future<void> downloadFile(filename) async {
+    try {
+    var path = "$term/${widget.sectionID}/${assignment.id}";
+    var url = Uri.parse('http://localhost:8080/document?path=$path/$filename');
+
+    var response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      Directory appDocDir = await getApplicationDocumentsDirectory();
+      String appDocPath = appDocDir.path;
+      File file = File('$appDocPath/$filename');
+      await file.writeAsBytes(response.bodyBytes);
+      print('File downloaded and saved locally at: ${file.path}');
+    } else {
+      print('Failed to download file: ${response.reasonPhrase}');
+    }
+  } catch (e) {
+    print('Error downloading file: $e');
+  }
   }
 
   @override
@@ -198,8 +271,9 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
                 Text("Solution Key: ${assignment.solutionKey}"),
                 Text("Term: ${assignment.term}"),
                 if (role == "student") ...[
+                  SizedBox(height: 20),
                   TextButton(
-                    onPressed: _pickFile,
+                    onPressed: _uploadFile,
                     child: Row(
                       children: [
                         Icon(Icons.upload),
@@ -208,13 +282,18 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
                     ),
                   )
                 ],
+                if (role == "instructor") ...[
+                  SizedBox(height: 20),
+                  // Dynamic list of download buttons
+                  ...students.map((filename) {
+                    return TextButton(
+                      onPressed: () => downloadFile(filename),
+                      child: Text(filename),
+                    );
+                  }).toList(),
+                ],
                 SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: _uploadFile,
-                  child: Text('Upload File'),
-                ),
-                SizedBox(height: 20),
-                if (_uploadedFileBytes != null)
+                if (_selectedFileBytes != null)
                   ElevatedButton(
                     onPressed: _openFile,
                     child: Text('Open Uploaded File'),
