@@ -26,11 +26,12 @@ class Assignment_Details extends StatefulWidget {
 class _Assignment_DetailsState extends State<Assignment_Details> {
   String term = "2024 Spring";
   Assignment assignment = Assignment(
-    name: "nonigga",
+      name: "nonigga",
       term: "term",
       sectionID: "sectionID",
       questions: ["questions"],
-      deadline: "deadline");
+      deadline: "deadline",
+      grades: {});
   String? role = "unknown";
 
   List<Question> questions = [];
@@ -122,16 +123,16 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
   }
 
   Assignment parseAssignmentData(dynamic json) {
-  return Assignment(
-      name: json['name'],
-      id: json['id'].toString(),
-      term: json['term'].toString(),
-      sectionID: json['sectionID'].toString(),
-      deadline: json['deadline'].toString(),
-      questions: List<String>.from(json['questions']),
-      solutionKey: json['solutionKey'].toString(),
-  );
-}
+    return Assignment(
+        name: json['name'],
+        id: json['id'].toString(),
+        term: json['term'].toString(),
+        sectionID: json['sectionID'].toString(),
+        deadline: json['deadline'].toString(),
+        questions: List<String>.from(json['questions']),
+        solutionKey: json['solutionKey'].toString(),
+        grades: Map<String, String>.from(json['grades']));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -173,7 +174,7 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
             ),
           ),
         ],
-     ),
-);
-}
+      ),
+    );
+  }
 }
