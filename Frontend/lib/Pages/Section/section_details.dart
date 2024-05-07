@@ -131,31 +131,17 @@ class _Section_DetailsState extends State<Section_Details> {
     var width = MediaQuery.of(context).size.width;
     // Ensure assignments are fetched before rendering
 
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
+    return Row(
       children: [
-        Row(
-          children: [
-            ElevatedButton(
-                onPressed: widget.onBack, child: Icon(Icons.arrow_back)),
-            if (role == "instructor") ...[
-              ElevatedButton(
-                  onPressed: () {
-                    GoRouter.of(context)
-                        .go('/createAssignment/${widget.section.id}');
-                  },
-                  child: const Text("Create assignment"))
-            ]
-          ],
-        ),
+        ElevatedButton(onPressed: widget.onBack, child: Icon(Icons.arrow_back)),
         Expanded(
           child: Container(
             decoration: BoxDecoration(color: PoolColors.cardWhite),
-            height: 500,
-            width: 1500,
+            height: 1250,
+            width: 1250,
             child: SingleChildScrollView(
               child: Column(
-//                crossAxisAlignment: CrossAxisAlignment.stretch,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   for (int i = 0; i < weeks.length; i++)
                     Column(
@@ -186,19 +172,18 @@ class _Section_DetailsState extends State<Section_Details> {
                                     SizedBox(width: 15),
                                     Expanded(
                                       child: Text(
-                                        "${assignment.name} (Due: ${DateFormat('MMM dd').format(deadline)})",
+                                        "${assignment.id} (Due: ${DateFormat('MMM dd').format(deadline)})",
                                         overflow: TextOverflow.ellipsis,
                                         maxLines: 1,
                                       ),
                                     ),
                                   ],
                                 ),
-                                onPressed: () async {
+                                onPressed: () {
                                   final String assignmentid = assignment.id;
                                   final String sectionid = assignment.sectionID;
-                                  String? role = await TokenStorage.getRole();
                                   GoRouter.of(context).go(
-                                      '/$role/assignment/$sectionid/$assignmentid');
+                                      '/instructor/assignment/$sectionid/$assignmentid');
                                 },
                               ),
                             );
