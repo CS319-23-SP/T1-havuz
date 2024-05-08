@@ -35,7 +35,7 @@ Pool offers a wide range of features to address the diverse needs of its users, 
 
   Pool stands out for its comprehensive functionality, user-friendly interface, and efficiency in simplifying administrative tasks. By providing a centralized platform for all course-related activities, Pool allows users to focus more on teaching and learning. Its adaptability to various user requirements ensures its versatility, optimizing the educational experience for all involved parties.
 
-**What Makes it Interesting/Cool**
+**What Makes it Interesting**
 
 Pool revolutionizes course management in universities by leveraging technology to streamline workflows. Its intuitive design and seamless integration with existing systems make it a standout solution in educational software. With the ability to scale and innovate, Pool remains at the forefront of course management technology, making it an appealing choice for institutions seeking modernization.
 
