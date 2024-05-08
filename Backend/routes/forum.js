@@ -7,6 +7,6 @@ router
   .post('/', forumController.createForumPost)
   .post('/:parentReplyId', forumController.createForumReply)
   .get('/:replId', forumController.getForumRepliesByReplyId)
-  //.get('/', forumController.getAll)
+  .get('/section/:sectionId', forumController.getForumPostsBySectionId);
 
 module.exports = router;
