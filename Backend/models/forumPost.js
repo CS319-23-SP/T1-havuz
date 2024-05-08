@@ -10,6 +10,10 @@ const forumPostSchema = new mongoose.Schema(
     title: {
       type: String,
       required: true,
+    },    
+    sectionId: {
+      type: String,
+      required: true,
     },
     initialReplyId: {
       type: String,
@@ -23,17 +27,28 @@ const forumPostSchema = new mongoose.Schema(
   }
 );
 
-forumPostSchema.statics.createForumPost = async function (forumInitiator, title) {
+forumPostSchema.statics.createForumPost = async function (forumInitiator, title, sectionId) {
   try {
     const forumPost = await this.create({
       forumInitiator,
       title,
+      sectionId
     });
     return forumPost;
   } catch (error) {
     throw error;
   }
 };
+
+forumPostSchema.statics.getAllForumPostsBySectionId = async function (sectionId) {
+  try {
+    const posts = await this.find({ sectionId });
+    return posts;
+  } catch (error) {
+    throw error;
+  }
+};
+
 
 forumPostSchema.statics.getFirstReplyWithReplies = async function (postId) {
   try {

@@ -71,12 +71,11 @@ const getFirstReplyWithReplies = async (req, res) => {
 const createForumPost = async (req, res) => {
     try {
         
-        //console.log(title)
         const validation = makeValidation(types => ({
             payload: req.body,
             checks: {
               title: { type: types.string },
-              message: { type: types.string },
+              messageText: { type: types.string },
             }
           }));   
           
@@ -84,15 +83,16 @@ const createForumPost = async (req, res) => {
         if (!validation.success) return res.status(400).json({ ...validation });
 
         const forumInitiator = req._id;
-        const { title, message } = req.body;
+        const { title, message: messageText, sectionId } = req.body;
 
         const forumPost = await ForumPost.createForumPost(
             forumInitiator,
             title,
+            sectionId,
         );
 
         const initialReply = await ForumReply.createForumReply(
-            message,
+            messageText,
             forumInitiator, 
             forumPost.initialReplyId, 
         );
@@ -105,9 +105,24 @@ const createForumPost = async (req, res) => {
     }
 };
 
+const getForumPostsBySectionId = async (req, res) => {
+    try {
+        const { sectionId } = req.params;
+
+        const forumPosts = await ForumPost.getAllForumPostsBySectionId(sectionId);
+
+        return res.json({ forumPosts });
+    } catch (error) {
+        console.error('Error getting forum posts by section ID:', error);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+
 module.exports = {  
     createForumReply,
     getForumRepliesByReplyId,
     getFirstReplyWithReplies,
-    createForumPost 
+    createForumPost,
+    getForumPostsBySectionId
     };
