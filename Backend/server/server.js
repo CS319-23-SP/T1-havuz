@@ -20,6 +20,7 @@ const sectionRouter = require("../routes/section");
 const chadRouter = require("../routes/chad");
 const forumRouter = require("../routes/forum");
 const fileRouter = require("../routes/fileHandler");
+const eventRouter = require("../routes/event");
 
 
 const { decode } = require('../middlewares/jwt');
@@ -50,6 +51,7 @@ app.use("/section", decode, sectionRouter);
 app.use("/chad", decode, chadRouter);
 app.use("/forum", decode, forumRouter);
 app.use("/document", fileRouter);
+app.use("/event", decode, eventRouter);
 
 app.use('*', (req, res) => {
     return res.status(404).json({
