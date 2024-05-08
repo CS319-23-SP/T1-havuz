@@ -126,3 +126,6 @@ module.exports = {
     createForumPost,
     getForumPostsBySectionId
     };
+
+
+//forum controller

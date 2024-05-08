@@ -132,11 +132,27 @@ class _Section_DetailsState extends State<Section_Details> {
     // Ensure assignments are fetched before rendering
 
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        ElevatedButton(onPressed: widget.onBack, child: Icon(Icons.arrow_back)),
+        Row(
+          children: [
+            ElevatedButton(
+                onPressed: widget.onBack, child: Icon(Icons.arrow_back)),
+            if (role == "instructor") ...[
+              ElevatedButton(
+                  onPressed: () {
+                    GoRouter.of(context)
+                        .go('/createAssignment/${widget.section.id}');
+                  },
+                  child: const Text("Create assignment"))
+            ]
+          ],
+        ),
         Expanded(
           child: Container(
-            decoration: BoxDecoration(color: PoolColors.cardWhite),
+            decoration: BoxDecoration(
+                color: PoolColors.cardWhite,
+                borderRadius: BorderRadius.circular(15)),
             height: 1250,
             width: 1250,
             child: SingleChildScrollView(
@@ -172,18 +188,19 @@ class _Section_DetailsState extends State<Section_Details> {
                                     SizedBox(width: 15),
                                     Expanded(
                                       child: Text(
-                                        "${assignment.id} (Due: ${DateFormat('MMM dd').format(deadline)})",
+                                        "${assignment.name} (Due: ${DateFormat('MMM dd').format(deadline)})",
                                         overflow: TextOverflow.ellipsis,
                                         maxLines: 1,
                                       ),
                                     ),
                                   ],
                                 ),
-                                onPressed: () {
+                                onPressed: () async {
                                   final String assignmentid = assignment.id;
                                   final String sectionid = assignment.sectionID;
+                                  String? role = await TokenStorage.getRole();
                                   GoRouter.of(context).go(
-                                      '/instructor/assignment/$sectionid/$assignmentid');
+                                      '/$role/assignment/$sectionid/$assignmentid');
                                 },
                               ),
                             );
@@ -195,6 +212,22 @@ class _Section_DetailsState extends State<Section_Details> {
               ),
             ),
           ),
+        ),
+        Column(
+          children: [
+            TextButton(
+                onPressed: () {
+                  final String sectionId = widget.section.id;
+                  GoRouter.of(context).go("/$sectionId/createForum");
+                },
+                child: Text("Create Forum")),
+            TextButton(
+                onPressed: () {
+                  final String sectionId = widget.section.id;
+                  GoRouter.of(context).go("/$sectionId/forum");
+                },
+                child: Text("View Forums")),
+          ],
         ),
       ],
     );
