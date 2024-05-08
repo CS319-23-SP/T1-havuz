@@ -17,7 +17,6 @@ const forumPostSchema = new mongoose.Schema(
     },
     initialReplyId: {
       type: String,
-      default: uuidv4,
       unique: true, 
     },
   },
@@ -27,12 +26,13 @@ const forumPostSchema = new mongoose.Schema(
   }
 );
 
-forumPostSchema.statics.createForumPost = async function (forumInitiator, title, sectionId) {
+forumPostSchema.statics.createForumPost = async function (forumInitiator, title, sectionId, initialReplyId) {
   try {
     const forumPost = await this.create({
       forumInitiator,
       title,
-      sectionId
+      sectionId,
+      initialReplyId
     });
     return forumPost;
   } catch (error) {
