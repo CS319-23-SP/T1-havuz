@@ -2,6 +2,8 @@ import 'package:first_trial/Pages/Admin/admin_page.dart';
 import 'package:first_trial/Pages/Admin/student_create_page.dart';
 import 'package:first_trial/Pages/Chat/chat_homepage.dart';
 import 'package:first_trial/Pages/Chat/create_contact.dart';
+import 'package:first_trial/Pages/Forum/create_forum.dart';
+import 'package:first_trial/Pages/Forum/view_forums.dart';
 import 'package:first_trial/Pages/Section/Widgets/assignment_details.dart';
 import 'package:first_trial/Pages/Section/Widgets/create_assignment.dart';
 import 'package:first_trial/Pages/UserProfile/user_profile_page.dart';
@@ -20,6 +22,8 @@ class RouteGenerator {
   final String instructorRoute = "/instructor";
   final String questionHomepageRoute = "/instructor/question";
   final String questionCreateRoute = "/instructor/question/create";
+  final String viewForumRoute = "/:sectionID/forum";
+  final String createForumRoute = "/:sectionID/createForum";
 
   final String studentRoute = "/student";
 
@@ -75,6 +79,18 @@ class RouteGenerator {
               final role = state.pathParameters['role'].toString();
               return Assignment_Details(
                   role: role, assignmentID: assignmentID, sectionID: sectionID);
+            }),
+        GoRoute(
+            path: viewForumRoute,
+            builder: (context, state) {
+              final sectionID = state.pathParameters['sectionID'].toString();
+              return ViewForumPage(sectionID: sectionID);
+            }),
+        GoRoute(
+            path: createForumRoute,
+            builder: (context, state) {
+              final sectionID = state.pathParameters['sectionID'].toString();
+              return CreateForumPage(sectionID: sectionID);
             }),
         GoRoute(
             path: profileRoute,
