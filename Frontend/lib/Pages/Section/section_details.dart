@@ -229,7 +229,5 @@ class _Section_DetailsState extends State<Section_Details> {
                 child: Text("View Forums")),
           ],
         ),
-     ],
-);
-}
-}
+  ],
+  );}}

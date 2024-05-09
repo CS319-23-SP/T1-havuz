@@ -29,6 +29,25 @@ const forumReplySchema = new mongoose.Schema(
   }
 );
 
+forumReplySchema.statics.createForumReplyWithId = async function (
+  message,
+  postedByUser,
+  replyID,
+  parentReplyId,
+) {
+  try {
+    const forumReply = await this.create({
+      message,
+      postedByUser,
+      replyID,
+      parentReplyId, 
+    });
+    return forumReply;
+  } catch (error) {
+    throw error;
+  }
+};
+
 forumReplySchema.statics.createForumReply = async function (
   message,
   postedByUser,
@@ -45,7 +64,6 @@ forumReplySchema.statics.createForumReply = async function (
     throw error;
   }
 };
-
 
 
 forumReplySchema.statics.getDirectRepliesOfReply = async function (replyId) {
