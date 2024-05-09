@@ -21,6 +21,7 @@ const chadRouter = require("../routes/chad");
 const forumRouter = require("../routes/forum");
 const fileRouter = require("../routes/fileHandler");
 const eventRouter = require("../routes/event");
+const evaluationRouter = require("../routes/evaluation");
 
 
 const { decode } = require('../middlewares/jwt');
@@ -52,6 +53,7 @@ app.use("/chad", decode, chadRouter);
 app.use("/forum", decode, forumRouter);
 app.use("/document", fileRouter);
 app.use("/event", decode, eventRouter);
+app.use("/evaluation", decode, evaluationRouter);
 
 app.use('*', (req, res) => {
     return res.status(404).json({
