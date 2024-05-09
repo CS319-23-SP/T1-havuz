@@ -94,7 +94,7 @@ const createForumPost = async (req, res) => {
             uniqueId
         );
 
-        const initialReply = await ForumReply.createForumReply(
+        const initialReply = await ForumReply.createForumReplyWithId(
             messageText,
             forumInitiator, 
             uniqueId,
