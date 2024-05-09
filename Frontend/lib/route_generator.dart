@@ -5,6 +5,7 @@ import 'package:first_trial/Pages/Chat/create_contact.dart';
 import 'package:first_trial/Pages/Forum/create_forum.dart';
 import 'package:first_trial/Pages/Forum/view_forums.dart';
 import 'package:first_trial/Pages/Section/Widgets/assignment_details.dart';
+import 'package:first_trial/Pages/Section/Widgets/assignment_grade.dart';
 import 'package:first_trial/Pages/Section/Widgets/create_assignment.dart';
 import 'package:first_trial/Pages/UserProfile/user_profile_page.dart';
 import 'package:first_trial/Pages/Auth/login_page.dart';
@@ -30,13 +31,15 @@ class RouteGenerator {
   final String profileRoute = "/user/profile/:userId";
 
   final String assignmentRoute = "/:role/assignment/:sectionID/:assignmentID";
+  final String assignmentGradeRoute =
+      "/:role/assignment/:sectionID/:assignmentID/grade";
 
   final String adminRoute = "/admin";
   final String studentCreateRoute = "/admin/studentCreate";
 
   final String createAssignmentRoute = "/createAssignment/:sectionID";
   final String contactRoute = "/chad/createContact";
-
+//'/$role/assignment/$sectionid/$assignmentid');
   getRouter() {
     return GoRouter(
       initialLocation: loginRoute,
@@ -45,6 +48,21 @@ class RouteGenerator {
           path: '/student/grade/:studentID',
           builder: (context, state) => StudentSectionGradePage(), // New page
         ),
+        GoRoute(
+            path: assignmentGradeRoute,
+            builder: (context, state) {
+              final sectionID = state.pathParameters['sectionID'].toString();
+              final assignmentID =
+                  state.pathParameters['assignmentID'].toString();
+              final role = state.pathParameters['role'].toString();
+              //final term = state.pathParameters['term'].toString();
+              return AssignmentGradePage(
+                role: role,
+                assignmentID: assignmentID,
+                sectionID: sectionID,
+                term: "2024 Spring",
+              );
+            }),
         GoRoute(
           path: '/student/attendance/:studentID',
           builder: (context, state) => StudentAttendancePage(), // New page

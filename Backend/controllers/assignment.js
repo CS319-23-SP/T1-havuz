@@ -85,10 +85,58 @@ const onGetAssignmentForInstructor = async (req, res) => {
   try {
     const assignments = await assignmentModel.getAssignmentsForInstructor(req.params.term, req.params.sectionID);
     return res.status(200).json({ success: true, assignments });
-} catch (error) {
-    return res.status(500).json({ success: false, error: error })
+  } catch (error) {
+      return res.status(500).json({ success: false, error: error })
+  }
 }
-}
+
+const onUpdateAssGrade = async (req, res) => {
+  try {
+    const validation = makeValidation((types) => ({
+      payload: req.body,
+      checks: {
+        grade: { type: types.number, optional: false },
+      },
+    }));
+
+    if (!validation.success) {
+      return res.status(400).json(validation); // Return validation errors
+    }
+
+    const { id, term, sectionID, studentID } = req.params;
+    const { grade } = req.body;
+
+    const assignment = await assignmentModel.findOne({
+      id,
+      term,
+      sectionID,
+    });
+
+    if (!assignment) {
+      return res.status(404).json({ success: false, message: 'Assignment not found' });
+    }
+
+    // Find the index where studentID matches
+    const existingGradeIndex = assignment.grades.findIndex(
+      (g) => g[studentID] !== undefined
+    );
+
+    if (existingGradeIndex >= 0) {
+      // Update the grade if it exists
+      assignment.grades[existingGradeIndex][studentID] = grade;
+    } else {
+      // Create a new entry if it doesn't exist
+      assignment.grades.push({ [studentID]: grade });
+    }
+
+    await assignment.save(); // Save the updated assignment
+
+    return res.status(200).json({ success: true, assignment });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ success: false, error: error.message });
+  }
+};
 
   
   module.exports = {
@@ -97,5 +145,6 @@ const onGetAssignmentForInstructor = async (req, res) => {
     onDeleteAssignment,
     onGetAssignment,
     onGetAssignments,
-    onGetAssignmentForInstructor
+    onGetAssignmentForInstructor,
+    onUpdateAssGrade
   };

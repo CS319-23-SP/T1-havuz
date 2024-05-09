@@ -181,29 +181,62 @@ class _Section_DetailsState extends State<Section_Details> {
                             DateTime deadline =
                                 DateTime.parse(assignment.deadline);
                             return ListTile(
-                              title: TextButton(
-                                child: Row(
-                                  children: [
-                                    Icon(Icons.assignment),
-                                    SizedBox(width: 15),
-                                    Expanded(
-                                      child: Text(
-                                        "${assignment.name} (Due: ${DateFormat('MMM dd').format(deadline)})",
-                                        overflow: TextOverflow.ellipsis,
-                                        maxLines: 1,
-                                      ),
+                                title: Row(
+                              children: [
+                                Expanded(
+                                  child: TextButton(
+                                    child: Row(
+                                      children: [
+                                        Icon(Icons.assignment),
+                                        SizedBox(width: 15),
+                                        Expanded(
+                                          child: Text(
+                                            "${assignment.name} (Due: ${DateFormat('MMM dd').format(deadline)})",
+                                            overflow: TextOverflow.ellipsis,
+                                            maxLines: 1,
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                  ],
+                                    onPressed: () async {
+                                      final String assignmentid = assignment.id;
+                                      final String sectionid =
+                                          assignment.sectionID;
+                                      String? role =
+                                          await TokenStorage.getRole();
+                                      GoRouter.of(context).go(
+                                          '/$role/assignment/$sectionid/$assignmentid');
+                                    },
+                                  ),
                                 ),
-                                onPressed: () async {
-                                  final String assignmentid = assignment.id;
-                                  final String sectionid = assignment.sectionID;
-                                  String? role = await TokenStorage.getRole();
-                                  GoRouter.of(context).go(
-                                      '/$role/assignment/$sectionid/$assignmentid');
-                                },
-                              ),
-                            );
+                                Expanded(
+                                  child: TextButton(
+                                    child: Row(
+                                      children: [
+                                        Icon(Icons.grade),
+                                        SizedBox(width: 15),
+                                        Expanded(
+                                          child: Text(
+                                            "Grade",
+                                            overflow: TextOverflow.ellipsis,
+                                            maxLines: 1,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    onPressed: () async {
+                                      final String assignmentid = assignment.id;
+                                      final String sectionid =
+                                          assignment.sectionID;
+                                      String? role =
+                                          await TokenStorage.getRole();
+                                      GoRouter.of(context).go(
+                                          '/$role/assignment/$sectionid/$assignmentid/grade');
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ));
                           },
                         ),
                       ],
@@ -229,5 +262,7 @@ class _Section_DetailsState extends State<Section_Details> {
                 child: Text("View Forums")),
           ],
         ),
-  ],
-  );}}
+      ],
+    );
+  }
+}

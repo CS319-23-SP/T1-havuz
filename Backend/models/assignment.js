@@ -13,6 +13,7 @@ const assignmentSchema = new mongoose.Schema(
           sectionID: String,
           deadline: String, 
           solutionKey: String,
+          weights: [Number],
           questions: [String],
           grades: [{String: Number}]
     },
