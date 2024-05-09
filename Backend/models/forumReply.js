@@ -29,7 +29,7 @@ const forumReplySchema = new mongoose.Schema(
   }
 );
 
-forumReplySchema.statics.createForumReply = async function (
+forumReplySchema.statics.createForumReplyWithId = async function (
   message,
   postedByUser,
   replyID,

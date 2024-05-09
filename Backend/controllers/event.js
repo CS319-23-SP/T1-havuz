@@ -3,8 +3,9 @@ const Event = require('../models/event');
 
 const createEvent = async (req, res) => {
   try {
-    const { userIds, eventCreator, title, date } = req.body;
-    console.log(userIds, eventCreator, title, date);
+    const { userIds, title, date } = req.body;
+    const { _id: eventCreator } = req;
+
     const result = await Event.createEvent(userIds, eventCreator, title, date);
     res.status(201).json(result);
   } catch (error) {
@@ -14,7 +15,7 @@ const createEvent = async (req, res) => {
 
 const getEventDetailstById = async (req, res) => {
   try {
-    const eventId = req.params.id;
+    const eventId = req.params.eventId;
     const event = await Event.getEventById(eventId);
     if (!event) {
       return res.status(404).json({ message: 'Event not found' });

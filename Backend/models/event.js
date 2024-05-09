@@ -25,31 +25,19 @@ eventSchema.statics.createEvent = async function (
   userIds, eventCreator, title, date
 ) {
   try {
-    const oldEvent = await this.findOne({
-      userIds: {
-        $size: userIds.length,
-        $all: [...userIds],
-      },
-    });
-    if (oldEvent) {
-      return {
-        isNew: false,
-        message: 'retrieving an old event',
-        EventId: oldEvent._doc._id,
-      };
-    }
+    const participants = Array.from(new Set([...userIds, eventCreator]));
 
-    const newEvent = await this.create({ userIds, eventCreator, title, date });
+    const event = await this.create({ participants, eventCreator, title, date });
     return {
-      isNew: true,
-      message: 'creating a new  event',
-      EventId: newEvent._doc._id,
+      event
     };
   } catch (error) {
-    console.log('error on create event method', error);
+    console.log('Error on create event method', error);
     throw error;
   }
 };
+
+
 
 eventSchema.statics.getEventById = async function (eventId) {
   try {
@@ -62,7 +50,7 @@ eventSchema.statics.getEventById = async function (eventId) {
 
 eventSchema.statics.getEventsByUserId = async function (userId) {
   try {
-    const events = await this.find({ userIds: { $in: [userId] } });
+    const events = await this.find({ participants: { $in: [userId] } });
     return events;
   } catch (error) {
     throw new Error(`Error fetching events by user ID: ${error.message}`);
