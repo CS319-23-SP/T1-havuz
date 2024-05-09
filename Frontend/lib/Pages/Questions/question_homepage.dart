@@ -14,10 +14,10 @@ import 'dart:convert';
 
 const List<String> list = <String>[
   'All',
-  '2018-2019 Fall',
-  '2019-2020 Fall',
-  '2019-2020 Spring',
-  '2020-2021 Fall',
+  '2022-2023 Fall',
+  '2023-2024 Fall',
+  '2022-2023 Spring',
+  '2023-2024 Spring',
 ];
 
 class QuestionHomepage extends StatefulWidget {
@@ -197,23 +197,6 @@ class _QuestionHomepageState extends State<QuestionHomepage> {
                         ),
                         Container(
                           decoration: BoxDecoration(
-                              border: Border.all(color: PoolColors.black),
-                              color: PoolColors.fairTurkuaz,
-                              borderRadius:
-                                  const BorderRadius.all(Radius.circular(15))),
-                          child: Padding(
-                            padding: EdgeInsets.only(left: 12.0),
-                            child: TextField(
-                              controller: _CourseController,
-                              decoration: InputDecoration(
-                                border: InputBorder.none,
-                                labelText: "Course",
-                              ),
-                            ),
-                          ),
-                        ),
-                        Container(
-                          decoration: BoxDecoration(
                               color: PoolColors.fairTurkuaz,
                               border: Border.all(color: PoolColors.black),
                               borderRadius:
@@ -241,6 +224,23 @@ class _QuestionHomepageState extends State<QuestionHomepage> {
                                 return DropdownMenuEntry<String>(
                                     value: value, label: value);
                               }).toList(),
+                            ),
+                          ),
+                        ),
+                        Container(
+                          decoration: BoxDecoration(
+                              border: Border.all(color: PoolColors.black),
+                              color: PoolColors.fairTurkuaz,
+                              borderRadius:
+                                  const BorderRadius.all(Radius.circular(15))),
+                          child: Padding(
+                            padding: EdgeInsets.only(left: 12.0),
+                            child: TextField(
+                              controller: _CourseController,
+                              decoration: InputDecoration(
+                                border: InputBorder.none,
+                                labelText: "Course",
+                              ),
                             ),
                           ),
                         ),
@@ -353,7 +353,7 @@ class _QuestionHomepageState extends State<QuestionHomepage> {
                               ),
                               Expanded(
                                 child: Text(
-                                  'Header',
+                                  'Term',
                                 ),
                               ),
                               Expanded(
@@ -390,7 +390,8 @@ class _QuestionHomepageState extends State<QuestionHomepage> {
                                         child: Text('${question.id}'),
                                       ),
                                       Expanded(
-                                        child: Text('${question.header}'),
+                                        child: Text(
+                                            '${question.pastExams.toString()}'),
                                       ),
                                       Expanded(
                                         child: Text(
@@ -415,7 +416,7 @@ class _QuestionHomepageState extends State<QuestionHomepage> {
             )
           ],
         ),
-      );
-    }
-  }
+    );
+}
+}
 }
