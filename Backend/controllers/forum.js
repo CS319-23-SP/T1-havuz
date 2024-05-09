@@ -2,6 +2,7 @@ const makeValidation = require('@withvoid/make-validation');
 const ForumReply = require('../models/forumReply');
 const ForumPost = require('../models/forumPost');
 const AuthModel = require('../models/auth');
+const { v4: uuidv4 } = require("uuid");
 
 const createForumReply = async (req, res) => {
     try {
@@ -85,16 +86,19 @@ const createForumPost = async (req, res) => {
         const forumInitiator = req._id;
         const { title, message: messageText, sectionId } = req.body;
 
+        const uniqueId = uuidv4();
         const forumPost = await ForumPost.createForumPost(
             forumInitiator,
             title,
             sectionId,
+            uniqueId
         );
 
-        const initialReply = await ForumReply.createForumReply(
+        const initialReply = await ForumReply.createForumReplyWithId(
             messageText,
             forumInitiator, 
-            forumPost.initialReplyId, 
+            uniqueId,
+            0, 
         );
 
 
@@ -126,3 +130,6 @@ module.exports = {
     createForumPost,
     getForumPostsBySectionId
     };
+
+
+//forum controller
