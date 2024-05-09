@@ -14,7 +14,6 @@ const questionSchema = new mongoose.Schema(
           topics: [String],
           toughness: String,
           history: [{String: Number}],
-          point: Number,
           pastExams: [String], // Exam ID + Course ID + Term
           creatorID: String,
     },
