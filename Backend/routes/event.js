@@ -5,7 +5,7 @@ const router = express.Router();
 
 router
   .post('/', event.createEvent)
-  .get('/:eventId', event.getEventDetailstById)
-  .get('/', event.getEventsByUserId)
+  .get('/details/:eventId', event.getEventDetailstById)
+  .get('/:userId', event.getEventsByUserId)
 
 module.exports = router;
