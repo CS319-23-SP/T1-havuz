@@ -72,6 +72,7 @@ function listFilesInDirectory(directoryPath) {
 }
 
 function deleteFile(filePath, res) {
+  console.log(filePath);
   fs.unlink(filePath, (err) => {
     if (err) {
       console.error('Error deleting file:', err);
@@ -87,6 +88,7 @@ router
   })
   .get('/', (req, res) => {
     const { path: urlPath } = req.query;
+
     
     if (!urlPath)
         return res.status(400).send('Path parameter is missing');
@@ -100,6 +102,7 @@ router
   })
   .delete('/', (req, res) => {
     const { path: urlPath } = req.query;
+
     
     if (!urlPath)
         return res.status(400).send('Path parameter is missing');

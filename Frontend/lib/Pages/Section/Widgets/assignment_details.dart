@@ -64,9 +64,7 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
 
     await getAssignmentAndQuestions();
 
-    if (role == "instructor") {
-      await fetchStudentList();
-    }
+    await fetchStudentList();
     setState(() {});
   }
 
@@ -191,22 +189,14 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
       var response = await request.send();
       if (response.statusCode == 200) {
         print('File uploaded successfully');
+        setState(() {
+          fetchStudentList();
+        });
       } else {
         print('Error uploading file: ${response.reasonPhrase}');
       }
     } catch (e) {
       print('Erroro uploading file: $e');
-    }
-  }
-
-  Future<void> _openFile() async {
-    if (_selectedFileBytes != null && _selectedFileName != null) {
-      final blob = html.Blob([_selectedFileBytes!]);
-      final url = html.Url.createObjectUrlFromBlob(blob);
-      final anchor = html.AnchorElement(href: url)
-        ..setAttribute("download", _selectedFileName!);
-      anchor.click();
-      html.Url.revokeObjectUrl(url);
     }
   }
 
@@ -240,7 +230,6 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
 
         if (response.statusCode == 200) {
           final List<dynamic> fileList = json.decode(response.body);
-          print(fileList);
           if (fileList.contains("$id.pdf")) {
             setState(() {
               isSolutionKeyUploaded = true;
@@ -255,6 +244,7 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
     } catch (e) {
       print('Error fetching student list: $e');
     }
+    
   }
 
   Future<void> downloadFile(filename, isSolutionKey) async {
@@ -287,6 +277,39 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
     }
   }
 
+  Future<void> deleteFile(isSolutionKey) async {
+    try {
+      var answer = "";
+      if (!isSolutionKey) answer = "/answers";
+      var fileExtension = ".pdf";
+      var path = "$term/${widget.sectionID}/${assignment.id}$answer";
+      var filename = id;
+      var url =
+          Uri.parse('http://localhost:8080/document?path=$path/$filename$fileExtension');
+
+      var response = await http.delete(url);
+
+      if (response.statusCode == 200) {
+        if(isSolutionKey) {
+          setState(() {
+            isSolutionKeyUploaded = false;
+          });
+          }
+        else{
+          setState(() {
+            fetchStudentList();
+          });
+        }
+        print('File deleted successfully');
+        }
+       else {
+        print('Failed to delete file: ${response.reasonPhrase}');
+      }
+    } catch (e) {
+      print('Error deletin file: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -314,18 +337,22 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
                               ),
                               TextButton(
                                 onPressed: () => _uploadFile(true),
-                                child: Row(
+                                child: const Row(
                                   children: [
                                     Icon(Icons.upload),
                                     Text("update File"),
                                   ],
                                 ),
                               ),
+                              IconButton(
+                                icon: const Icon(Icons.delete),
+                                onPressed: () => deleteFile(true),
+                              ),
                             ],
                           )
                         : TextButton(
                             onPressed: () => _uploadFile(true),
-                            child: Row(
+                            child: const Row(
                               children: [
                                 Icon(Icons.upload),
                                 Text("select File"),
@@ -334,18 +361,40 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
                           )
                     : Container(),
                 Text("Term: ${assignment.term}"),
-                if (role == "student") ...[
-                  SizedBox(height: 20),
-                  TextButton(
-                    onPressed: () => _uploadFile(false),
-                    child: Row(
-                      children: [
-                        Icon(Icons.upload),
-                        Text("select File"),
-                      ],
-                    ),
-                  )
-                ],
+                const SizedBox(height: 20),
+                role == "student"
+                  ? students.contains("$id.pdf")
+                        ? Row(
+                            children: [
+                              TextButton(
+                                onPressed: () => downloadFile("$id.pdf", false),
+                                child: Text("Uploaded Assignment: $id.pdf"),
+                              ),
+                              TextButton(
+                                onPressed: () => _uploadFile(false),
+                                child: const Row(
+                                  children: [
+                                    Icon(Icons.upload),
+                                    Text("select File"),
+                                  ],
+                                ),
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.delete),
+                                onPressed: () => deleteFile(false),
+                              ),
+                            ],
+                          )
+                        : TextButton(
+                            onPressed: () => _uploadFile(false),
+                            child: const Row(
+                              children: [
+                                Icon(Icons.upload),
+                                Text("select File"),
+                              ],
+                            ),
+                          )
+                          :Container(),
                 if (role == "instructor") ...[
                   SizedBox(height: 20),
                   // Dynamic list of download buttons
@@ -357,11 +406,6 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
                   }).toList(),
                 ],
                 SizedBox(height: 20),
-                if (_selectedFileBytes != null)
-                  ElevatedButton(
-                    onPressed: _openFile,
-                    child: Text('Open Uploaded File'),
-                  ),
                 Text("Questions:",
                     style:
                         TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
