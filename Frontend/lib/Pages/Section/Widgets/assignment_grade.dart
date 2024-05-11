@@ -114,11 +114,101 @@ class _AssignmentGradePageState extends State<AssignmentGradePage> {
 
   Future<void> onSubmit() async {
     final studentID = studentIDController.text;
-
+    int size = studentIDs!.length;
+    bool exists = false;
+    for (var i = 0; i < size; i++) {
+      if (studentID == studentIDs![i]) {
+        exists = true;
+      }
+    }
+    if (!exists) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Container(
+            padding: const EdgeInsets.all(20.0),
+            height: 90,
+            margin: const EdgeInsetsDirectional.fromSTEB(200, 0, 200, 0),
+            decoration: const BoxDecoration(
+              color: Colors.red,
+              borderRadius: BorderRadius.all(Radius.circular(30)),
+            ),
+            child: const Row(
+              children: [
+                SizedBox(
+                  width: 48,
+                ),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Sorry!',
+                          style: TextStyle(fontSize: 18, color: Colors.white)),
+                      Text(
+                        'Invalid Student ID',
+                        style: TextStyle(fontSize: 12, color: Colors.white),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            )),
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        duration: const Duration(seconds: 3),
+      ));
+      return;
+    }
     if (assignmentData != null && studentID.isNotEmpty) {
       final List<dynamic> weights = assignmentData!['weights'];
       final List<double> grades = [];
 
+      for (int i = 0; i < questionControllers.length; i++) {
+        final weight = weights[i];
+        final point = int.tryParse(questionControllers[i].text) ??
+            0; // Default to 0 if invalid
+        if (weight < point || 0 > point) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Container(
+                padding: const EdgeInsets.all(20.0),
+                height: 90,
+                margin: const EdgeInsetsDirectional.fromSTEB(200, 0, 200, 0),
+                decoration: const BoxDecoration(
+                  color: Colors.red,
+                  borderRadius: BorderRadius.all(Radius.circular(30)),
+                ),
+                child: const Row(
+                  children: [
+                    SizedBox(
+                      width: 48,
+                    ),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Sorry!',
+                              style:
+                                  TextStyle(fontSize: 18, color: Colors.white)),
+                          Text(
+                            'Invalid question points',
+                            style: TextStyle(fontSize: 12, color: Colors.white),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                )),
+            behavior: SnackBarBehavior.floating,
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            duration: const Duration(seconds: 3),
+          ));
+          return;
+        }
+      }
       for (int i = 0; i < questionControllers.length; i++) {
         final weight = weights[i];
         final point = int.tryParse(questionControllers[i].text) ??
@@ -141,6 +231,16 @@ class _AssignmentGradePageState extends State<AssignmentGradePage> {
       await updateAssignmentGrade(widget.assignmentID, widget.term,
           widget.sectionID, studentID, finalGrade);
     }
+    fetchAssignmentData();
+  }
+
+  int? findGradeByStudentID(String studentID) {
+    for (Map<String, dynamic> grade in assignmentData!['grades']) {
+      if (grade['studentID'] == studentID) {
+        return grade['grade'];
+      }
+    }
+    return null;
   }
 
   Future<void> updateQuestionHistory(
@@ -151,7 +251,6 @@ class _AssignmentGradePageState extends State<AssignmentGradePage> {
         throw Exception('Token not found');
       }
       print(questionID);
-      print(studentID);
       print(grade);
       await http.put(
         Uri.parse('http://localhost:8080/question/update-history/$questionID'),
@@ -233,17 +332,32 @@ class _AssignmentGradePageState extends State<AssignmentGradePage> {
 
                               return Column(
                                 children: [
-                                  ElevatedButton(
-                                    onPressed: () =>
-                                        onStudentIDButtonPressed(studentID),
-                                    child: Text(studentID),
+                                  Row(
+                                    children: [
+                                      ElevatedButton(
+                                        onPressed: () =>
+                                            onStudentIDButtonPressed(studentID),
+                                        child: Text(studentID),
+                                      ),
+                                      SizedBox(
+                                          width:
+                                              30.0), // Add space between the button and the text
+                                      Expanded(
+                                        child: findGradeByStudentID(
+                                                    studentID) !=
+                                                null
+                                            ? Text(
+                                                "Assignment Grade: ${findGradeByStudentID(studentID)}")
+                                            : Text(
+                                                "Assignment Grade: Not Given"),
+                                      ),
+                                    ],
                                   ),
                                   if (index <
                                       studentIDs!.length -
                                           1) // Check if it's not the last item
                                     SizedBox(
-                                        height:
-                                            8.0), // Add space between buttons
+                                        height: 20.0), // Add space between rows
                                 ],
                               );
                             }).toList(),

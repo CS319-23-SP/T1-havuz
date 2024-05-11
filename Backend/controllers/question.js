@@ -109,7 +109,7 @@ const onGetQuestionByID = async (req, res) => {
 }
 
 const onUpdateHistory = async (req, res) => {
-  try {
+  try {    
     const validation = makeValidation((types) => ({
       payload: req.body,
       checks: {
@@ -132,7 +132,6 @@ const onUpdateHistory = async (req, res) => {
     if (!question) {
       return res.status(404).json({ success: false, message: 'Question not found' });
     }
-
     // Check if the history record exists
     const historyRecord = question.history.find(
       (h) => h.studentID === studentID && h.term === term
