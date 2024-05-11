@@ -18,7 +18,6 @@ class StudentCreationPage extends StatefulWidget {
 }
 
 class _StudentCreationPageState extends State<StudentCreationPage> {
-  final TextEditingController studentIdController = TextEditingController();
   final TextEditingController studentNameController = TextEditingController();
   final TextEditingController studentMiddleNameController =
       TextEditingController();
@@ -41,7 +40,6 @@ class _StudentCreationPageState extends State<StudentCreationPage> {
   }
 
   void _createStudent() async {
-    final studentId = studentIdController.text;
     String firstName = studentNameController.text;
     String middleName = studentMiddleNameController.text;
     String lastName = studentSurNameController.text;
@@ -49,11 +47,6 @@ class _StudentCreationPageState extends State<StudentCreationPage> {
     final department = departmentController.text;
 
     final url = Uri.parse('http://localhost:8080/student');
-    final id = int.tryParse(studentId);
-    if (id == null) {
-      print("bad id");
-      return;
-    }
 
     String? token = await TokenStorage.getToken();
     if (token == null) {
@@ -115,16 +108,6 @@ class _StudentCreationPageState extends State<StudentCreationPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'Student ID',
-                      ),
-                      TextFormField(
-                        controller: studentIdController,
-                        decoration: const InputDecoration(
-                          hintText: 'Enter Student ID',
-                        ),
-                      ),
-                      const SizedBox(height: 16),
                       Text('Student Name'),
                       Row(
                         children: [

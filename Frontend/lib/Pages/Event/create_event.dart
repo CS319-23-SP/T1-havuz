@@ -4,6 +4,7 @@ import 'package:first_trial/Pages/Widgets/AppBars/app_bars.dart';
 import 'package:first_trial/Pages/Widgets/LeftBar/left_bar.dart';
 import 'package:first_trial/final_variables.dart';
 import 'package:first_trial/token.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
@@ -22,6 +23,7 @@ class _CreateEventState extends State<CreateEvent> {
   List<Widget> _additionalTextFields = [];
   final List<TextEditingController> groupFieldControllers = [];
   final TextEditingController titleController = TextEditingController();
+  final TextEditingController messageTextController = TextEditingController();
   var date;
 
   String? term = PoolTerm.term;
@@ -45,6 +47,7 @@ class _CreateEventState extends State<CreateEvent> {
 
   void createEvent() async {
     final title = titleController.text;
+    final messageText = messageTextController.text;
     List<String> orgy = [];
     for (var i = 0; i < groupFieldControllers.length; i++) {
       orgy.add(groupFieldControllers[i].text);
@@ -65,6 +68,7 @@ class _CreateEventState extends State<CreateEvent> {
       },
       body: json.encode({
         'title': title,
+        'messageText': messageText,
         'date': date,
         'userIds': orgy,
       }),
@@ -84,9 +88,12 @@ class _CreateEventState extends State<CreateEvent> {
       body: Row(
         children: [
           LeftBar(role: role),
-          Expanded(
+          Flexible(
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 50.0),
+              constraints: BoxConstraints(
+                maxWidth: 1000,
+              ),
+              padding: const EdgeInsets.all(50.0),
               child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -104,40 +111,18 @@ class _CreateEventState extends State<CreateEvent> {
                     TextFormField(
                       controller: titleController,
                       decoration: InputDecoration(
-                        labelText: 'Assignment Name',
+                        labelText: 'Event Title',
                         border: OutlineInputBorder(),
                       ),
                     ),
                     SizedBox(
                       height: 20,
                     ),
-                    Expanded(
-                      child: ListView(
-                        children: [
-                          SizedBox(height: 20.0),
-                          ..._additionalTextFields,
-                          ElevatedButton(
-                            onPressed: () {
-                              setState(() {
-                                TextEditingController newController =
-                                    TextEditingController();
-                                groupFieldControllers.add(newController);
-                                _additionalTextFields.add(Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 20.0),
-                                  child: TextFormField(
-                                    controller: newController,
-                                    decoration: InputDecoration(
-                                      labelText: 'Enter User ID',
-                                      border: OutlineInputBorder(),
-                                    ),
-                                  ),
-                                ));
-                              });
-                            },
-                            child: Text('Add'),
-                          ),
-                        ],
+                    TextFormField(
+                      controller: messageTextController,
+                      decoration: InputDecoration(
+                        labelText: 'Explanations',
+                        border: OutlineInputBorder(),
                       ),
                     ),
                     SizedBox(
@@ -171,17 +156,65 @@ class _CreateEventState extends State<CreateEvent> {
                         ),
                       ),
                     ),
-                    TextButton(
-                        onPressed: () {
-                          createEvent();
-                        },
-                        child: Text("Create Event"))
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Expanded(
+                      child: Container(
+                        decoration: BoxDecoration(border: Border.all(width: 1)),
+                        child: ListView(
+                          children: [
+                            SizedBox(height: 10.0),
+                            ..._additionalTextFields,
+                            IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  TextEditingController newController =
+                                      TextEditingController();
+                                  groupFieldControllers.add(newController);
+                                  _additionalTextFields.add(Padding(
+                                    padding: const EdgeInsets.all(10.0),
+                                    child: TextFormField(
+                                      controller: newController,
+                                      decoration: InputDecoration(
+                                        labelText: 'Enter User ID',
+                                        border: OutlineInputBorder(),
+                                      ),
+                                    ),
+                                  ));
+                                });
+                              },
+                              icon: Row(
+                                children: [
+                                  Icon(Icons.add_circle_outline_sharp),
+                                  Text('Add Participants'),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
                   ]),
+            ),
+          ),
+          InkWell(
+            onTap: () {
+              createEvent();
+            },
+            child: Container(
+              padding: EdgeInsets.all(15),
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(5),
+                  border: Border.all(color: Colors.black)),
+              child: Text("Create Event"),
             ),
           ),
         ],
       ),
     );
-    ();
   }
 }

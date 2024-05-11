@@ -56,7 +56,7 @@ app.use("/forum", decode, forumRouter);
 app.use("/document", fileRouter);
 app.use("/event", decode, eventRouter);
 app.use("/evaluation", decode, evaluationRouter);
-app.use("/abet", decode, abetRouter);
+app.use("/ABET", decode, abetRouter);
 
 app.use('*', (req, res) => {
     return res.status(404).json({

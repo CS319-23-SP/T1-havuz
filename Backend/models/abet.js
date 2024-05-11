@@ -24,6 +24,11 @@ const abetSchema = new mongoose.Schema(
 
 abetSchema.statics.createAbet = async function (sectionId, messageText) {
   try {
+    const existing = await this.findOne({sectionId})
+
+    if(existing){
+      await this.deleteOne({sectionId});
+    }
     const abet = await this.create({
       sectionId,
       messageText, 

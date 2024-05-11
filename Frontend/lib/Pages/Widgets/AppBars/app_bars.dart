@@ -2,7 +2,7 @@ import 'package:first_trial/Pages/Admin/admin_page.dart';
 import 'package:first_trial/Pages/Auth/login_page.dart';
 import 'package:first_trial/Pages/Homepage/homepage.dart';
 import 'package:first_trial/Pages/Questions/question_homepage.dart';
-import 'package:first_trial/Pages/Admin/student_create_page.dart';
+import 'package:first_trial/Pages/Admin/Create/student_create_page.dart';
 import 'package:first_trial/Pages/UserProfile/user_profile_page.dart';
 import 'package:first_trial/Pages/Widgets/AppBars/roles/admin_appbar.dart';
 import 'package:first_trial/Pages/Widgets/AppBars/roles/instructor_appbar.dart';
@@ -65,7 +65,6 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           ] else if (role == "student") ...[
             StudentAppBar(),
           ],
-          //logout
         ],
       ),
       actions: [
