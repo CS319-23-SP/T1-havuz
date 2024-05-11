@@ -28,7 +28,7 @@ class Section_Details extends StatefulWidget {
 }
 
 class _Section_DetailsState extends State<Section_Details> {
-  String term = "2024 Spring";
+  String? term = PoolTerm.term;
   String? role = "unknown";
   @override
   void initState() {
@@ -130,7 +130,7 @@ class _Section_DetailsState extends State<Section_Details> {
     }
   }
 
-  List<String> materials= [];
+  List<String> materials = [];
 
   Future<void> fetchMaterials() async {
     try {
@@ -154,7 +154,6 @@ class _Section_DetailsState extends State<Section_Details> {
         });
 
         if (response.statusCode == 200) {
-          
         } else {
           throw Exception('Failed to fetch student list');
         }
@@ -164,7 +163,6 @@ class _Section_DetailsState extends State<Section_Details> {
     } catch (e) {
       print('Error fetching student list: $e');
     }
-    
   }
 
   Uint8List? _selectedFileBytes;
@@ -244,12 +242,11 @@ class _Section_DetailsState extends State<Section_Details> {
       var response = await http.delete(url);
 
       if (response.statusCode == 200) {
-          setState(() {
-            fetchMaterials();
-          });
+        setState(() {
+          fetchMaterials();
+        });
         print('File deleted successfully');
-        }
-       else {
+      } else {
         print('Failed to delete file: ${response.reasonPhrase}');
       }
     } catch (e) {
@@ -361,66 +358,66 @@ class _Section_DetailsState extends State<Section_Details> {
                 child: Text("View Forums")),
           ],
         ),
-      Expanded(
-        child: Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Padding(
-        padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-        child: Text(
-          "Materials",
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
-      ),
-      if (role == "instructor") ...[
-      Padding(
-        padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-        child: ElevatedButton(
-          onPressed: () {
-            uploadFile();
-          },
-          child: Text("Upload File"),
-        ),
-      ),
-    ],
-      ...materials.map((filename) {
-        return ListTile(
-        title: Row(
-          children: [
-            Expanded(
-              child: Text(filename),
-            ),
-            if (role == "instructor") ...[
-              TextButton(
-                onPressed: () {
-                  downloadFile(filename);
-                },
-                child: Text("Download"),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                child: Text(
+                  "Materials",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
               ),
-              TextButton(
-                onPressed: () {
-                  deleteFile(filename);
-                },
-                child: Text("Delete"),
-              ),
+              if (role == "instructor") ...[
+                Padding(
+                  padding:
+                      EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      uploadFile();
+                    },
+                    child: Text("Upload File"),
+                  ),
+                ),
+              ],
+              ...materials.map((filename) {
+                return ListTile(
+                  title: Row(
+                    children: [
+                      Expanded(
+                        child: Text(filename),
+                      ),
+                      if (role == "instructor") ...[
+                        TextButton(
+                          onPressed: () {
+                            downloadFile(filename);
+                          },
+                          child: Text("Download"),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            deleteFile(filename);
+                          },
+                          child: Text("Delete"),
+                        ),
+                      ],
+                      if (role == "student") ...[
+                        TextButton(
+                          onPressed: () {
+                            downloadFile(filename);
+                          },
+                          child: Text("Download"),
+                        ),
+                      ],
+                    ],
+                  ),
+                );
+              }).toList(),
             ],
-            if (role == "student") ...[
-              TextButton(
-                onPressed: () {
-                  downloadFile(filename);
-                },
-                child: Text("Download"),
-              ),
-            ],
-          ],
+          ),
         ),
-      );
-      }).toList(),
-    ],
-      ),
-      ),
       ],
-
-  );
+    );
   }
-  }
+}

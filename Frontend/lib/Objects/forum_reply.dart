@@ -1,13 +1,13 @@
 import 'dart:convert';
 
 class ForumReply {
-  String messageText;
+  String message;
   String postedByUser;
   String parentReplyId;
   String replyId;
 
   ForumReply({
-    required this.messageText,
+    required this.message,
     required this.postedByUser,
     required this.parentReplyId,
     required this.replyId,
@@ -15,7 +15,7 @@ class ForumReply {
 
   factory ForumReply.fromJson(Map<String, dynamic> json) {
     return ForumReply(
-        messageText: json['messageText'],
+        message: json['message'],
         postedByUser: json['postedByUser'],
         parentReplyId: json['parentReplyId'],
         replyId: json['replyID']);

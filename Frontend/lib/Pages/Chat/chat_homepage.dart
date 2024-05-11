@@ -14,7 +14,6 @@ import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
-
 class Chat_Homepage extends StatefulWidget {
   const Chat_Homepage({super.key});
 
@@ -30,6 +29,8 @@ String? ID = "";
 String? addContactSt = "22000004";
 
 class Chat_HomepageState extends State<Chat_Homepage> {
+  String? term = PoolTerm.term;
+
   String? role = "unknown";
   ChatRoom cr = ChatRoom(
       roomId: "roomId",
@@ -256,15 +257,13 @@ class Chat_HomepageState extends State<Chat_Homepage> {
     }
   }
 
-
-  void connectAndListen(){
+  void connectAndListen() {
     print("called");
 
-    IO.Socket socket = IO.io('http://localhost:8080', 
-      IO.OptionBuilder()
-       .setTransports(['websocket']).build());
+    IO.Socket socket = IO.io('http://localhost:8080',
+        IO.OptionBuilder().setTransports(['websocket']).build());
 
-      socket.onConnect((_) {
+    socket.onConnect((_) {
       print('connect');
     });
     socket.on('newchatroom', (data) => print("newwroom"));
@@ -274,7 +273,6 @@ class Chat_HomepageState extends State<Chat_Homepage> {
 
   @override
   Widget build(BuildContext context) {
-
     connectAndListen();
 
     return Scaffold(

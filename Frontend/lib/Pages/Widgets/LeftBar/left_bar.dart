@@ -15,9 +15,11 @@ int ind = 0;
 bool showDetails = true;
 
 class LeftBar extends StatefulWidget {
+  String? term = PoolTerm.term;
+
   final String? role;
 
-  const LeftBar({
+  LeftBar({
     Key? key,
     required this.role,
   }) : super(key: key);
@@ -51,7 +53,7 @@ class _LeftBarState extends State<LeftBar> {
         throw Exception('Token not found');
       }
       String? ID = await TokenStorage.getID();
-      String? term = '2024 Spring';
+      String? term = PoolTerm.term;
 
       final response = await http.get(
         Uri.http('localhost:8080', '/section/$ID/$term'),
