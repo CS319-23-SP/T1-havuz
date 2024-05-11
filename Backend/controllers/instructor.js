@@ -142,6 +142,24 @@ const onGiveAttendance = async (req, res) => {
     }
   };  
 
+  const onGetAttendance = async (req, res) => {
+    try {
+      const { studentID, sectionID } = req.body;
+
+      console.log(req.body);
+  
+      if (!studentID || !sectionID) {
+        return res.status(400).json({ success: false, error: "Missing studentID or sectionID in query parameters" });
+      }
+  
+      const attendances = await Attendance.find({ studentID, sectionID });
+  
+      return res.status(200).json({ success: true, data: attendances });
+    } catch (error) {
+      return res.status(500).json({ success: false, error: error.message });
+    }
+  };
+
 module.exports = {
     onCreateInstructor,
     onEditInstructorByID,
@@ -149,4 +167,5 @@ module.exports = {
     onGetAllInstructors,
     onGetInstructorByID,
     onGiveAttendance,
+    onGetAttendance
 };

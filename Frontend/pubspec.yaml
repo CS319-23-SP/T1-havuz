@@ -46,6 +46,7 @@ dependencies:
   table_calendar: ^3.1.1
   intl: ^0.19.0
   socket_io_client: ^2.0.3+1
+  pdf: ^3.10.8
 
 dev_dependencies:
   flutter_test:
@@ -67,11 +68,17 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
+  fonts:
+    - family: Roboto
+      fonts:
+        - asset: lib/Assets/fonts/Roboto-Regular.ttf
+
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+    
 
 
 
@@ -80,6 +87,7 @@ flutter:
     - lib/Assets/login_design.png
     - lib/Assets/bilkent_logo.png
     - lib/Assets/user_photo.jpg
+    - lib/Assets/fonts/Roboto-Regular.ttf
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
