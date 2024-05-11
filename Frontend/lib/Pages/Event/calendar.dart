@@ -57,6 +57,8 @@ class _CalendarState extends State<Calendar> {
 
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
+        print(responseData);
+
         setState(() {
           _eventsByDate = parseEventsData(responseData);
         });
@@ -144,13 +146,101 @@ class _CalendarState extends State<Calendar> {
             Expanded(
               flex: 1,
               child: Container(
+                padding: EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(
+                      20), // Adjust the border radius as needed
+                ),
                 child: ListView.builder(
                   itemCount: _eventsByDate[today]?.length ?? 0,
                   itemBuilder: (context, index) {
-                    return ListTile(
-                      title: Text(_eventsByDate[today]![index].title),
-                      subtitle:
-                          Text(_eventsByDate[today]![index].date.toString()),
+                    return InkWell(
+                      onTap: () {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              contentPadding: EdgeInsets.all(100),
+                              title: Text(
+                                _eventsByDate[today]![index].title,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                ),
+                              ),
+                              content: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  SizedBox(height: 10),
+                                  Text(
+                                    'Participants:',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                  SizedBox(height: 5),
+                                  Text(
+                                    _eventsByDate[today]![index]
+                                        .participants
+                                        .join(', '),
+                                    style: TextStyle(fontSize: 14),
+                                  ),
+                                  SizedBox(height: 10),
+                                  Text(
+                                    'Date:',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                  SizedBox(height: 5),
+                                  Text(
+                                    _eventsByDate[today]![index]
+                                        .date
+                                        .toString(),
+                                    style: TextStyle(fontSize: 14),
+                                  ),
+                                  SizedBox(height: 10),
+                                  Text(
+                                    'Explanations :',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                  SizedBox(height: 5),
+                                  Text(
+                                    _eventsByDate[today]![index].messageText,
+                                    style: TextStyle(fontSize: 14),
+                                  ),
+                                ],
+                              ),
+                              actions: <Widget>[
+                                TextButton(
+                                  child: Text(
+                                    'Done',
+                                    style: TextStyle(
+                                      color: Colors.blue,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      },
+                      child: ListTile(
+                        title: Text(_eventsByDate[today]![index].title),
+                        subtitle:
+                            Text(_eventsByDate[today]![index].date.toString()),
+                      ),
                     );
                   },
                 ),

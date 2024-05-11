@@ -3,10 +3,10 @@ const Event = require('../models/event');
 
 const createEvent = async (req, res) => {
   try {
-    const { userIds, title, date } = req.body;
+    const { userIds, title, messageText, date } = req.body;
     const { _id: eventCreator } = req;
 
-    const result = await Event.createEvent(userIds, eventCreator, title, date);
+    const result = await Event.createEvent(userIds, eventCreator, title, messageText, date);
     res.status(201).json(result);
   } catch (error) {
     res.status(500).json({ error: error.message });

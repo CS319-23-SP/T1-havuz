@@ -8,6 +8,7 @@ const eventSchema = new mongoose.Schema(
       default: () => uuidv4().replace(/\-/g, ""),
     },
     title: String,
+    messageText: String,
     date: Date,
     participants: Array,
     eventCreator: {
@@ -22,12 +23,12 @@ const eventSchema = new mongoose.Schema(
 );
 
 eventSchema.statics.createEvent = async function (
-  userIds, eventCreator, title, date
+  userIds, eventCreator, title,messageText, date
 ) {
   try {
     const participants = Array.from(new Set([...userIds, eventCreator]));
 
-    const event = await this.create({ participants, eventCreator, title, date });
+    const event = await this.create({ participants, eventCreator, title,messageText, date });
     return {
       event
     };
