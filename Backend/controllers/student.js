@@ -84,8 +84,8 @@ const onGetStudentByID = async (req, res) => {
 
 const onGetStudentAttendance = async (req, res) => {
     try {
-      const { studentID } = req.params; 
-      const attendanceRecords = await Attendance.find({ studentID });
+      const { studentID, term } = req.params; 
+      const attendanceRecords = await Attendance.find({ studentID, term });
   
       if (!attendanceRecords || attendanceRecords.length === 0) {
         return res.status(404).json({ success: false, error: "No attendance records found for this student." });

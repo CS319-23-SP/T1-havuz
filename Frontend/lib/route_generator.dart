@@ -39,7 +39,7 @@ class RouteGenerator {
 
   final String createAssignmentRoute = "/createAssignment/:sectionID";
   final String contactRoute = "/chad/createContact";
-//'/$role/assignment/$sectionid/$assignmentid');
+
   getRouter() {
     return GoRouter(
       initialLocation: loginRoute,

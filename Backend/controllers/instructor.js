@@ -102,9 +102,9 @@ const onGiveAttendance = async (req, res) => {
         return res.status(400).json({ success: false, error: "Invalid data" });
       }
       const { attendances } = req.body;
-      
+      const { term } = req.params;       
       for (const attendance of attendances) {
-        const { studentID, sectionID, date, hour } = attendance;
+        const { studentID, sectionID, date, hour} = attendance;
 
 
         const attendanceDate = new Date(date);
@@ -112,6 +112,7 @@ const onGiveAttendance = async (req, res) => {
         const existingAttendance = await Attendance.findOne({
           studentID,
           sectionID,
+          term,
           date: attendanceDate,
         });
   
@@ -132,6 +133,7 @@ const onGiveAttendance = async (req, res) => {
             date: attendanceDate,
             hour: hour ? 1 : 0,
             totalHour: 1,
+            term,
           });
         }
       }
