@@ -15,7 +15,10 @@ const assignmentSchema = new mongoose.Schema(
           solutionKey: String,
           weights: [Number],
           questions: [String],
-          grades: [{String: Number}]
+          grades: [{
+            studentID: String,
+            grade: Number
+          }]
     },
     {
         timestamps: true,

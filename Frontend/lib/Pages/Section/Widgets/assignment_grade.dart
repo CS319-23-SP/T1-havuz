@@ -150,11 +150,15 @@ class _AssignmentGradePageState extends State<AssignmentGradePage> {
       if (token == null) {
         throw Exception('Token not found');
       }
+      print(questionID);
+      print(studentID);
+      print(grade);
       await http.put(
         Uri.parse('http://localhost:8080/question/update-history/$questionID'),
         body: json.encode({
           'studentID': studentID,
-          'grade': grade,
+          'grade': grade.toString(),
+          'term': "2024 Spring",
         }),
         headers: {
           'Authorization': 'Bearer $token',
@@ -173,11 +177,17 @@ class _AssignmentGradePageState extends State<AssignmentGradePage> {
       if (token == null) {
         throw Exception('Token not found');
       }
+      print(assignmentID);
+      print(term);
+      print(sectionID);
+      print(studentID);
+      print(grade.toStringAsFixed(1));
+      print(grade.toStringAsFixed(0));
       await http.put(
         Uri.parse(
-            'http://localhost:8080/assignment/update-grade/$assignmentID/$term/$sectionID/$studentID'),
+            'http://localhost:8080/assignment/$assignmentID/$term/$sectionID/$studentID'),
         body: json.encode({
-          'grade': grade,
+          'grade': grade.toStringAsFixed(0).toString(),
         }),
         headers: {
           'Authorization': 'Bearer $token',
@@ -194,19 +204,18 @@ class _AssignmentGradePageState extends State<AssignmentGradePage> {
     final assignmentID = widget.assignmentID;
 
     return Scaffold(
-      appBar: CustomAppBar(role: widget.role), // Custom app bar
+      appBar: CustomAppBar(role: widget.role),
       body: Row(
         children: [
           LeftBar(role: widget.role), // Left bar
           Expanded(
-            // Main content area
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
-                    'Assignment ID: $assignmentID', // Page title
+                    'Assignment : ${assignmentData?['name']}', // Page title
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                 ),

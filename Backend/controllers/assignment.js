@@ -95,7 +95,7 @@ const onUpdateAssGrade = async (req, res) => {
     const validation = makeValidation((types) => ({
       payload: req.body,
       checks: {
-        grade: { type: types.number, optional: false },
+        grade: { type: types.string, optional: false },
       },
     }));
 
@@ -104,8 +104,9 @@ const onUpdateAssGrade = async (req, res) => {
     }
 
     const { id, term, sectionID, studentID } = req.params;
-    const { grade } = req.body;
+    const grade = req.body.grade; // Get the grade from the body
 
+    // Find the assignment with the given ID, term, and sectionID
     const assignment = await assignmentModel.findOne({
       id,
       term,
@@ -116,27 +117,29 @@ const onUpdateAssGrade = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Assignment not found' });
     }
 
-    // Find the index where studentID matches
-    const existingGradeIndex = assignment.grades.findIndex(
-      (g) => g[studentID] !== undefined
+    // Find the existing `grades` entry with the matching `studentID`
+    let existingGrade = assignment.grades.find(
+      (g) => g.studentID === studentID
     );
 
-    if (existingGradeIndex >= 0) {
-      // Update the grade if it exists
-      assignment.grades[existingGradeIndex][studentID] = grade;
+    if (existingGrade) {
+      // Update the existing grade
+      existingGrade.grade = grade;
     } else {
-      // Create a new entry if it doesn't exist
-      assignment.grades.push({ [studentID]: grade });
+      // Create a new `grades` entry
+      assignment.grades.push({ studentID, grade });
     }
 
     await assignment.save(); // Save the updated assignment
 
     return res.status(200).json({ success: true, assignment });
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ success: false, error: error.message });
+    console.error('Error updating assignment grade:', error);
+    return res.status(500).json({ success: false, message: 'Server error' });
   }
 };
+
+
 
   
   module.exports = {
