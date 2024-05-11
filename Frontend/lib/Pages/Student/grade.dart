@@ -54,7 +54,6 @@ class _StudentSectionGradePageState extends State<StudentSectionGradePage> {
           } else {
             throw Exception("Invalid data format for sections");
           }
-
           // Fetch assignments for each section
           for (var section in sections) {
             await _fetchAssignmentsForSection(section, token);
@@ -80,7 +79,7 @@ class _StudentSectionGradePageState extends State<StudentSectionGradePage> {
       for (var assignmentID in section.assignments) {
         final response = await http.get(
           Uri.parse(
-              'http://localhost:8080/assignment/$assignmentID/$term/${section.id}'),
+              'http://localhost:8080/assignment/grade/$assignmentID/$term/${section.id}'),
           headers: {
             'Authorization': 'Bearer $token',
             'Content-Type': 'application/json',
@@ -89,6 +88,8 @@ class _StudentSectionGradePageState extends State<StudentSectionGradePage> {
 
         if (response.statusCode == 200) {
           final responseData = json.decode(response.body);
+          print(responseData);
+
           assignments.add(responseData['assignment']); // Extract assignment map
         } else {
           throw Exception("Failed to fetch assignment with ID $assignmentID");
@@ -136,22 +137,24 @@ class _StudentSectionGradePageState extends State<StudentSectionGradePage> {
                   ...assignments.asMap().entries.map((entry) {
                     final assignment = entry.value;
                     final assignmentData = assignment as Map<String, dynamic>;
-                    print(assignmentData);
+//                    print(assignmentData);
 
                     final assignmentName =
                         assignmentData['name'] ?? 'Unknown Assignment';
 
-                    int? grade;
+                    String? grade;
 
-                    for (var map in assignmentData['grades']) {
-                      if (map.containsKey(studentID)) {
-                        grade = map[studentID];
+                    for (var gradeData in assignmentData['grades']) {
+                      final studentIDFromData = gradeData['studentID'];
+                      if (studentIDFromData == studentID) {
+                        grade = gradeData['grade'];
                         break;
                       }
                     }
 
-                    final studentGrade =
-                        grade ?? 'N/A'; // If grade is null, display 'N/A'
+                    final studentGrade = grade != null
+                        ? grade.toString()
+                        : 'N/A'; // If grade is null, display 'N/A'
 
                     return Padding(
                       padding: const EdgeInsets.symmetric(
