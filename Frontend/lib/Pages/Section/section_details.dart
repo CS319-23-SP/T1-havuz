@@ -267,14 +267,44 @@ class _Section_DetailsState extends State<Section_Details> {
           children: [
             ElevatedButton(
                 onPressed: widget.onBack, child: Icon(Icons.arrow_back)),
-            if (role == "instructor") ...[
-              ElevatedButton(
-                  onPressed: () {
-                    GoRouter.of(context)
-                        .go('/createAssignment/${widget.section.id}');
-                  },
-                  child: const Text("Create assignment"))
-            ]
+            Column(
+              children: [
+                if (role == "instructor") ...[
+                  TextButton(
+                      onPressed: () {
+                        GoRouter.of(context)
+                            .go('/createAssignment/${widget.section.id}');
+                      },
+                      child: const Text("Create assignment")),
+                  TextButton(
+                      onPressed: () {
+                        GoRouter.of(context)
+                            .go('/evaluation/${widget.section.id}');
+                      },
+                      child: const Text("See Evaluation")),
+                ],
+                if (role == "student") ...[
+                  TextButton(
+                      onPressed: () {
+                        GoRouter.of(context)
+                            .go('/evaluation/${widget.section.id}');
+                      },
+                      child: const Text("Make Evaluation")),
+                ],
+                TextButton(
+                    onPressed: () {
+                      final String sectionId = widget.section.id;
+                      GoRouter.of(context).go("/$sectionId/createForum");
+                    },
+                    child: Text("Create Forum")),
+                TextButton(
+                    onPressed: () {
+                      final String sectionId = widget.section.id;
+                      GoRouter.of(context).go("/$sectionId/forum");
+                    },
+                    child: Text("View Forums")),
+              ],
+            )
           ],
         ),
         Expanded(
@@ -342,79 +372,74 @@ class _Section_DetailsState extends State<Section_Details> {
             ),
           ),
         ),
-        Column(
-          children: [
-            TextButton(
-                onPressed: () {
-                  final String sectionId = widget.section.id;
-                  GoRouter.of(context).go("/$sectionId/createForum");
-                },
-                child: Text("Create Forum")),
-            TextButton(
-                onPressed: () {
-                  final String sectionId = widget.section.id;
-                  GoRouter.of(context).go("/$sectionId/forum");
-                },
-                child: Text("View Forums")),
-          ],
+        SizedBox(
+          width: 20,
         ),
         Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-                child: Text(
-                  "Materials",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-              ),
-              if (role == "instructor") ...[
+          child: Container(
+            decoration: BoxDecoration(
+                color: PoolColors.cardWhite,
+                borderRadius: BorderRadius.circular(15)),
+            height: 1250,
+            width: 1250,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
                 Padding(
                   padding:
                       EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-                  child: ElevatedButton(
-                    onPressed: () {
-                      uploadFile();
-                    },
-                    child: Text("Upload File"),
+                  child: Text(
+                    "Materials",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                 ),
-              ],
-              ...materials.map((filename) {
-                return ListTile(
-                  title: Row(
-                    children: [
-                      Expanded(
-                        child: Text(filename),
-                      ),
-                      if (role == "instructor") ...[
-                        TextButton(
-                          onPressed: () {
-                            downloadFile(filename);
-                          },
-                          child: Text("Download"),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            deleteFile(filename);
-                          },
-                          child: Text("Delete"),
-                        ),
-                      ],
-                      if (role == "student") ...[
-                        TextButton(
-                          onPressed: () {
-                            downloadFile(filename);
-                          },
-                          child: Text("Download"),
-                        ),
-                      ],
-                    ],
+                if (role == "instructor") ...[
+                  Padding(
+                    padding:
+                        EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                    child: ElevatedButton(
+                      onPressed: () {
+                        uploadFile();
+                      },
+                      child: Text("Upload File"),
+                    ),
                   ),
-                );
-              }).toList(),
-            ],
+                ],
+                ...materials.map((filename) {
+                  return ListTile(
+                    title: Row(
+                      children: [
+                        Expanded(
+                          child: Text(filename),
+                        ),
+                        if (role == "instructor") ...[
+                          TextButton(
+                            onPressed: () {
+                              downloadFile(filename);
+                            },
+                            child: Text("Download"),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              deleteFile(filename);
+                            },
+                            child: Text("Delete"),
+                          ),
+                        ],
+                        if (role == "student") ...[
+                          TextButton(
+                            onPressed: () {
+                              downloadFile(filename);
+                            },
+                            child: Text("Download"),
+                          ),
+                        ],
+                      ],
+                    ),
+                  );
+                }).toList(),
+              ],
+            ),
           ),
         ),
       ],

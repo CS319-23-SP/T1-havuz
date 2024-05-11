@@ -17,7 +17,7 @@ const createForumReply = async (req, res) => {
 
         const postedByUser  = req._id;
         const { parentReplyId } = req.params;
-        const { messageText } = req.body;
+        const {messageText} = req.body;
 
         const parentReply = await ForumReply.findById(parentReplyId);
         if (!parentReply) {
@@ -84,14 +84,16 @@ const createForumPost = async (req, res) => {
         if (!validation.success) return res.status(400).json({ ...validation });
 
         const forumInitiator = req._id;
-        const { title, messageText, sectionId } = req.body;
+        const { title, messageText } = req.body;
+        const { sectionId, term } = req.params;
 
         const uniqueId = uuidv4();
         const forumPost = await ForumPost.createForumPost(
             forumInitiator,
             title,
             sectionId,
-            uniqueId
+            uniqueId,
+            term,
         );
 
         const initialReply = await ForumReply.createForumReplyWithId(
@@ -109,18 +111,19 @@ const createForumPost = async (req, res) => {
     }
 };
 
-const getForumPostsBySectionId = async (req, res) => {
+const getForumPostsBySectionIdAndTerm = async (req, res) => {
     try {
-        const { sectionId } = req.params;
+        const { term, sectionId } = req.params;
 
-        const forumPosts = await ForumPost.getAllForumPostsBySectionId(sectionId);
+        const forumPosts = await ForumPost.getAllForumPostsBySectionIdAndTerm(sectionId, term);
 
         return res.json({ forumPosts });
     } catch (error) {
-        console.error('Error getting forum posts by section ID:', error);
+        console.error('Error getting forum posts by section ID and term:', error);
         return res.status(500).json({ error: 'Internal server error' });
     }
 };
+
 
 
 module.exports = {  
@@ -128,7 +131,7 @@ module.exports = {
     getForumRepliesByReplyId,
     getFirstReplyWithReplies,
     createForumPost,
-    getForumPostsBySectionId
+    getForumPostsBySectionId: getForumPostsBySectionIdAndTerm
     };
 
 

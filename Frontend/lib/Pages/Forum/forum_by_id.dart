@@ -131,7 +131,6 @@ class _ForumRoutePageState extends State<ForumRoutePage> {
           },
         );
       }
-      print(response.statusCode);
     } catch (e) {
       print("object$e");
     }
@@ -151,7 +150,6 @@ class _ForumRoutePageState extends State<ForumRoutePage> {
                   onPressed: () async {
                     final sectionID = widget.sectionId;
                     final id = forum.parentReplyId;
-                    print(id);
                     if (id == "0") {
                       showDialog(
                           context: context,
