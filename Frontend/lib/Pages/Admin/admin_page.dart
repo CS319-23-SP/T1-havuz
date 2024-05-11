@@ -2,6 +2,7 @@ import 'package:first_trial/Pages/Auth/login_page.dart';
 import 'package:first_trial/Pages/Widgets/AppBars/roles/admin_appbar.dart';
 import 'package:first_trial/Pages/Widgets/AppBars/app_bars.dart';
 import 'package:first_trial/Pages/Widgets/access_denied.dart';
+import 'package:first_trial/final_variables.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'student_create_page.dart';
@@ -17,7 +18,7 @@ class Admin extends StatefulWidget {
 
 class _AdminState extends State<Admin> {
   List<Student> students = [];
-
+  String? term = PoolTerm.term;
   String? role = "unknown";
 
   @override

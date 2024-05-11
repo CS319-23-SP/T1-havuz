@@ -4,9 +4,9 @@ const onCreateEvaluation = async (req, res) => {
   try {
 
     
-    const { sectionId } = req.params;
+    const { term ,sectionId } = req.params;
     const { courseMessage, instructorMessage } = req.body;
-    const evaluation = await Evaluation.createEvaluation(sectionId, courseMessage, instructorMessage);
+    const evaluation = await Evaluation.createEvaluation(term, sectionId, courseMessage, instructorMessage);
     return res.status(200).json({ success: true, evaluation });
   } catch (error) {
     console.error(error);
@@ -16,8 +16,8 @@ const onCreateEvaluation = async (req, res) => {
 
 const onGetAllEvaluationsBySectionId = async (req, res) => {
   try {
-    const { sectionId } = req.params;
-    const evaluations = await Evaluation.getAllEvaluationsBySectionId(sectionId);
+    const { term, sectionId } = req.params;
+    const evaluations = await Evaluation.getAllEvaluationsBySectionId(term, sectionId);
     return res.status(200).json({ success: true, evaluations });
   } catch (error) {
     console.error(error);

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:first_trial/Objects/question.dart';
 import 'package:first_trial/Pages/Widgets/AppBars/app_bars.dart';
 import 'package:first_trial/Pages/Widgets/LeftBar/left_bar.dart';
+import 'package:first_trial/final_variables.dart';
 import 'package:first_trial/token.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -21,7 +22,7 @@ class CreateAssignmentPage extends StatefulWidget {
 
 class _CreateAssignmentPageState extends State<CreateAssignmentPage> {
   final TextEditingController nameController = TextEditingController();
-  final term = "2024 Spring";
+  String? term = PoolTerm.term;
   DateTime finalDay = DateTime(2024, 05, 31);
   String? role = "unknown";
   var deadline;

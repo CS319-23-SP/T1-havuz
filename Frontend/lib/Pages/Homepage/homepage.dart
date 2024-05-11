@@ -29,6 +29,7 @@ class CourseHomePage extends StatefulWidget {
 
 class _CourseHomePageState extends State<CourseHomePage> {
   String? role = "unknown";
+  String? term = PoolTerm.term;
 
   @override
   void initState() {
@@ -54,7 +55,6 @@ class _CourseHomePageState extends State<CourseHomePage> {
         throw Exception('Token not found');
       }
       String? ID = await TokenStorage.getID();
-      String? term = '2024 Spring';
 
       final response = await http.get(
         Uri.http('localhost:8080', '/section/$ID/$term'),
