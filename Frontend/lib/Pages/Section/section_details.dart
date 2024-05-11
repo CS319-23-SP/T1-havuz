@@ -347,73 +347,87 @@ class _Section_DetailsState extends State<Section_Details> {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
+        Column(
           children: [
-            ElevatedButton(
-                onPressed: widget.onBack, child: Icon(Icons.arrow_back)),
-            Column(
-              children: [
-                if (role == "instructor") ...[
-                  TextButton(
-                      onPressed: () {
-                        GoRouter.of(context)
-                            .go('/createAssignment/${widget.section.id}');
-                      },
-                      child: const Text("Create assignment")),
-                  TextButton(
-                      onPressed: () {
-                        GoRouter.of(context)
-                            .go('/evaluation/${widget.section.id}');
-                      },
-                      child: const Text("See Evaluation")),
-                ],
-                if (role == "student") ...[
-                  TextButton(
-                      onPressed: () {
-                        GoRouter.of(context)
-                            .go('/evaluation/${widget.section.id}');
-                      },
-                      child: const Text("Make Evaluation")),
-                ],
-                TextButton(
-                    onPressed: () {
-                      final String sectionId = widget.section.id;
-                      GoRouter.of(context).go("/$sectionId/createForum");
-                    },
-                    child: Text("Create Forum")),
-                TextButton(
-                    onPressed: () {
-                      final String sectionId = widget.section.id;
-                      GoRouter.of(context).go("/$sectionId/forum");
-                    },
-                    child: Text("View Forums")),
-                DropdownMenu<String>(
-                  inputDecorationTheme:
-                      InputDecorationTheme(border: InputBorder.none),
-                  hintText: "Select Term",
-                  onSelected: (String? value) {
-                    setState(() {
-                      selectedStudent = value.toString();
-                    });
+            InkWell(
+              onTap: widget.onBack,
+              child: Container(
+                padding: EdgeInsets.all(20),
+                child: Icon(Icons.arrow_back),
+              ),
+            ),
+            if (role == "instructor") ...[
+              InkWell(
+                  onTap: () {
+                    GoRouter.of(context)
+                        .go('/createAssignment/${widget.section.id}');
                   },
-                  dropdownMenuEntries:
-                      students.map<DropdownMenuEntry<String>>((String value) {
-                    return DropdownMenuEntry<String>(
-                        value: value, label: value);
-                  }).toList(),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    if (selectedStudent != null) {
-                      createReport(selectedStudent);
-                    } else {
-                      // Handle case when no student is selected
-                    }
+                  child: Container(
+                      padding: EdgeInsets.all(20),
+                      child: const Text("Create assignment"))),
+              InkWell(
+                  onTap: () {
+                    GoRouter.of(context).go('/evaluation/${widget.section.id}');
                   },
-                  child: Text("Create Report"),
-                ),
-              ],
-            )
+                  child: Container(
+                      padding: EdgeInsets.all(20),
+                      child: const Text("See Evaluation"))),
+            ],
+            if (role == "student") ...[
+              InkWell(
+                  onTap: () {
+                    GoRouter.of(context).go('/evaluation/${widget.section.id}');
+                  },
+                  child: Container(
+                      padding: EdgeInsets.all(20),
+                      child: const Text("Make Evaluation"))),
+            ],
+            InkWell(
+                onTap: () {
+                  final String sectionId = widget.section.id;
+                  GoRouter.of(context).go("/$sectionId/createForum");
+                },
+                child: Container(
+                    padding: EdgeInsets.all(20), child: Text("Create Forum"))),
+            InkWell(
+                onTap: () {
+                  final String sectionId = widget.section.id;
+                  GoRouter.of(context).go("/$sectionId/forum");
+                },
+                child: Container(
+                    padding: EdgeInsets.all(20), child: Text("View Forums"))),
+            InkWell(
+                onTap: () {
+                  final String courseId = widget.section.sectionID;
+                  GoRouter.of(context).go("/$courseId/ABET");
+                },
+                child: Container(
+                    padding: EdgeInsets.all(20), child: Text("ABET"))),
+            DropdownMenu<String>(
+              inputDecorationTheme:
+                  InputDecorationTheme(border: InputBorder.none),
+              hintText: "Select Term",
+              onSelected: (String? value) {
+                setState(() {
+                  selectedStudent = value.toString();
+                });
+              },
+              dropdownMenuEntries:
+                  students.map<DropdownMenuEntry<String>>((String value) {
+                return DropdownMenuEntry<String>(value: value, label: value);
+              }).toList(),
+            ),
+            InkWell(
+              onTap: () {
+                if (selectedStudent != null) {
+                  createReport(selectedStudent);
+                } else {
+                  // Handle case when no student is selected
+                }
+              },
+              child: Container(
+                  padding: EdgeInsets.all(20), child: Text("Create Report")),
+            ),
           ],
         ),
         Expanded(
@@ -449,21 +463,26 @@ class _Section_DetailsState extends State<Section_Details> {
                             DateTime deadline =
                                 DateTime.parse(assignment.deadline);
                             return ListTile(
-                              title: TextButton(
-                                child: Row(
-                                  children: [
-                                    Icon(Icons.assignment),
-                                    SizedBox(width: 15),
-                                    Expanded(
-                                      child: Text(
-                                        "${assignment.name} (Due: ${DateFormat('MMM dd').format(deadline)})",
-                                        overflow: TextOverflow.ellipsis,
-                                        maxLines: 1,
+                              title: InkWell(
+                                child: Container(
+                                  padding: EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                      border: Border.all(width: 1)),
+                                  child: Row(
+                                    children: [
+                                      Icon(Icons.assignment),
+                                      SizedBox(width: 15),
+                                      Expanded(
+                                        child: Text(
+                                          "${assignment.name} (Due: ${DateFormat('MMM dd').format(deadline)})",
+                                          overflow: TextOverflow.ellipsis,
+                                          maxLines: 1,
+                                        ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
-                                onPressed: () async {
+                                onTap: () async {
                                   final String assignmentid = assignment.id;
                                   final String sectionid = assignment.sectionID;
                                   String? role = await TokenStorage.getRole();
@@ -506,11 +525,15 @@ class _Section_DetailsState extends State<Section_Details> {
                   Padding(
                     padding:
                         EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-                    child: ElevatedButton(
-                      onPressed: () {
+                    child: InkWell(
+                      onTap: () {
                         uploadFile();
                       },
-                      child: Text("Upload File"),
+                      child: Container(
+                          padding: EdgeInsets.all(10),
+                          decoration:
+                              BoxDecoration(border: Border.all(width: 1)),
+                          child: Text("Upload File")),
                     ),
                   ),
                 ],
@@ -536,11 +559,17 @@ class _Section_DetailsState extends State<Section_Details> {
                           ),
                         ],
                         if (role == "student") ...[
-                          TextButton(
-                            onPressed: () {
+                          InkWell(
+                            onTap: () {
                               downloadFile(filename);
                             },
-                            child: Text("Download"),
+                            child: Container(
+                                padding: EdgeInsets.all(10),
+                                child: Text(
+                                  "Download",
+                                  style:
+                                      TextStyle(color: Colors.deepOrangeAccent),
+                                )),
                           ),
                         ],
                       ],
