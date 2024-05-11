@@ -1,3 +1,4 @@
+import 'package:first_trial/final_variables.dart';
 import 'package:flutter/material.dart';
 import 'package:first_trial/Objects/section.dart';
 import 'package:first_trial/token.dart';
@@ -17,7 +18,7 @@ class _StudentSectionGradePageState extends State<StudentSectionGradePage> {
   List<Section> sections = [];
   Map<String, List<dynamic>> sectionAssignments = {};
   String? studentID;
-  final String term = "2024 Spring"; // Term is fixed
+  String? term = PoolTerm.term;
 
   @override
   void initState() {

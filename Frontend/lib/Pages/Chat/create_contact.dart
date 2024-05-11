@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:first_trial/Pages/Widgets/AppBars/app_bars.dart';
 import 'package:first_trial/Pages/Widgets/success_fail.dart';
+import 'package:first_trial/final_variables.dart';
 import 'package:first_trial/token.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -16,6 +17,8 @@ class CreateContactPage extends StatefulWidget {
 
 class _CreateContactPageState extends State<CreateContactPage> {
   String? role = "unknown";
+  String? term = PoolTerm.term;
+
   final TextEditingController headerController = TextEditingController();
   final TextEditingController topicsController = TextEditingController();
   final TextEditingController textController = TextEditingController();

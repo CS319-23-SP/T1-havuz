@@ -4,6 +4,10 @@ import 'package:flutter/src/painting/text_style.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flip_card/flip_card.dart';
 
+class PoolTerm {
+  static const String term = "2024 Spring";
+}
+
 class PoolColors {
   static const Color white = Color.fromRGBO(255, 255, 255, 1);
 

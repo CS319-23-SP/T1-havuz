@@ -7,10 +7,14 @@ const evaluationSchema = new mongoose.Schema(
     type: String,
     default: () => uuidv4().replace(/\-/g, ""),
   },
-    sectionId: {
-      type: String,
-      required: true,
-    },
+  term: {
+    type: String,
+    required: true,
+  },
+  sectionId: {
+    type: String,
+    required: true,
+  },
     courseMessage: {
       type: String,
     },
@@ -24,9 +28,10 @@ const evaluationSchema = new mongoose.Schema(
   }
 );
 
-evaluationSchema.statics.createEvaluation = async function (sectionId, courseMessage, instructorMessage) {
+evaluationSchema.statics.createEvaluation = async function (term, sectionId, courseMessage, instructorMessage) {
   try {
     const evaluation = await this.create({
+      term,
       sectionId,
       courseMessage, instructorMessage,
     });
@@ -37,9 +42,9 @@ evaluationSchema.statics.createEvaluation = async function (sectionId, courseMes
   }
 };
 
-evaluationSchema.statics.getAllEvaluationsBySectionId = async function (sectionId) {
+evaluationSchema.statics.getAllEvaluationsBySectionId = async function (term, sectionId) {
   try {
-    const evaluations = await this.find({ sectionId });
+    const evaluations = await this.find({ term, sectionId });
     return evaluations;
   } catch (error) {
     throw error;

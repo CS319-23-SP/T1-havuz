@@ -1,26 +1,43 @@
-const socketIo = require('socket.io');
-
 class WebSockets {
   constructor() {
     this.users = [];
+    this.io = null; 
   }
 
-  connection = (client) => {
-    client.on("disconnect", () => {
-      this.users = this.users.filter((user) => user.socketId !== client.id);
+  init(io) {
+    this.io = io;
+    io.on('connection', this.connection);
+  }
+
+  connection = (socket) => {
+    console.log('A user conneected');
+    
+    socket.on('disconnect', () => {
+      console.log('User disconnected');
+      this.users = this.users.filter((user) => user.socketId !== socket.id);
     });
-    client.on("identity", async (userId) => {
+
+    socket.on('identity', async (userId) => {
+      console.log("he is", userId)
       this.users.push({
-        socketId: client.id,
+        socketId: socket.id,
         userId: userId,
       });
     });
-    client.on("subscribe", async (room, otherUserId = "") => {
+
+    socket.on('subscribe', async (room, otherUserId = "") => {
+      console.log(room, otherUserId)
       await this.subscribeOtherUser(room, otherUserId);
-      client.join(room);
+      socket.join(room);
     });
-    client.on("unsubscribe", async (room) => {
-      client.leave(room);
+
+    socket.on('unsubscribe', async (room) => {
+      socket.leave(room);
+    });
+
+    socket.on('chat message', (msg) => {
+      console.log('Message: ' + msg);
+      this.io.emit('chat message', msg); 
     });
   };
 
@@ -29,7 +46,7 @@ class WebSockets {
       (user) => user.userId === otherUserId
     );
     for (const userInfo of userSockets) {
-      const socketConn = global.io.sockets.connected[userInfo.socketId];
+      const socketConn = this.io.sockets.connected[userInfo.socketId];
       if (socketConn) {
         socketConn.join(room);
       }

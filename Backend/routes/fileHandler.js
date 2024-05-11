@@ -71,12 +71,24 @@ function listFilesInDirectory(directoryPath) {
   return fs.readdirSync(directoryPath);
 }
 
+function deleteFile(filePath, res) {
+  console.log(filePath);
+  fs.unlink(filePath, (err) => {
+    if (err) {
+      console.error('Error deleting file:', err);
+      return res.status(500).send('Error deleting file');
+    }
+    res.status(200).send('File deleted successfully');
+  });
+}
+
 router
   .post('/', handleFileUpload, upload.single('file'), (req, res) => {
     res.status(200).send('Si señor');
   })
   .get('/', (req, res) => {
     const { path: urlPath } = req.query;
+
     
     if (!urlPath)
         return res.status(400).send('Path parameter is missing');
@@ -87,6 +99,20 @@ router
       return res.status(400).send('Invalid file path');
 
     downloadFile(filePath, res);
+  })
+  .delete('/', (req, res) => {
+    const { path: urlPath } = req.query;
+
+    
+    if (!urlPath)
+        return res.status(400).send('Path parameter is missing');
+
+    const filePath = createFilePath(urlPath);
+
+    if (!isValidFilePath(filePath))
+      return res.status(400).send('Invalid file path');
+
+    deleteFile(filePath, res);
   })
   .get('/list', (req, res) => {
     const { path: urlPath } = req.query;

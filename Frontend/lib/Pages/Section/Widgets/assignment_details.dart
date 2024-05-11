@@ -1,6 +1,8 @@
 import 'dart:convert';
+import 'dart:html';
 import 'dart:typed_data';
 import 'package:file_picker/file_picker.dart';
+import 'package:first_trial/final_variables.dart';
 import 'package:open_file/open_file.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:path_provider/path_provider.dart';
@@ -33,7 +35,7 @@ class Assignment_Details extends StatefulWidget {
 }
 
 class _Assignment_DetailsState extends State<Assignment_Details> {
-  String term = "2024 Spring";
+  String? term = PoolTerm.term;
   String? id = "";
   Assignment assignment = Assignment(
       name: "nonigga",
@@ -63,9 +65,7 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
 
     await getAssignmentAndQuestions();
 
-    if (role == "instructor") {
-      await fetchStudentList();
-    }
+    await fetchStudentList();
     setState(() {});
   }
 
@@ -171,15 +171,13 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
 
     var answer = "";
 
-    if(!isSolutionKey){
+    if (!isSolutionKey) {
       answer = "/answers";
-    }
-    else{
+    } else {
       setState(() {
         isSolutionKeyUploaded = true;
       });
     }
-
 
     var path = "$term/${widget.sectionID}/${assignment.id}$answer";
     var url = Uri.parse('http://localhost:8080/document?path=$path');
@@ -192,22 +190,14 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
       var response = await request.send();
       if (response.statusCode == 200) {
         print('File uploaded successfully');
+        setState(() {
+          fetchStudentList();
+        });
       } else {
         print('Error uploading file: ${response.reasonPhrase}');
       }
     } catch (e) {
       print('Erroro uploading file: $e');
-    }
-  }
-
-  Future<void> _openFile() async {
-    if (_selectedFileBytes != null && _selectedFileName != null) {
-      final blob = html.Blob([_selectedFileBytes!]);
-      final url = html.Url.createObjectUrlFromBlob(blob);
-      final anchor = html.AnchorElement(href: url)
-        ..setAttribute("download", _selectedFileName!);
-      anchor.click();
-      html.Url.revokeObjectUrl(url);
     }
   }
 
@@ -230,28 +220,25 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
         fileList.forEach((filename) {
           String filenameStr = filename.toString();
           setState(() {
-            if(filenameStr != "answers")
-              students.add(filenameStr);
+            if (filenameStr != "answers") students.add(filenameStr);
           });
         });
 
-         path = "$term/${widget.sectionID}/${assignment.id}";
-      url = Uri.parse('http://localhost:8080/document/list?path=$path');
+        path = "$term/${widget.sectionID}/${assignment.id}";
+        url = Uri.parse('http://localhost:8080/document/list?path=$path');
 
-      response = await http.get(url);
+        response = await http.get(url);
 
-       if (response.statusCode == 200) {
-        final List<dynamic> fileList = json.decode(response.body);
-        print(fileList);
-        if (fileList.contains("$id.pdf")) {
-          setState(() {
-            isSolutionKeyUploaded = true;
-          });
+        if (response.statusCode == 200) {
+          final List<dynamic> fileList = json.decode(response.body);
+          if (fileList.contains("$id.pdf")) {
+            setState(() {
+              isSolutionKeyUploaded = true;
+            });
+          }
+        } else {
+          throw Exception('Failed to fetch student list');
         }
-      } else {
-        throw Exception('Failed to fetch student list');
-      }
-
       } else {
         throw Exception('Failed to fetch student list');
       }
@@ -260,27 +247,64 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
     }
   }
 
-  Future<void> downloadFile(filename,isSolutionKey) async {
+  Future<void> downloadFile(filename, isSolutionKey) async {
     try {
       var answer = "";
-      if(!isSolutionKey)
-        answer = "/answers";
+      if (!isSolutionKey) answer = "/answers";
       var path = "$term/${widget.sectionID}/${assignment.id}$answer";
-      var url = Uri.parse('http://localhost:8080/document?path=$path/$filename');
+      var url =
+          Uri.parse('http://localhost:8080/document?path=$path/$filename');
 
       var response = await http.get(url);
 
-       if (response.statusCode == 200) {
-        Directory appDocDir = await getApplicationDocumentsDirectory();
-        String appDocPath = appDocDir.path;
-        File file = File('$appDocPath/$filename');
-        await file.writeAsBytes(response.bodyBytes);
-        print('File downloaded and saved locally at: ${file.path}');
+      if (response.statusCode == 200) {
+        List<int> fileBytes = response.bodyBytes;
+
+        var blob = html.Blob([fileBytes]);
+
+        var url = html.Url.createObjectUrlFromBlob(blob);
+
+        var anchor = html.AnchorElement(href: url.toString())
+          ..setAttribute("download", filename)
+          ..click();
+
+        html.Url.revokeObjectUrl(url.toString());
       } else {
         print('Failed to download file: ${response.reasonPhrase}');
       }
     } catch (e) {
       print('Error downloading file: $e');
+    }
+  }
+
+  Future<void> deleteFile(isSolutionKey) async {
+    try {
+      var answer = "";
+      if (!isSolutionKey) answer = "/answers";
+      var fileExtension = ".pdf";
+      var path = "$term/${widget.sectionID}/${assignment.id}$answer";
+      var filename = id;
+      var url = Uri.parse(
+          'http://localhost:8080/document?path=$path/$filename$fileExtension');
+
+      var response = await http.delete(url);
+
+      if (response.statusCode == 200) {
+        if (isSolutionKey) {
+          setState(() {
+            isSolutionKeyUploaded = false;
+          });
+        } else {
+          setState(() {
+            fetchStudentList();
+          });
+        }
+        print('File deleted successfully');
+      } else {
+        print('Failed to delete file: ${response.reasonPhrase}');
+      }
+    } catch (e) {
+      print('Error deletin file: $e');
     }
   }
 
@@ -310,39 +334,65 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
                                 child: Text("Solution key: $id.pdf"),
                               ),
                               TextButton(
-                                onPressed: () =>_uploadFile(true),
-                                child: Row(
+                                onPressed: () => _uploadFile(true),
+                                child: const Row(
                                   children: [
                                     Icon(Icons.upload),
                                     Text("update File"),
                                   ],
                                 ),
                               ),
+                              IconButton(
+                                icon: const Icon(Icons.delete),
+                                onPressed: () => deleteFile(true),
+                              ),
                             ],
                           )
                         : TextButton(
                             onPressed: () => _uploadFile(true),
-                            child: Row(
+                            child: const Row(
                               children: [
                                 Icon(Icons.upload),
                                 Text("select File"),
                               ],
                             ),
                           )
-                  :Container(),
+                    : Container(),
                 Text("Term: ${assignment.term}"),
-                if (role == "student") ...[
-                  SizedBox(height: 20),
-                  TextButton(
-                    onPressed: () => _uploadFile(false),
-                    child: Row(
-                      children: [
-                        Icon(Icons.upload),
-                        Text("select File"),
-                      ],
-                    ),
-                  )
-                ],
+                const SizedBox(height: 20),
+                role == "student"
+                    ? students.contains("$id.pdf")
+                        ? Row(
+                            children: [
+                              TextButton(
+                                onPressed: () => downloadFile("$id.pdf", false),
+                                child: Text("Uploaded Assignment: $id.pdf"),
+                              ),
+                              TextButton(
+                                onPressed: () => _uploadFile(false),
+                                child: const Row(
+                                  children: [
+                                    Icon(Icons.upload),
+                                    Text("select File"),
+                                  ],
+                                ),
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.delete),
+                                onPressed: () => deleteFile(false),
+                              ),
+                            ],
+                          )
+                        : TextButton(
+                            onPressed: () => _uploadFile(false),
+                            child: const Row(
+                              children: [
+                                Icon(Icons.upload),
+                                Text("select File"),
+                              ],
+                            ),
+                          )
+                    : Container(),
                 if (role == "instructor") ...[
                   SizedBox(height: 20),
                   // Dynamic list of download buttons
@@ -354,11 +404,6 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
                   }).toList(),
                 ],
                 SizedBox(height: 20),
-                if (_selectedFileBytes != null)
-                  ElevatedButton(
-                    onPressed: _openFile,
-                    child: Text('Open Uploaded File'),
-                  ),
                 Text("Questions:",
                     style:
                         TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
@@ -382,22 +427,4 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
       ),
     );
   }
-
-  /*Future uploadPdf() async {
-    var dio = Dio();
-    FilePickerResult? result = await FilePicker.platform.pickFiles();
-
-    if (result != null) {
-      File file = File(result.files.single.path ?? " ");
-
-      String filename = file.path.split("/").last;
-      String filepath = file.path;
-
-      FormData data = FormData.fromMap({
-        'x-api-key': 'apikey',
-        'file': await MultipartFile.fromFile(filepath, filename: filename),
-      });
-      var response = dio.post("")
-    }
-  }*/
 }

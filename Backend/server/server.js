@@ -3,6 +3,7 @@ const express = require("express");
 const mogger = require("morgan");
 const cors = require("cors");
 const socketio = require("socket.io"); 
+const WebSockets = require("../utils/WebSockets")
 const roleChecker = require('../middlewares/roleChecker');
 const bodyParser = require('body-parser');
 
@@ -65,21 +66,15 @@ app.use('*', (req, res) => {
 
 const server = http.createServer(app);
 
-//dont touch bilal's parts
-const io = socketio(server);
-global.io = io;
-io.on('connection', (socket) => {
-  console.log('A user connected');
-
-  socket.on('disconnect', () => {
-    console.log('User disconnected');
-  });
-
-  socket.on('chat message', (msg) => {
-    console.log('Message: ' + msg);
-    io.emit('chat message', msg); 
-  });
+const io = socketio(server, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"],
+  },
 });
+global.io = io;
+
+WebSockets.init(io);
 
 
 server.listen(port);
