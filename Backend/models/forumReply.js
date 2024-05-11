@@ -10,7 +10,7 @@ const forumReplySchema = new mongoose.Schema(
       default: uuidv4,
       unique: true,
     },
-    message: mongoose.Schema.Types.Mixed,
+    messageText: mongoose.Schema.Types.Mixed,
     type: {
       type: String,
     },
@@ -30,14 +30,14 @@ const forumReplySchema = new mongoose.Schema(
 );
 
 forumReplySchema.statics.createForumReplyWithId = async function (
-  message,
+  messageText,
   postedByUser,
   replyID,
   parentReplyId,
 ) {
   try {
     const forumReply = await this.create({
-      message,
+      messageText,
       postedByUser,
       replyID,
       parentReplyId, 
@@ -49,13 +49,13 @@ forumReplySchema.statics.createForumReplyWithId = async function (
 };
 
 forumReplySchema.statics.createForumReply = async function (
-  message,
+  messageText,
   postedByUser,
   parentReplyId,
 ) {
   try {
     const forumReply = await this.create({
-      message,
+      messageText,
       postedByUser,
       parentReplyId, 
     });

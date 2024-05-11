@@ -4,32 +4,32 @@ const ChadRoomModel = require('../models/chadRoom');
 const AuthModel = require('../models/auth');
 
 const initiate = async (req, res) => {
-    try {      
+  try {      
+    const validation = makeValidation(types => ({
+      payload: req.body,
+      checks: {
+        userIds: { 
+          type: types.array, 
+          options: { unique: true, empty: false, stringOnly: true } 
+        },
+      }
+    }));
+    
+    if (!validation.success) return res.status(400).json({ ...validation });
+    
+    const { userIds } = req.body;
+    const { _id: chadInitiator } = req;
+    const allUserIds = [...userIds, chadInitiator];
+    const chadRoom = await ChadRoomModel.initiateChat(allUserIds, chadInitiator);
 
-      const validation = makeValidation(types => ({
-        payload: req.body,
-        checks: {
-          userIds: { 
-            type: types.array, 
-            options: { unique: true, empty: false, stringOnly: true } 
-          },
-        }
-      }));
-      if (!validation.success) return res.status(400).json({ ...validation });
-      const { userIds } = req.body;
-      
-      const { _id: chadInitiator } = req;
-      const allUserIds = [...userIds, chadInitiator];
-      const chadRoom = await ChadRoomModel.initiateChat(allUserIds, chadInitiator);
-
-      global.io.emit('newChatRoom', chadRoom);
-      
-      return res.status(200).json({ success: true, chatRoom: chadRoom });
-    } catch (error) {
-      return res.status(500).json({ success: false, error: error })
-    }
+    global.io.emit('newchatroom', chadRoom);
+    global.io.emit('event', chadRoom);
+    
+    return res.status(200).json({ success: true, chatRoom: chadRoom });
+  } catch (error) {
+    return res.status(500).json({ success: false, error: error })
   }
-
+}
 
 const postMessage = async (req, res) => {
   try {
@@ -42,19 +42,23 @@ const postMessage = async (req, res) => {
     }));    
 
     if (!validation.success) return res.status(400).json(validation);
+    
     const messagePayload = {
       messageText: req.body.messageText,
     };
     const currentLoggedUser = req._id;
     const post = await ChadMessageModel.createPostInChatRoom(roomId, messagePayload, currentLoggedUser);
     
-    global.io.sockets.in(roomId).emit('new message', { message: post });
+    global.io.emit('newmessage', roomId);
     
     return res.status(200).json({ success: true, post });
   } catch (error) {
     return res.status(500).json({ success: false, error: error });
   }
 };
+
+module.exports = { initiate, postMessage };
+
 
 
 const getConversationByRoomId = async (req, res) => {
