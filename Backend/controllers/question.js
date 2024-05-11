@@ -109,50 +109,73 @@ const onGetQuestionByID = async (req, res) => {
 }
 
 const onUpdateHistory = async (req, res) => {
-    try {
-      const validation = makeValidation((types) => ({
-        payload: req.body,
-        checks: {
-          studentID: { type: types.string, optional: false },
-          grade: { type: types.number, optional: false },
-        },
-      }));
-  
-      if (!validation.success) {
-        return res.status(400).json(validation); // Return validation errors
-      }
-  
-      const questionID = req.params.id; // Get the question ID from URL params
-      const { studentID, grade } = req.body; // Get the student ID and grade from the request body
-  
-      // Fetch the question from the database
-      const question = await questionModel.findById(questionID);
-  
-      if (!question) {
-        return res.status(404).json({ success: false, message: 'Question not found' });
-      }
-  
-      // Find the existing history record for this student ID
-      let historyRecord = question.history.find((h) => h.studentID === studentID);
-  
-      if (historyRecord) {
-        // Update the grade if the history record exists
-        historyRecord.grade = grade;
-      } else {
-        // If not, create a new history record
-        question.history.push({ studentID, grade });
-      }
-  
-      // Save the updated question back to the database
-      await question.save();
-  
-      return res.status(200).json({ success: true, question });
-    } catch (error) {
-      console.error(error);
-      return res.status(500).json({ success: false, error: error.message });
+  try {
+    const validation = makeValidation((types) => ({
+      payload: req.body,
+      checks: {
+        studentID: { type: types.string },
+        grade: { type: types.string }, // Assuming grade is a string
+        term: { type: types.string },
+      },
+    }));
+
+    if (!validation.success) {
+      return res.status(400).json(validation); // Return validation errors
     }
-  };
-  
+
+    const questionID = req.params.id; // Get the question ID from URL params
+    const { studentID, grade, term } = req.body; // Get student ID, grade, and term from the request body
+
+    // Fetch the question from the database
+    const question = await questionModel.findOne({ id: questionID });
+
+    if (!question) {
+      return res.status(404).json({ success: false, message: 'Question not found' });
+    }
+
+    // Check if the history record exists
+    const historyRecord = question.history.find(
+      (h) => h.studentID === studentID && h.term === term
+    );
+
+    let update;
+    if (historyRecord) {
+      // If record exists, update the grade
+      update = { $set: { 'history.$[element].grade': grade } };
+      arrayFilters = [{ 'element.studentID': studentID, 'element.term': term }];
+    } else {
+      // If record doesn't exist, add a new record
+      update = {
+        $addToSet: {
+          history: {
+            studentID,
+            grade,
+            term,
+          },
+        },
+      };
+      arrayFilters = []; // No array filters needed for new records
+    }
+
+    // Use findOneAndUpdate with array filters
+    const updatedQuestion = await questionModel.findOneAndUpdate(
+      { id: questionID },
+      update,
+      {
+        new: true, // Return the updated document
+        arrayFilters: arrayFilters,
+        upsert: false, // No upsert to avoid creating new questions
+      }
+    );
+
+    return res.status(200).json({ success: true, question: updatedQuestion });
+  } catch (error) {
+    console.error(`Error updating history: ${error.message}`);
+    return res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+
 module.exports = {
     onCreateQuestion,
     onEditQuestionByID,
