@@ -46,7 +46,7 @@ class FailWidget extends StatelessWidget {
       content: const SingleChildScrollView(
         child: ListBody(
           children: <Widget>[
-            Text('Failed to add question. Please try again.'),
+            Text('Failed. Please try again.'),
           ],
         ),
       ),

@@ -4,9 +4,9 @@ const forumController = require('../controllers/forum.js');
 const router = express.Router();
 
 router
-  .post('/', forumController.createForumPost)
+  .post('/:term/:sectionId', forumController.createForumPost)
   .post('/:parentReplyId', forumController.createForumReply)
   .get('/:replId', forumController.getForumRepliesByReplyId)
-  .get('/section/:sectionId', forumController.getForumPostsBySectionId);
+  .get('/:term/:sectionId', forumController.getForumPostsBySectionId);
 
 module.exports = router;

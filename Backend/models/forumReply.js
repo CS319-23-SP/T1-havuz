@@ -1,8 +1,6 @@
 const mongoose = require("mongoose");
 const { v4: uuidv4 } = require("uuid");
 
-
-
 const forumReplySchema = new mongoose.Schema(
   {
     replyID: {
@@ -10,7 +8,7 @@ const forumReplySchema = new mongoose.Schema(
       default: uuidv4,
       unique: true,
     },
-    messageText: mongoose.Schema.Types.Mixed,
+    message: mongoose.Schema.Types.Mixed,
     type: {
       type: String,
     },
@@ -30,14 +28,14 @@ const forumReplySchema = new mongoose.Schema(
 );
 
 forumReplySchema.statics.createForumReplyWithId = async function (
-  messageText,
+  message,
   postedByUser,
   replyID,
   parentReplyId,
 ) {
   try {
     const forumReply = await this.create({
-      messageText,
+      message,
       postedByUser,
       replyID,
       parentReplyId, 
@@ -49,13 +47,13 @@ forumReplySchema.statics.createForumReplyWithId = async function (
 };
 
 forumReplySchema.statics.createForumReply = async function (
-  messageText,
+  message,
   postedByUser,
   parentReplyId,
 ) {
   try {
     const forumReply = await this.create({
-      messageText,
+      message,
       postedByUser,
       parentReplyId, 
     });

@@ -2,6 +2,7 @@ import 'package:first_trial/Pages/Admin/admin_page.dart';
 import 'package:first_trial/Pages/Admin/student_create_page.dart';
 import 'package:first_trial/Pages/Chat/chat_homepage.dart';
 import 'package:first_trial/Pages/Chat/create_contact.dart';
+import 'package:first_trial/Pages/Evaluation/evaluation.dart';
 import 'package:first_trial/Pages/Forum/create_forum.dart';
 import 'package:first_trial/Pages/Forum/forum_by_id.dart';
 import 'package:first_trial/Pages/Forum/view_forums.dart';
@@ -42,6 +43,8 @@ class RouteGenerator {
   final String instructorAttendance = "/instructor/give-attendance";
 
   final String forumRouteId = "/:sectionId/forum/:id";
+
+  final String evaluationInstr = "/evaluation/:sectionId";
   getRouter() {
     return GoRouter(
       initialLocation: loginRoute,
@@ -102,6 +105,12 @@ class RouteGenerator {
             builder: (context, state) {
               final userId = state.pathParameters['userId'].toString();
               return UserProfilePage(userId: userId);
+            }),
+        GoRoute(
+            path: evaluationInstr,
+            builder: (context, state) {
+              final section = state.pathParameters['sectionId'].toString();
+              return EvaluationPage(sectionID: section);
             }),
         GoRoute(
             path: createAssignmentRoute,
