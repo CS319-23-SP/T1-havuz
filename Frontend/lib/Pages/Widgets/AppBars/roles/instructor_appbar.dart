@@ -28,8 +28,6 @@ class _InstructorAppBarState extends State<InstructorAppBar> {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        const DropdownButtonChoice(),
-        const VerticalD(),
         AppBarChoice(
           text: "Weekly Schedule",
           onPressed: () {},
@@ -46,6 +44,12 @@ class _InstructorAppBarState extends State<InstructorAppBar> {
             text: "Questions",
             onPressed: () {
               GoRouter.of(context).go('/instructor/question');
+            }),
+        const VerticalD(),
+        AppBarChoice(
+            text: "Create Event",
+            onPressed: () {
+              GoRouter.of(context).go('/createEvent');
             }),
       ],
     );

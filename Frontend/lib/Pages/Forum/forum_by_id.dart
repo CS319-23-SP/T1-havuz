@@ -168,7 +168,7 @@ class _ForumRoutePageState extends State<ForumRoutePage> {
                                 TextButton(
                                   child: const Text('OK'),
                                   onPressed: () {
-                                    Navigator.of(context).pop();
+                                    GoRouter.of(context).go("/$role");
                                   },
                                 ),
                               ],
@@ -310,7 +310,7 @@ class _ForumRoutePageState extends State<ForumRoutePage> {
           // Positioned TextField for Reply
           isVisibleTextField
               ? Positioned(
-                  bottom: screen.height / 2 - 14,
+                  bottom: screen.height / 2 - 9,
                   right: 0,
                   left: 0,
                   child: Container(
