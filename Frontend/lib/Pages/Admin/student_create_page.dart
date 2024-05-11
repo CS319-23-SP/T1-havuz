@@ -2,6 +2,7 @@ import 'package:first_trial/Pages/Widgets/AppBars/roles/admin_appbar.dart';
 import 'package:first_trial/Pages/Widgets/AppBars/app_bars.dart';
 import 'package:first_trial/Pages/Admin/admin_page.dart';
 import 'package:first_trial/Pages/Widgets/access_denied.dart';
+import 'package:first_trial/final_variables.dart';
 import 'package:first_trial/token.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -26,6 +27,7 @@ class _StudentCreationPageState extends State<StudentCreationPage> {
   final TextEditingController departmentController = TextEditingController();
 
   String? role = "unknown";
+  String? term = PoolTerm.term;
 
   @override
   void initState() {

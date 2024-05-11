@@ -3,6 +3,7 @@ import 'package:first_trial/Pages/Admin/student_create_page.dart';
 import 'package:first_trial/Pages/Chat/chat_homepage.dart';
 import 'package:first_trial/Pages/Chat/create_contact.dart';
 import 'package:first_trial/Pages/Forum/create_forum.dart';
+import 'package:first_trial/Pages/Forum/forum_by_id.dart';
 import 'package:first_trial/Pages/Forum/view_forums.dart';
 import 'package:first_trial/Pages/Section/Widgets/assignment_details.dart';
 import 'package:first_trial/Pages/Section/Widgets/create_assignment.dart';
@@ -36,21 +37,25 @@ class RouteGenerator {
 
   final String createAssignmentRoute = "/createAssignment/:sectionID";
   final String contactRoute = "/chad/createContact";
+  final String studentSectionGrade = "/student/grade/:studentID";
+  final String studentSectionAttendance = "/student/attendance/:studentID";
+  final String instructorAttendance = "/instructor/give-attendance";
 
+  final String forumRouteId = "/:sectionId/forum/:id";
   getRouter() {
     return GoRouter(
       initialLocation: loginRoute,
       routes: [
         GoRoute(
-          path: '/student/grade/:studentID',
+          path: studentSectionGrade,
           builder: (context, state) => StudentSectionGradePage(), // New page
         ),
         GoRoute(
-          path: '/student/attendance/:studentID',
+          path: studentSectionAttendance,
           builder: (context, state) => StudentAttendancePage(), // New page
         ),
         GoRoute(
-          path: '/instructor/give-attendance',
+          path: instructorAttendance,
           builder: (context, state) => GiveAttendancePage(), // New page
         ),
         GoRoute(
@@ -60,7 +65,7 @@ class RouteGenerator {
           },
         ),
         GoRoute(
-          path: '/chad',
+          path: chat,
           builder: (context, state) {
             return const Chat_Homepage();
           },
@@ -138,6 +143,13 @@ class RouteGenerator {
             path: contactRoute,
             builder: (context, state) {
               return CreateContactPage();
+            }),
+        GoRoute(
+            path: forumRouteId,
+            builder: (context, state) {
+              final id = state.pathParameters['id'].toString();
+              final sectionId = state.pathParameters['sectionId'].toString();
+              return ForumRoutePage(replyId: id, sectionId: sectionId);
             }),
       ],
     );

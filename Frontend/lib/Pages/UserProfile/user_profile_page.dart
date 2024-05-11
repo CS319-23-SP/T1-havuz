@@ -17,6 +17,8 @@ class UserProfilePage extends StatefulWidget {
 }
 
 class _UserProfilePageState extends State<UserProfilePage> {
+  String? term = PoolTerm.term;
+
   var user = {};
   var role;
 

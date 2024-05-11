@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:html';
 import 'dart:typed_data';
 import 'package:file_picker/file_picker.dart';
+import 'package:first_trial/final_variables.dart';
 import 'package:open_file/open_file.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:path_provider/path_provider.dart';
@@ -34,7 +35,7 @@ class Assignment_Details extends StatefulWidget {
 }
 
 class _Assignment_DetailsState extends State<Assignment_Details> {
-  String term = "2024 Spring";
+  String? term = PoolTerm.term;
   String? id = "";
   Assignment assignment = Assignment(
       name: "nonigga",
@@ -244,7 +245,6 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
     } catch (e) {
       print('Error fetching student list: $e');
     }
-    
   }
 
   Future<void> downloadFile(filename, isSolutionKey) async {
@@ -284,25 +284,23 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
       var fileExtension = ".pdf";
       var path = "$term/${widget.sectionID}/${assignment.id}$answer";
       var filename = id;
-      var url =
-          Uri.parse('http://localhost:8080/document?path=$path/$filename$fileExtension');
+      var url = Uri.parse(
+          'http://localhost:8080/document?path=$path/$filename$fileExtension');
 
       var response = await http.delete(url);
 
       if (response.statusCode == 200) {
-        if(isSolutionKey) {
+        if (isSolutionKey) {
           setState(() {
             isSolutionKeyUploaded = false;
           });
-          }
-        else{
+        } else {
           setState(() {
             fetchStudentList();
           });
         }
         print('File deleted successfully');
-        }
-       else {
+      } else {
         print('Failed to delete file: ${response.reasonPhrase}');
       }
     } catch (e) {
@@ -363,7 +361,7 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
                 Text("Term: ${assignment.term}"),
                 const SizedBox(height: 20),
                 role == "student"
-                  ? students.contains("$id.pdf")
+                    ? students.contains("$id.pdf")
                         ? Row(
                             children: [
                               TextButton(
@@ -394,7 +392,7 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
                               ],
                             ),
                           )
-                          :Container(),
+                    : Container(),
                 if (role == "instructor") ...[
                   SizedBox(height: 20),
                   // Dynamic list of download buttons

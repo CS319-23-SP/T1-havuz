@@ -20,9 +20,11 @@ const List<String> listforExam = <String>[
 ];
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
+  String? term = PoolTerm.term;
+
   final String? role;
 
-  const CustomAppBar({Key? key, required this.role}) : super(key: key);
+  CustomAppBar({Key? key, required this.role}) : super(key: key);
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);

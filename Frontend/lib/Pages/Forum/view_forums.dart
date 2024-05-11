@@ -1,5 +1,6 @@
 import 'package:first_trial/Objects/forum_post.dart';
 import 'package:first_trial/Pages/Widgets/AppBars/app_bars.dart';
+import 'package:first_trial/final_variables.dart';
 import 'package:first_trial/token.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -18,7 +19,7 @@ class ViewForumPage extends StatefulWidget {
 }
 
 class _ViewForumPageState extends State<ViewForumPage> {
-  String term = "2024 Spring";
+  String? term = PoolTerm.term;
   String? role = "unknown";
   @override
   void initState() {
@@ -28,7 +29,7 @@ class _ViewForumPageState extends State<ViewForumPage> {
 
   Future<void> checkRole() async {
     role = await TokenStorage.getRole();
-    fetchForums();
+    await fetchForums();
     setState(() {});
   }
 
@@ -41,9 +42,8 @@ class _ViewForumPageState extends State<ViewForumPage> {
       }
       String? ID = await TokenStorage.getID();
       String sectionID = widget.sectionID;
-      print(sectionID);
       final response = await http.get(
-        Uri.http('localhost:8080', '/forum/section/$sectionID'),
+        Uri.http('localhost:8080', '/forum/$term/$sectionID'),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
@@ -52,7 +52,6 @@ class _ViewForumPageState extends State<ViewForumPage> {
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
         setState(() {
-          print(responseData);
           forums = parseForumPostData(responseData['forumPosts']);
         });
       } else {
@@ -82,7 +81,10 @@ class _ViewForumPageState extends State<ViewForumPage> {
               title: Text(forum.title),
               subtitle: Text(forum.forumInitiator),
               onTap: () {
-                GoRouter.of(context).go("/forum/");
+                final id = forum.initialReplyId;
+                final sectionID = forum.sectionId;
+
+                GoRouter.of(context).go("/$sectionID/forum/$id");
               },
             );
           },

@@ -1,5 +1,6 @@
 import 'package:first_trial/Pages/Widgets/AppBars/app_bars.dart';
 import 'package:first_trial/Pages/Widgets/LeftBar/left_bar.dart';
+import 'package:first_trial/final_variables.dart';
 import 'package:flutter/material.dart';
 import 'package:first_trial/Objects/section.dart';
 import 'package:first_trial/Objects/student.dart';
@@ -45,7 +46,7 @@ class _GiveAttendancePageState extends State<GiveAttendancePage> {
         throw Exception('Token not found');
       }
       String? ID = await TokenStorage.getID();
-      String? term = '2024 Spring';
+      String? term = PoolTerm.term;
 
       final response = await http.get(
         Uri.http('localhost:8080', '/section/$ID/$term'),
