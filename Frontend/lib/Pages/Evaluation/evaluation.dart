@@ -31,7 +31,6 @@ class _EvaluationPageState extends State<EvaluationPage> {
 
   Future<void> checkRole() async {
     role = await TokenStorage.getRole();
-    List<String> returned = [];
     if (role == "instructor") {
       fetchEvaluations();
     }

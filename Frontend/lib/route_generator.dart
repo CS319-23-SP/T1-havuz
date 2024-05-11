@@ -3,6 +3,8 @@ import 'package:first_trial/Pages/Admin/student_create_page.dart';
 import 'package:first_trial/Pages/Chat/chat_homepage.dart';
 import 'package:first_trial/Pages/Chat/create_contact.dart';
 import 'package:first_trial/Pages/Evaluation/evaluation.dart';
+import 'package:first_trial/Pages/Event/calendar.dart';
+import 'package:first_trial/Pages/Event/create_event.dart';
 import 'package:first_trial/Pages/Forum/create_forum.dart';
 import 'package:first_trial/Pages/Forum/forum_by_id.dart';
 import 'package:first_trial/Pages/Forum/view_forums.dart';
@@ -28,6 +30,7 @@ class RouteGenerator {
   final String createForumRoute = "/:sectionID/createForum";
 
   final String studentRoute = "/student";
+  final String calendar = "/calendar";
 
   final String profileRoute = "/user/profile/:userId";
 
@@ -45,6 +48,8 @@ class RouteGenerator {
   final String forumRouteId = "/:sectionId/forum/:id";
 
   final String evaluationInstr = "/evaluation/:sectionId";
+
+  final String createEvent = "/createEvent";
   getRouter() {
     return GoRouter(
       initialLocation: loginRoute,
@@ -113,6 +118,11 @@ class RouteGenerator {
               return EvaluationPage(sectionID: section);
             }),
         GoRoute(
+            path: calendar,
+            builder: (context, state) {
+              return Calendar();
+            }),
+        GoRoute(
             path: createAssignmentRoute,
             builder: (context, state) {
               final section = state.pathParameters['sectionID'].toString();
@@ -142,6 +152,11 @@ class RouteGenerator {
             path: studentRoute,
             builder: (context, state) {
               return const CourseHomePage();
+            }),
+        GoRoute(
+            path: createEvent,
+            builder: (context, state) {
+              return const CreateEvent();
             }),
         GoRoute(
             path: adminRoute,
