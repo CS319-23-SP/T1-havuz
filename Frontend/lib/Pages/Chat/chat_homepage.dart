@@ -12,6 +12,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
+import 'package:socket_io_client/socket_io_client.dart' as IO;
+
 
 class Chat_Homepage extends StatefulWidget {
   const Chat_Homepage({super.key});
@@ -254,8 +256,27 @@ class Chat_HomepageState extends State<Chat_Homepage> {
     }
   }
 
+
+  void connectAndListen(){
+    print("called");
+
+    IO.Socket socket = IO.io('http://localhost:8080', 
+      IO.OptionBuilder()
+       .setTransports(['websocket']).build());
+
+      socket.onConnect((_) {
+      print('connect');
+    });
+    socket.on('newchatroom', (data) => print("newwroom"));
+    socket.on('newmessage', (data) => print(data));
+    socket.onDisconnect((_) => print('disconnect'));
+  }
+
   @override
   Widget build(BuildContext context) {
+
+    connectAndListen();
+
     return Scaffold(
       appBar: CustomAppBar(role: role),
       body: Row(

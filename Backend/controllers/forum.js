@@ -17,14 +17,14 @@ const createForumReply = async (req, res) => {
 
         const postedByUser  = req._id;
         const { parentReplyId } = req.params;
-        const message = req.body;
+        const { messageText } = req.body;
 
         const parentReply = await ForumReply.findById(parentReplyId);
         if (!parentReply) {
             return res.status(404).json({ error: 'Parent reply not found' });
         }
 
-        const forumReply = await ForumReply.createForumReply(message, postedByUser, parentReplyId);
+        const forumReply = await ForumReply.createForumReply(messageText, postedByUser, parentReplyId);
 
         return res.status(201).json({ forumReply });
     } catch (error) {
@@ -84,7 +84,7 @@ const createForumPost = async (req, res) => {
         if (!validation.success) return res.status(400).json({ ...validation });
 
         const forumInitiator = req._id;
-        const { title, message: messageText, sectionId } = req.body;
+        const { title, messageText, sectionId } = req.body;
 
         const uniqueId = uuidv4();
         const forumPost = await ForumPost.createForumPost(
