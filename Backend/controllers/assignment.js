@@ -81,9 +81,9 @@ const onCreateAssignment = async (req, res) => {
     }
 }
 
-const onGetAssignmentForInstructor = async (req, res) => {
+const onGetAssignmentForSection = async (req, res) => {
   try {
-    const assignments = await assignmentModel.getAssignmentsForInstructor(req.params.term, req.params.sectionID);
+    const assignments = await assignmentModel.getAssignmentsForSection(req.params.term, req.params.sectionID);
     return res.status(200).json({ success: true, assignments });
   } catch (error) {
       return res.status(500).json({ success: false, error: error })
@@ -148,6 +148,6 @@ const onUpdateAssGrade = async (req, res) => {
     onDeleteAssignment,
     onGetAssignment,
     onGetAssignments,
-    onGetAssignmentForInstructor,
+    onGetAssignmentForSection,
     onUpdateAssGrade
   };

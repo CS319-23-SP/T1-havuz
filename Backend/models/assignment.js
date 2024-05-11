@@ -55,7 +55,7 @@ assignmentSchema.statics.getAssignment = async function (id, term, sectionID) {
     }
 }
 
-assignmentSchema.statics.getAssignmentsForInstructor = async function (term, sectionID) {
+assignmentSchema.statics.getAssignmentsForSection = async function (term, sectionID) {
     try {
         const assignments = await this.find({ term: term, sectionID: sectionID});
         if(!assignments) throw ({error: 'No assignment with this id, term, or section ID found' });
