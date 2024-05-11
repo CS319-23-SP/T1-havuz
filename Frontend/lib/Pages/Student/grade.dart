@@ -16,7 +16,7 @@ class StudentSectionGradePage extends StatefulWidget {
 
 class _StudentSectionGradePageState extends State<StudentSectionGradePage> {
   List<Section> sections = [];
-  Map<String, List<dynamic>> sectionAssignments = {};
+  Map<String, List<dynamic>>? sectionAssignments = {};
   String? studentID;
   String? term = PoolTerm.term;
 
@@ -74,30 +74,22 @@ class _StudentSectionGradePageState extends State<StudentSectionGradePage> {
   Future<void> _fetchAssignmentsForSection(
       Section section, String token) async {
     try {
-      List<dynamic> assignments = [];
+      final response = await http.get(
+        Uri.parse('http://localhost:8080/assignment/$term/${section.id}'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+      );
 
-      for (var assignmentID in section.assignments) {
-        final response = await http.get(
-          Uri.parse(
-              'http://localhost:8080/assignment/grade/$assignmentID/$term/${section.id}'),
-          headers: {
-            'Authorization': 'Bearer $token',
-            'Content-Type': 'application/json',
-          },
-        );
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
 
-        if (response.statusCode == 200) {
-          final responseData = json.decode(response.body);
-          print(responseData);
-
-          assignments.add(responseData['assignment']); // Extract assignment map
-        } else {
-          throw Exception("Failed to fetch assignment with ID $assignmentID");
-        }
+        sectionAssignments![section.id] = responseData['assignments'];
+      } else {
+        throw Exception(
+            "Failed to fetch assignments for section ${section.id}");
       }
-
-      sectionAssignments[section.id] =
-          assignments; // Store assignments for the section
     } catch (e) {
       print("Error fetching assignments for section ${section.id}: $e");
     }
@@ -118,7 +110,7 @@ class _StudentSectionGradePageState extends State<StudentSectionGradePage> {
       body: ListView(
         padding: const EdgeInsets.all(16.0), // Adding padding for the list
         children: sections.map((section) {
-          final assignments = sectionAssignments[section.id] ?? [];
+          final assignments = sectionAssignments![section.id] ?? [];
 
           return Card(
             elevation: 4, // Add a shadow effect
@@ -134,10 +126,8 @@ class _StudentSectionGradePageState extends State<StudentSectionGradePage> {
                         fontSize: 24, fontWeight: FontWeight.bold),
                   ),
                   const Divider(),
-                  ...assignments.asMap().entries.map((entry) {
-                    final assignment = entry.value;
+                  ...assignments.map((assignment) {
                     final assignmentData = assignment as Map<String, dynamic>;
-//                    print(assignmentData);
 
                     final assignmentName =
                         assignmentData['name'] ?? 'Unknown Assignment';
@@ -147,14 +137,12 @@ class _StudentSectionGradePageState extends State<StudentSectionGradePage> {
                     for (var gradeData in assignmentData['grades']) {
                       final studentIDFromData = gradeData['studentID'];
                       if (studentIDFromData == studentID) {
-                        grade = gradeData['grade'];
+                        grade = gradeData['grade'].toString();
                         break;
                       }
                     }
 
-                    final studentGrade = grade != null
-                        ? grade.toString()
-                        : 'N/A'; // If grade is null, display 'N/A'
+                    final studentGrade = grade ?? 'N/A';
 
                     return Padding(
                       padding: const EdgeInsets.symmetric(
@@ -167,8 +155,7 @@ class _StudentSectionGradePageState extends State<StudentSectionGradePage> {
                             style: const TextStyle(fontSize: 18),
                           ),
                           Text(
-                            studentGrade
-                                .toString(), // Convert to string for display
+                            studentGrade,
                             style: const TextStyle(
                                 fontSize: 18, fontWeight: FontWeight.bold),
                           ),

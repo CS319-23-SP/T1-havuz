@@ -57,7 +57,7 @@ class _Section_DetailsState extends State<Section_Details> {
       String sectionID = widget.section.id;
 
       final response = await http.get(
-        Uri.http('localhost:8080', '/assignment/instructor/$term/$sectionID'),
+        Uri.http('localhost:8080', '/assignment/$term/$sectionID'),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
