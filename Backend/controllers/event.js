@@ -1,5 +1,5 @@
 const makeValidation = require('@withvoid/make-validation');
-const Event = require('../models/event');
+const{  Event } = require('../models/event');
 const { EventNotification } = require('../models/event')
 
 const createEvent = async (req, res) => {

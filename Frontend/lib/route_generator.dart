@@ -1,4 +1,5 @@
 import 'package:first_trial/Pages/ABET/abet.dart';
+import 'package:first_trial/Pages/Notifications/notifications.dart';
 import 'package:first_trial/Pages/Admin/Create/instructor_create_page.dart';
 import 'package:first_trial/Pages/Admin/admin_instuctor.dart';
 import 'package:first_trial/Pages/Admin/admin_page.dart';
@@ -60,6 +61,7 @@ class RouteGenerator {
   final String adminSections = "/admin/allSections";
   final String adminStudents = "/admin/allStudents";
   final String adminInstructors = "/admin/allInstructors";
+  final String notifications = "/notifications";
 
   getRouter() {
     return GoRouter(
@@ -206,6 +208,11 @@ class RouteGenerator {
             path: adminInstructors,
             builder: (context, state) {
               return AdminInstructorsPage();
+            }),    
+        GoRoute(
+            path: notifications,
+            builder: (context, state) {
+              return Notifications();
             }),
         GoRoute(
             path: adminStudents,
