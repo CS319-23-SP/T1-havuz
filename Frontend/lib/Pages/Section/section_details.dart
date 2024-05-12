@@ -371,7 +371,6 @@ class _Section_DetailsState extends State<Section_Details> {
     final screenWidth = MediaQuery.of(context).size.width;
     var height = MediaQuery.of(context).size.height;
     var width = MediaQuery.of(context).size.width;
-    // Ensure assignments are fetched before rendering
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,

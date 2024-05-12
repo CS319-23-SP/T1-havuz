@@ -187,7 +187,7 @@ class Chat_HomepageState extends State<Chat_Homepage> {
 
     try {
       final response = await http.get(
-        Uri.http('localhost:8080', '/chad/${roomId}'),
+        Uri.http('localhost:8080', '/chad/$roomId'),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
@@ -242,7 +242,7 @@ class Chat_HomepageState extends State<Chat_Homepage> {
 
     try {
       final response = await http.post(
-        Uri.http('localhost:8080', '/chad/${roomID}'),
+        Uri.http('localhost:8080', '/chad/$roomID'),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
@@ -285,18 +285,22 @@ class Chat_HomepageState extends State<Chat_Homepage> {
 
     socket.on('newchatroom', (data) {
       if (!hasViewedYouAdded && mounted) {
-        viewYouAddedNigga(context); // Pass the context here
+        viewYouAdded(context); // Pass the context here
       }
     });
 
-    socket.on('newmessage', (data) => print("message sent"));
+    socket.on('newmessage', (data) {
+      print("new message received");
+      fetchMessages(data);
+    });
+
     socket.onDisconnect((_) => print('disconnect'));
   }
 
-  void viewYouAddedNigga(BuildContext context) {
+  void viewYouAdded(BuildContext context) {
     hasViewedYouAdded = true;
 
-    print("viewYouAddedNigga");
+    print("viewYouAdded");
     chatRooms.clear();
     getContacts();
   }
