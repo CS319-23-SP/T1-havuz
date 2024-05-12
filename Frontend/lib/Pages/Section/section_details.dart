@@ -287,6 +287,18 @@ class _Section_DetailsState extends State<Section_Details> {
       final List<Map<String, dynamic>> data =
           List<Map<String, dynamic>>.from(responseJson['data']);
 
+          response = await http.get(
+        Uri.parse('http://localhost:8080/student/grade/$studentName'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        });
+
+      final neworesponseJson = jsonDecode(response.body);
+      print(neworesponseJson);
+      /*final List<Map<String, dynamic>> dataGrade =
+          List<Map<String, dynamic>>.from(neworesponseJson['data']);*/
+
       final pdf = pw.Document();
 
       final ByteData datao =
