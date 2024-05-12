@@ -265,7 +265,7 @@ class _Section_DetailsState extends State<Section_Details> {
   List<dynamic> attendances = [];
 
   Future<void> createReport(studentName) async {
-    if(studentName == null) {
+    if (studentName == null) {
       return;
     }
     try {
@@ -440,34 +440,33 @@ class _Section_DetailsState extends State<Section_Details> {
                 },
                 child: Container(
                     padding: EdgeInsets.all(20), child: Text("ABET"))),
-                    if(role == "instructor") ...[
-                      DropdownMenu<String>(
-              inputDecorationTheme:
-                  InputDecorationTheme(border: InputBorder.none),
-              hintText: "Select Term",
-              onSelected: (String? value) {
-                setState(() {
-                  selectedStudent = value.toString();
-                });
-              },
-              dropdownMenuEntries:
-                  students.map<DropdownMenuEntry<String>>((String value) {
-                return DropdownMenuEntry<String>(value: value, label: value);
-              }).toList(),
-            ),
-            InkWell(
-              onTap: () {
-                if (selectedStudent != null) {
-                  createReport(selectedStudent);
-                } else {
-                  print("choose a student man cmon");
-                }
-              },
-              child: Container(
-                  padding: EdgeInsets.all(20), child: Text("Create Report")),
-            ),
-                    ]
->>>>>>> bbe8f0a314ca53730c983c5176e71ad94e406246
+            if (role == "instructor") ...[
+              DropdownMenu<String>(
+                inputDecorationTheme:
+                    InputDecorationTheme(border: InputBorder.none),
+                hintText: "Select Term",
+                onSelected: (String? value) {
+                  setState(() {
+                    selectedStudent = value.toString();
+                  });
+                },
+                dropdownMenuEntries:
+                    students.map<DropdownMenuEntry<String>>((String value) {
+                  return DropdownMenuEntry<String>(value: value, label: value);
+                }).toList(),
+              ),
+              InkWell(
+                onTap: () {
+                  if (selectedStudent != null) {
+                    createReport(selectedStudent);
+                  } else {
+                    print("choose a student man cmon");
+                  }
+                },
+                child: Container(
+                    padding: EdgeInsets.all(20), child: Text("Create Report")),
+              ),
+            ]
           ],
         ),
         Expanded(
@@ -503,7 +502,6 @@ class _Section_DetailsState extends State<Section_Details> {
                             DateTime deadline =
                                 DateTime.parse(assignment.deadline);
                             return ListTile(
-<<<<<<< HEAD
                                 title: Row(
                               children: [
                                 Expanded(
@@ -601,36 +599,6 @@ class _Section_DetailsState extends State<Section_Details> {
                                 ),
                               ],
                             ));
-=======
-                              title: InkWell(
-                                child: Container(
-                                  padding: EdgeInsets.all(10),
-                                  decoration: BoxDecoration(
-                                      border: Border.all(width: 1)),
-                                  child: Row(
-                                    children: [
-                                      Icon(Icons.assignment),
-                                      SizedBox(width: 15),
-                                      Expanded(
-                                        child: Text(
-                                          "${assignment.name} (Due: ${DateFormat('MMM dd').format(deadline)})",
-                                          overflow: TextOverflow.ellipsis,
-                                          maxLines: 1,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                onTap: () async {
-                                  final String assignmentid = assignment.id;
-                                  final String sectionid = assignment.sectionID;
-                                  String? role = await TokenStorage.getRole();
-                                  GoRouter.of(context).go(
-                                      '/$role/assignment/$sectionid/$assignmentid');
-                                },
-                              ),
-                            );
->>>>>>> bbe8f0a314ca53730c983c5176e71ad94e406246
                           },
                         ),
                       ],
