@@ -342,15 +342,17 @@ class Chat_HomepageState extends State<Chat_Homepage> {
                                                   .width *
                                               0.5),
                                       decoration: BoxDecoration(
-                                          borderRadius: isMyMessage
+                                          borderRadius: !isMyMessage
                                               ? BorderRadius.only(
-                                                  topLeft: Radius.circular(15),
+                                                  bottomLeft:
+                                                      Radius.circular(15),
                                                   topRight: Radius.circular(15),
                                                   bottomRight:
                                                       Radius.circular(15))
                                               : BorderRadius.only(
                                                   topLeft: Radius.circular(15),
-                                                  topRight: Radius.circular(15),
+                                                  bottomRight:
+                                                      Radius.circular(15),
                                                   bottomLeft:
                                                       Radius.circular(15)),
                                           color: isMyMessage
@@ -360,9 +362,31 @@ class Chat_HomepageState extends State<Chat_Homepage> {
                                       margin:
                                           EdgeInsets.symmetric(vertical: 10),
                                       child: Column(
+                                        crossAxisAlignment: !isMyMessage
+                                            ? CrossAxisAlignment.start
+                                            : CrossAxisAlignment.end,
                                         children: [
-                                          Text(messages[indexx][index]
-                                              .postedByUserId),
+                                          InkWell(
+                                            onTap: () {
+                                              ValueNotifier<String>
+                                                  userIdNotifier =
+                                                  ValueNotifier<String>('');
+                                              userIdNotifier.value =
+                                                  messages[indexx][index]
+                                                      .postedByUserId
+                                                      .toString();
+                                              GoRouter.of(context).go(
+                                                  "/user/profile/${messages[indexx][index].postedByUserId}");
+                                            },
+                                            child: Text(
+                                              !isMyMessage
+                                                  ? messages[indexx][index]
+                                                      .postedByUserId
+                                                  : "You",
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                          ),
                                           Text(messages[indexx][index]
                                               .messageText),
                                         ],
