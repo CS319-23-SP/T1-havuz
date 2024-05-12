@@ -208,7 +208,7 @@ class RouteGenerator {
             path: adminInstructors,
             builder: (context, state) {
               return AdminInstructorsPage();
-            }),    
+            }),
         GoRoute(
             path: notifications,
             builder: (context, state) {

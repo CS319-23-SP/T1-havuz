@@ -1,6 +1,7 @@
 import 'package:first_trial/Pages/Admin/admin_page.dart';
 import 'package:first_trial/Pages/Auth/login_page.dart';
 import 'package:first_trial/Pages/Homepage/homepage.dart';
+import 'package:first_trial/Pages/Notifications/notifications.dart';
 import 'package:first_trial/Pages/Questions/question_homepage.dart';
 import 'package:first_trial/Pages/Admin/Create/student_create_page.dart';
 import 'package:first_trial/Pages/UserProfile/user_profile_page.dart';
@@ -68,42 +69,46 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         ],
       ),
       actions: [
-            IconButton(
-            onPressed: () async {
-      var id = await TokenStorage.getID();
-      GoRouter.of(context).go('/notifications');
-    },
-            icon: Icon(Icons.notifications_active_outlined),
-          ),
-  IconButton(
-    onPressed: () async {
-      var id = await TokenStorage.getID();
-      GoRouter.of(context).go('/chad');
-    },
-    icon: Icon(Icons.chat_bubble_outline),
-  ),
-  IconButton(
-    onPressed: () async {
-      var id = await TokenStorage.getID();
-      GoRouter.of(context).go('/calendar');
-    },
-    icon: Icon(Icons.calendar_month_outlined),
-  ),
-  IconButton(
-    onPressed: () async {
-      var id = await TokenStorage.getID();
-      GoRouter.of(context).go('/user/profile/$id');
-    },
-    icon: Icon(Icons.person_outline),
-  ),
-  IconButton(
-    onPressed: () async {
-      await TokenStorage.deleteToken();
-      GoRouter.of(context).go('/login');
-    },
-    icon: Icon(Icons.logout),
-  ),
-],
+        IconButton(
+          onPressed: () async {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return Notifications(); // Display Notifications as a dialog
+              },
+            );
+          },
+          icon: Icon(Icons.notifications_active_outlined),
+        ),
+        IconButton(
+          onPressed: () async {
+            var id = await TokenStorage.getID();
+            GoRouter.of(context).go('/chad');
+          },
+          icon: Icon(Icons.chat_bubble_outline),
+        ),
+        IconButton(
+          onPressed: () async {
+            var id = await TokenStorage.getID();
+            GoRouter.of(context).go('/calendar');
+          },
+          icon: Icon(Icons.calendar_month_outlined),
+        ),
+        IconButton(
+          onPressed: () async {
+            var id = await TokenStorage.getID();
+            GoRouter.of(context).go('/user/profile/$id');
+          },
+          icon: Icon(Icons.person_outline),
+        ),
+        IconButton(
+          onPressed: () async {
+            await TokenStorage.deleteToken();
+            GoRouter.of(context).go('/login');
+          },
+          icon: Icon(Icons.logout),
+        ),
+      ],
     );
   }
 
