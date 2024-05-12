@@ -26,7 +26,7 @@ const assignmentSchema = new mongoose.Schema(
     }
 );
 
-assignmentSchema.statics.createAssignment = async function (term, sectionID, questions, deadline, name) {
+assignmentSchema.statics.createAssignment = async function (term, sectionID, questions, deadline, name, weights) {
     try {
         const lastAssignment = await this.findOne({term: term, sectionID: sectionID}).sort({ id: -1});
         let id;
@@ -38,7 +38,7 @@ assignmentSchema.statics.createAssignment = async function (term, sectionID, que
             id = `01`;
         }
 
-        const assignment = await this.create({id, term, sectionID, questions, deadline, name});
+        const assignment = await this.create({id, term, sectionID, questions, deadline, name, weights});
         return assignment;
     } catch (error) {
         throw error;

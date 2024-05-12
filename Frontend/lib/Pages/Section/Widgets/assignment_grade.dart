@@ -250,8 +250,7 @@ class _AssignmentGradePageState extends State<AssignmentGradePage> {
       if (token == null) {
         throw Exception('Token not found');
       }
-      print(questionID);
-      print(grade);
+
       await http.put(
         Uri.parse('http://localhost:8080/question/update-history/$questionID'),
         body: json.encode({

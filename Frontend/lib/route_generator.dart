@@ -9,7 +9,9 @@ import 'package:first_trial/Pages/Forum/create_forum.dart';
 import 'package:first_trial/Pages/Forum/forum_by_id.dart';
 import 'package:first_trial/Pages/Forum/view_forums.dart';
 import 'package:first_trial/Pages/Section/Widgets/assignment_details.dart';
+import 'package:first_trial/Pages/Section/Widgets/analysis.dart';
 import 'package:first_trial/Pages/Section/Widgets/assignment_grade.dart';
+import 'package:first_trial/Pages/Section/Widgets/exam.dart';
 import 'package:first_trial/Pages/Section/Widgets/create_assignment.dart';
 import 'package:first_trial/Pages/UserProfile/user_profile_page.dart';
 import 'package:first_trial/Pages/Auth/login_page.dart';
@@ -29,6 +31,8 @@ class RouteGenerator {
   final String questionCreateRoute = "/instructor/question/create";
   final String viewForumRoute = "/:sectionID/forum";
   final String createForumRoute = "/:sectionID/createForum";
+  final String createAnalysisRoute =
+      "/:role/assignment/:sectionID/:assignmentID/analysis";
 
   final String studentRoute = "/student";
   final String calendar = "/calendar";
@@ -47,7 +51,7 @@ class RouteGenerator {
   final String studentSectionGrade = "/student/grade/:studentID";
   final String studentSectionAttendance = "/student/attendance/:studentID";
   final String instructorAttendance = "/instructor/give-attendance";
-
+  final String sectionExamPage = "/section/:sectionID/exams";
   final String forumRouteId = "/:sectionId/forum/:id";
 
   final String evaluationInstr = "/evaluation/:sectionId";
@@ -57,6 +61,18 @@ class RouteGenerator {
     return GoRouter(
       initialLocation: loginRoute,
       routes: [
+        GoRoute(
+          path: createAnalysisRoute,
+
+          builder: (context, state) {
+            final sectionID = state.pathParameters['sectionID'].toString();
+            final assignmentID =
+                state.pathParameters['assignmentID'].toString();
+            final role = state.pathParameters['role'].toString();
+            return AnalysisPage(
+                role: role, assignmentID: assignmentID, sectionID: sectionID);
+          }, // New page
+        ),
         GoRoute(
           path: studentSectionGrade,
           builder: (context, state) => StudentSectionGradePage(), // New page
@@ -90,6 +106,15 @@ class RouteGenerator {
             return const LoginPage();
           },
         ),
+        GoRoute(
+            path: sectionExamPage,
+            builder: (context, state) {
+              final sectionID = state.pathParameters['sectionID'].toString();
+
+              return ExamPage(
+                sectionID: sectionID,
+              );
+            }),
         GoRoute(
           path: chat,
           builder: (context, state) {
