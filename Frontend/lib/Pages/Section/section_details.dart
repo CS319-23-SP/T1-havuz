@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:first_trial/Objects/assignment.dart';
@@ -295,11 +296,32 @@ class _Section_DetailsState extends State<Section_Details> {
         });
 
       final neworesponseJson = jsonDecode(response.body);
-      print(neworesponseJson);
+      var section = neworesponseJson["sections"].firstWhere((section) => section["id"] == widget.section.id, orElse: () => null);
+
+      response = await http.get(
+        Uri.parse('http://localhost:8080/assignment/$term/${section["id"]}'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+      );
+      final responseoData = json.decode(response.body);
+
+      
+
+      final filteredAssignments = (responseoData['assignments'] as List)
+            .where((assignment) => (assignment['grades'] as List).any(
+                (gradeData) =>
+                    gradeData['studentID'] == studentName &&
+                    gradeData['grade'] != null))
+            .toList();
+
+      print(filteredAssignments);
+      
       /*final List<Map<String, dynamic>> dataGrade =
           List<Map<String, dynamic>>.from(neworesponseJson['data']);*/
 
-      final pdf = pw.Document();
+      /*final pdf = pw.Document();
 
       final ByteData datao =
           await rootBundle.load('lib/Assets/fonts/Roboto-Regular.ttf');
@@ -372,7 +394,7 @@ class _Section_DetailsState extends State<Section_Details> {
       final anchor = html.AnchorElement(href: url.toString())
         ..setAttribute('download', filename)
         ..click();
-      html.Url.revokeObjectUrl(url.toString());
+      html.Url.revokeObjectUrl(url.toString());*/
     } catch (e) {
       print('Error deletin file: $e');
     }

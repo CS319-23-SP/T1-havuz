@@ -205,14 +205,17 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
 
   Future<void> fetchStudentList() async {
     try {
-      var path = "$term/${widget.sectionID}/${assignment.id}/answers";
+      var answer = "";
+      if(!(id?.length==6))
+      answer = "/answers";
+      var path = "$term/${widget.sectionID}/${assignment.id}$answer";
       var url = Uri.parse('http://localhost:8080/document/list?path=$path');
 
       var response = await http.get(url);
 
       if (response.statusCode == 200) {
+        
         final List<dynamic> fileList = json.decode(response.body);
-
         setState(() {
           students.clear();
         });
@@ -220,7 +223,7 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
         fileList.forEach((filename) {
           String filenameStr = filename.toString();
           setState(() {
-            if (filenameStr != "answers") students.add(filenameStr);
+            if (filenameStr != "answers" && filenameStr != '$id.pdf'&& filenameStr != 'materials') students.add(filenameStr);
           });
         });
 
@@ -248,7 +251,6 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
   }
 
   Future<void> downloadFile(filename, isSolutionKey) async {
-    print(filename);
     try {
       var answer = "";
       if (!isSolutionKey) answer = "/answers";
@@ -284,10 +286,9 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
       if (!isSolutionKey) answer = "/answers";
       var path = "$term/${widget.sectionID}/${assignment.id}$answer";
       var filename = students.firstWhere((entry) => entry.contains("$id"));
+      print(filename);
       var url = Uri.parse(
           'http://localhost:8080/document?path=$path/$filename');
-      
-      print('http://localhost:8080/document?path=$path/$filename');
 
       var response = await http.delete(url);
 
