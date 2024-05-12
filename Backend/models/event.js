@@ -27,12 +27,30 @@ const eventNotificationSchema = new mongoose.Schema(
     title: String,
     date: Date,
     userId: String,
+    isSeen: {
+      type: Boolean,
+      default: false 
+    },
   },
   {
     timestamps: true,
     collection: "eventnotifications",
   }
 );
+
+eventNotificationSchema.statics.markAsSeen = async function(notificationId) {
+  try {
+    const notification = await this.findById(notificationId);
+    if (!notification) {
+      throw new Error("Notification not found");
+    }
+    notification.isSeen = true;
+    await notification.save();
+    return notification;
+  } catch (error) {
+    throw error;
+  }
+};
 
 eventSchema.statics.createEvent = async function (
   userIds, eventCreator, title, messageText, date
