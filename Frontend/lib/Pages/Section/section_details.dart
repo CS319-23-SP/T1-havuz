@@ -265,6 +265,9 @@ class _Section_DetailsState extends State<Section_Details> {
   List<dynamic> attendances = [];
 
   Future<void> createReport(studentName) async {
+    if(studentName == null) {
+      return;
+    }
     try {
       String? token = await TokenStorage.getToken();
       if (token == null) {
@@ -320,6 +323,32 @@ class _Section_DetailsState extends State<Section_Details> {
                     .toList(),
               ],
             ),
+            /*pw.Text('Attendance Report for Student: $studentName',
+                style: pw.TextStyle(font: ttf, fontSize: 25)),
+            pw.SizedBox(height: 20),
+            pw.Table(
+              children: [
+                pw.TableRow(
+                  children: ['Date', 'Attended Hour', 'Total Hour']
+                      .map((header) => pw.Text(header,
+                          style: pw.TextStyle(font: ttf, fontSize: 20)))
+                      .toList(),
+                ),
+                ...data
+                    .map((entry) => pw.TableRow(
+                          children: [
+                            DateFormat('MMM dd, yyyy')
+                                .format(DateTime.parse(entry['date'])),
+                            entry['hour'].toString(),
+                            entry['totalHour'].toString()
+                          ]
+                              .map((value) => pw.Text(value,
+                                  style: pw.TextStyle(font: ttf, fontSize: 15)))
+                              .toList(),
+                        ))
+                    .toList(),
+              ],
+            ),*/ //Enter grade values here
           ],
         );
       }));
@@ -403,7 +432,8 @@ class _Section_DetailsState extends State<Section_Details> {
                 },
                 child: Container(
                     padding: EdgeInsets.all(20), child: Text("ABET"))),
-            DropdownMenu<String>(
+                    if(role == "instructor") ...[
+                      DropdownMenu<String>(
               inputDecorationTheme:
                   InputDecorationTheme(border: InputBorder.none),
               hintText: "Select Term",
@@ -422,12 +452,13 @@ class _Section_DetailsState extends State<Section_Details> {
                 if (selectedStudent != null) {
                   createReport(selectedStudent);
                 } else {
-                  // Handle case when no student is selected
+                  print("choose a student man cmon");
                 }
               },
               child: Container(
                   padding: EdgeInsets.all(20), child: Text("Create Report")),
             ),
+                    ]
           ],
         ),
         Expanded(
