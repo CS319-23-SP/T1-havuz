@@ -5,6 +5,15 @@ class TokenStorage {
   static const _roleKey = 'mamannigayeee';
   static const _idKey = 'HeHeHeHaw';
 
+  TokenStorage._();
+
+  static TokenStorage? _instance;
+
+  static TokenStorage getInstance() {
+    _instance ??= TokenStorage._(); // Create instance if not exists
+    return _instance!;
+  }
+
   static Future<void> saveToken(String token, String role, String id) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString(_tokenKey, token);
