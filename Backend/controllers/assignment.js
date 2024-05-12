@@ -10,13 +10,14 @@ const onCreateAssignment = async (req, res) => {
           sectionID: { type: types.string },
           questions: { type: types.array },
           deadline: { type: types.string},
-          name: { type: types.string}
+          name: { type: types.string},
+          weights: {type: types.array}
         }
       }));
       if (!validation.success) return res.status(400).json(validation);
   
-      const { term, sectionID, questions, deadline, name} = req.body;
-      const assignment = await assignmentModel.createAssignment(term, sectionID, questions, deadline, name);
+      const { term, sectionID, questions, deadline, name, weights} = req.body;
+      const assignment = await assignmentModel.createAssignment(term, sectionID, questions, deadline, name, weights);
       return res.status(200).json({ success: true, assignment });
     } catch (error) {
       return res.status(500).json({ success: false, error: error })

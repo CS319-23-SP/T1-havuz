@@ -303,6 +303,12 @@ class _Section_DetailsState extends State<Section_Details> {
                       GoRouter.of(context).go("/$sectionId/forum");
                     },
                     child: Text("View Forums")),
+                TextButton(
+                    onPressed: () {
+                      final String sectionId = widget.section.id;
+                      GoRouter.of(context).go("/section/$sectionId/exams");
+                    },
+                    child: Text("Give Exam Grade")),
               ],
             )
           ],
@@ -369,30 +375,71 @@ class _Section_DetailsState extends State<Section_Details> {
                                   ),
                                 ),
                                 Expanded(
-                                  child: TextButton(
-                                    child: Row(
-                                      children: [
-                                        Icon(Icons.grade),
-                                        SizedBox(width: 15),
-                                        Expanded(
-                                          child: Text(
-                                            "Grade",
-                                            overflow: TextOverflow.ellipsis,
-                                            maxLines: 1,
+                                  child: role == "instructor"
+                                      ? TextButton(
+                                          child: Row(
+                                            children: [
+                                              Icon(Icons.grade),
+                                              SizedBox(width: 15),
+                                              Expanded(
+                                                child: Text(
+                                                  "Grade",
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  maxLines: 1,
+                                                ),
+                                              ),
+                                            ],
                                           ),
-                                        ),
-                                      ],
-                                    ),
-                                    onPressed: () async {
-                                      final String assignmentid = assignment.id;
-                                      final String sectionid =
-                                          assignment.sectionID;
-                                      String? role =
-                                          await TokenStorage.getRole();
-                                      GoRouter.of(context).go(
-                                          '/$role/assignment/$sectionid/$assignmentid/grade');
-                                    },
-                                  ),
+                                          onPressed: () async {
+                                            final String assignmentid =
+                                                assignment.id;
+                                            final String sectionid =
+                                                assignment.sectionID;
+                                            String? role =
+                                                await TokenStorage.getRole();
+                                            GoRouter.of(context).go(
+                                              '/$role/assignment/$sectionid/$assignmentid/grade',
+                                            );
+                                          },
+                                        )
+                                      : SizedBox
+                                          .shrink(), // This widget will be invisible if the condition is false
+                                ),
+                                Expanded(
+                                  child: role == "instructor"
+                                      ? TextButton(
+                                          child: Row(
+                                            children: [
+                                              Icon(Icons.analytics),
+                                              SizedBox(width: 15),
+                                              Expanded(
+                                                child: Text(
+                                                  "Analysis",
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  maxLines: 1,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          onPressed: () async {
+                                            final String assignmentID =
+                                                assignment.id;
+                                            final String sectionID =
+                                                assignment.sectionID;
+                                            String? role =
+                                                await TokenStorage.getRole();
+                                            print(role);
+                                            print(sectionID);
+                                            print(assignmentID);
+                                            GoRouter.of(context).go(
+                                              '/$role/assignment/$sectionID/$assignmentID/analysis',
+                                            );
+                                          },
+                                        )
+                                      : SizedBox
+                                          .shrink(), // This widget will be invisible if the condition is false
                                 ),
                               ],
                             ));

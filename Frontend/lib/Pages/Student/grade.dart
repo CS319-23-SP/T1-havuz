@@ -1,5 +1,7 @@
 import 'package:first_trial/final_variables.dart';
 import 'package:flutter/material.dart';
+import 'package:first_trial/Pages/Widgets/AppBars/app_bars.dart';
+import 'package:first_trial/Pages/Widgets/LeftBar/left_bar.dart';
 import 'package:first_trial/Objects/section.dart';
 import 'package:first_trial/token.dart';
 import 'package:http/http.dart' as http;
@@ -19,6 +21,8 @@ class _StudentSectionGradePageState extends State<StudentSectionGradePage> {
   Map<String, List<dynamic>>? sectionAssignments = {};
   String? studentID;
   String? term = PoolTerm.term;
+  Map<String, String> midtermGrades = {};
+  Map<String, String> finalGrades = {};
 
   @override
   void initState() {
@@ -56,7 +60,9 @@ class _StudentSectionGradePageState extends State<StudentSectionGradePage> {
           }
           // Fetch assignments for each section
           for (var section in sections) {
-            await _fetchAssignmentsForSection(section, token);
+            await _fetchAssignmentsForSection(section);
+            await _fetchMidtermGrade(section.id);
+            await _fetchFinalGrade(section.id);
           }
 
           setState(() {}); // Refresh UI with updated data
@@ -71,9 +77,10 @@ class _StudentSectionGradePageState extends State<StudentSectionGradePage> {
     }
   }
 
-  Future<void> _fetchAssignmentsForSection(
-      Section section, String token) async {
+  Future<void> _fetchAssignmentsForSection(Section section) async {
     try {
+      final token = await TokenStorage.getToken();
+
       final response = await http.get(
         Uri.parse('http://localhost:8080/assignment/$term/${section.id}'),
         headers: {
@@ -85,13 +92,82 @@ class _StudentSectionGradePageState extends State<StudentSectionGradePage> {
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
 
-        sectionAssignments![section.id] = responseData['assignments'];
+        // Filter assignments to only include those with grades for the student
+        final filteredAssignments = (responseData['assignments'] as List)
+            .where((assignment) => (assignment['grades'] as List).any(
+                (gradeData) =>
+                    gradeData['studentID'] == studentID &&
+                    gradeData['grade'] != null))
+            .toList();
+
+        sectionAssignments![section.id] = filteredAssignments;
       } else {
         throw Exception(
             "Failed to fetch assignments for section ${section.id}");
       }
     } catch (e) {
       print("Error fetching assignments for section ${section.id}: $e");
+    }
+  }
+
+  Future<void> _fetchMidtermGrade(String sectionID) async {
+    try {
+      String? token = await TokenStorage.getToken();
+      if (token == null) {
+        throw Exception('Token not found');
+      }
+      print(studentID);
+      print(sectionID);
+      final response = await http.get(
+        Uri.parse(
+            'http://localhost:8080/student/$studentID/$sectionID/midterm'),
+        headers: {
+          'Authorization': 'Bearer ' + token,
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        if (responseData['success']) {
+          final grade = responseData['grade'].toString();
+          midtermGrades[sectionID] = grade;
+        } else {
+          midtermGrades[sectionID] = 'N/A';
+        }
+      } else {
+        throw Exception("Failed  midterm grade for section $sectionID");
+      }
+    } catch (e) {
+      print("Error midterm grade for section $sectionID: $e");
+    }
+  }
+
+  Future<void> _fetchFinalGrade(String sectionID) async {
+    try {
+      final token = await TokenStorage.getToken();
+
+      final response = await http.get(
+        Uri.parse('http://localhost:8080/student/$studentID/$sectionID/final'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        if (responseData['success']) {
+          final grade = responseData['grade'].toString();
+          finalGrades[sectionID] = grade;
+        } else {
+          finalGrades[sectionID] = 'N/A';
+        }
+      } else {
+        throw Exception("Failed final grade for section $sectionID");
+      }
+    } catch (e) {
+      print("Error final grade for section $sectionID: $e");
     }
   }
 
@@ -126,23 +202,21 @@ class _StudentSectionGradePageState extends State<StudentSectionGradePage> {
                         fontSize: 24, fontWeight: FontWeight.bold),
                   ),
                   const Divider(),
+                  Text('Midterm Grade: ${midtermGrades[section.id] ?? "N/A"}'),
+                  Text('Final Grade: ${finalGrades[section.id] ?? "N/A"}'),
+                  const Divider(),
                   ...assignments.map((assignment) {
                     final assignmentData = assignment as Map<String, dynamic>;
 
                     final assignmentName =
                         assignmentData['name'] ?? 'Unknown Assignment';
 
-                    String? grade;
-
-                    for (var gradeData in assignmentData['grades']) {
-                      final studentIDFromData = gradeData['studentID'];
-                      if (studentIDFromData == studentID) {
-                        grade = gradeData['grade'].toString();
-                        break;
-                      }
-                    }
-
-                    final studentGrade = grade ?? 'N/A';
+                    // Get the grade for the student
+                    final studentGrade = assignmentData['grades']
+                        .firstWhere(
+                            (gradeData) => gradeData['studentID'] == studentID,
+                            orElse: () => {'grade': 'N/A'})['grade']
+                        .toString();
 
                     return Padding(
                       padding: const EdgeInsets.symmetric(

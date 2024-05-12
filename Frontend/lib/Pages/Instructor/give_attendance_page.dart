@@ -26,6 +26,7 @@ class _GiveAttendancePageState extends State<GiveAttendancePage> {
   DateTime selectedDate = DateTime.now(); // Default to today's date
   String? role = "unknown";
   String? term = "2024 Spring";
+  var histories = [[], []];
   @override
   void initState() {
     super.initState();
