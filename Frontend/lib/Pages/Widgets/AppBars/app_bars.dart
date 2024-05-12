@@ -1,13 +1,15 @@
 import 'package:first_trial/Pages/Admin/admin_page.dart';
 import 'package:first_trial/Pages/Auth/login_page.dart';
 import 'package:first_trial/Pages/Homepage/homepage.dart';
+import 'package:first_trial/Pages/Notifications/notifications.dart';
 import 'package:first_trial/Pages/Questions/question_homepage.dart';
-import 'package:first_trial/Pages/Admin/student_create_page.dart';
+import 'package:first_trial/Pages/Admin/Create/student_create_page.dart';
 import 'package:first_trial/Pages/UserProfile/user_profile_page.dart';
 import 'package:first_trial/Pages/Widgets/AppBars/roles/admin_appbar.dart';
 import 'package:first_trial/Pages/Widgets/AppBars/roles/instructor_appbar.dart';
 import 'package:first_trial/Pages/Widgets/AppBars/roles/student_appbar.dart';
 import 'package:first_trial/token.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:first_trial/final_variables.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
@@ -65,14 +67,22 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           ] else if (role == "student") ...[
             StudentAppBar(),
           ],
-          //logout
         ],
       ),
       actions: [
-        IconButton(
-          onPressed: () {},
-          icon: const Icon(Icons.notifications_active_outlined),
-        ),
+        if (role != "admin") ...[
+          IconButton(
+            onPressed: () async {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return Notifications(); // Display Notifications as a dialog
+                },
+              );
+            },
+            icon: Icon(Icons.notifications_active_outlined),
+          ),
+        ],
         IconButton(
           onPressed: () async {
             var id = await TokenStorage.getID();
@@ -85,14 +95,16 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             var id = await TokenStorage.getID();
             GoRouter.of(context).go('/calendar');
           },
-          icon: const Icon(Icons.calendar_month_outlined),
+          icon: Icon(Icons.calendar_month_outlined),
         ),
         IconButton(
           onPressed: () async {
             var id = await TokenStorage.getID();
+            ValueNotifier<String> userIdNotifier = ValueNotifier<String>('');
+            userIdNotifier.value = id.toString();
             GoRouter.of(context).go('/user/profile/$id');
           },
-          icon: const Icon(Icons.person_outline),
+          icon: Icon(Icons.person_outline),
         ),
         IconButton(
           onPressed: () async {

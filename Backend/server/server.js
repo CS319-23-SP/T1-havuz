@@ -23,6 +23,7 @@ const forumRouter = require("../routes/forum");
 const fileRouter = require("../routes/fileHandler");
 const eventRouter = require("../routes/event");
 const evaluationRouter = require("../routes/evaluation");
+const abetRouter = require("../routes/abet");
 
 
 const { decode } = require('../middlewares/jwt');
@@ -55,6 +56,7 @@ app.use("/forum", decode, forumRouter);
 app.use("/document", fileRouter);
 app.use("/event", decode, eventRouter);
 app.use("/evaluation", decode, evaluationRouter);
+app.use("/ABET", decode, abetRouter);
 
 app.use('*', (req, res) => {
     return res.status(404).json({

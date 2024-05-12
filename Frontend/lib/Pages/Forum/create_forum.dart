@@ -3,6 +3,7 @@ import 'package:first_trial/Pages/Widgets/success_fail.dart';
 import 'package:first_trial/final_variables.dart';
 import 'package:first_trial/token.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -98,33 +99,58 @@ class CreateForumPageState extends State<CreateForumPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(role: role),
-      body: Center(
-        child: Column(
-          children: [
-            TextFormField(
-              controller: titleController,
-              decoration: InputDecoration(
-                labelText: 'Forum Title',
-                border: OutlineInputBorder(),
-              ),
+      body: Row(
+        children: [
+          Flexible(
+              flex: 2,
+              child: Placeholder(
+                color: Colors.transparent,
+              )),
+          Flexible(
+            flex: 5,
+            child: Column(
+              children: [
+                Padding(padding: EdgeInsets.only(top: 50)),
+                TextFormField(
+                  controller: titleController,
+                  decoration: InputDecoration(
+                    labelText: 'Forum Title',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                SizedBox(height: 20.0),
+                TextFormField(
+                  keyboardType: TextInputType.multiline,
+                  maxLines: null,
+                  controller: textController,
+                  decoration: InputDecoration(
+                    labelText: 'Forum Text',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                SizedBox(height: 20.0),
+                InkWell(
+                  onTap: () {
+                    createForum();
+                  },
+                  child: Container(
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(width: 1)),
+                      padding: EdgeInsets.all(15),
+                      child: Text(
+                        'Create Forum',
+                      )),
+                ),
+              ],
             ),
-            SizedBox(height: 20.0),
-            TextFormField(
-              controller: textController,
-              decoration: InputDecoration(
-                labelText: 'Forum Text',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            SizedBox(height: 20.0),
-            ElevatedButton(
-              onPressed: () {
-                createForum();
-              },
-              child: Text('Create Forum'),
-            ),
-          ],
-        ),
+          ),
+          Flexible(
+              flex: 2,
+              child: Placeholder(
+                color: Colors.transparent,
+              )),
+        ],
       ),
     );
   }

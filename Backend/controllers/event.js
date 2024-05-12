@@ -1,12 +1,13 @@
 const makeValidation = require('@withvoid/make-validation');
-const Event = require('../models/event');
+const{  Event } = require('../models/event');
+const { EventNotification } = require('../models/event')
 
 const createEvent = async (req, res) => {
   try {
-    const { userIds, title, date } = req.body;
+    const { userIds, title, messageText, date } = req.body;
     const { _id: eventCreator } = req;
 
-    const result = await Event.createEvent(userIds, eventCreator, title, date);
+    const result = await Event.createEvent(userIds, eventCreator, title, messageText, date);
     res.status(201).json(result);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -36,8 +37,32 @@ const getEventsByUserId = async (req, res) => {
   }
 };
 
+const getEventNotificationsByUserId = async (req, res) => {
+  const userId = req.params.userId; 
+  try {
+    const notifications = await EventNotification.getEventNotificationsByUserId(userId);
+    res.status(200).json(notifications);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+const markNotificationAsSeen = async (req, res) => {
+  const notificationId = req.params.notificationId; 
+  console.log(notificationId)
+  try {
+    const notification = await EventNotification.markAsSeen(notificationId); 
+    res.status(200).json(notification);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+
 module.exports = {
   createEvent,
   getEventDetailstById,
   getEventsByUserId,
+  markNotificationAsSeen,
+  getEventNotificationsByUserId,
 };

@@ -9,6 +9,7 @@ router
   .post('/', roleChecker(['admin']), instructor.onCreateInstructor)
   .get('/:id', instructor.onGetInstructorByID)
   .post("/give-attendance/:term", instructor.onGiveAttendance)
+  .post("/attendance", roleChecker(['admin', 'instructor']), instructor.onGetAttendance)
   .delete('/:id', roleChecker(['admin']), instructor.onDeleteInstructorByID)
   .patch('/:id', roleChecker(['admin', 'instructor']), instructor.onEditInstructorByID);
 
