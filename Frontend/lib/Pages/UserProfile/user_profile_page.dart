@@ -21,15 +21,30 @@ class _UserProfilePageState extends State<UserProfilePage> {
 
   var user = {};
   var role;
+  String id = "";
+  ValueNotifier<String> userIdNotifier = ValueNotifier<String>('');
 
   @override
   void initState() {
     super.initState();
     getUser();
+    userIdNotifier.addListener(_updateUserId);
+  }
+
+  @override
+  void dispose() {
+    userIdNotifier.removeListener(_updateUserId);
+    super.dispose();
+  }
+
+  void _updateUserId() {
+    setState(() {
+      id = userIdNotifier.value;
+    });
   }
 
   void getUser() async {
-    String id = widget.userId;
+    id = widget.userId;
 
     String? token = await TokenStorage.getToken();
     if (token == null) {
@@ -97,7 +112,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                 SizedBox(
                   height: 150,
                 ),
-                UserCard(user: user),
+                UserInfo(userID: widget.userId),
               ],
             ),
           )

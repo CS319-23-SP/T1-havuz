@@ -8,8 +8,9 @@ class Student {
   factory Student.fromJson(Map<String, dynamic> json) {
     return Student(
       id: json['id'].toString(),
-      name: '${json['firstName']} ${json['middleName'] != null ? json['middleName'] + ' ' : ''}${json['lastName']}',
+      name:
+          '${json['firstName']} ${json['middleName'] != null ? json['middleName'] + ' ' : ''}${json['lastName']}',
       courses: List<String>.from(json['coursesTaken']),
     );
-}
+  }
 }

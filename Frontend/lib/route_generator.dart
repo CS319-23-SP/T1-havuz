@@ -1,5 +1,11 @@
+import 'package:first_trial/Pages/ABET/abet.dart';
+import 'package:first_trial/Pages/Notifications/notifications.dart';
+import 'package:first_trial/Pages/Admin/Create/instructor_create_page.dart';
+import 'package:first_trial/Pages/Admin/admin_instuctor.dart';
 import 'package:first_trial/Pages/Admin/admin_page.dart';
-import 'package:first_trial/Pages/Admin/student_create_page.dart';
+import 'package:first_trial/Pages/Admin/admin_section.dart';
+import 'package:first_trial/Pages/Admin/admin_student.dart';
+import 'package:first_trial/Pages/Admin/Create/student_create_page.dart';
 import 'package:first_trial/Pages/Chat/chat_homepage.dart';
 import 'package:first_trial/Pages/Chat/create_contact.dart';
 import 'package:first_trial/Pages/Evaluation/evaluation.dart';
@@ -22,6 +28,7 @@ import 'package:first_trial/Pages/Questions/question_homepage.dart';
 import 'package:first_trial/Pages/Homepage/homepage.dart';
 import 'package:first_trial/Pages/Instructor/give_attendance_page.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter/widgets.dart';
 
 class RouteGenerator {
   final String loginRoute = "/login";
@@ -45,6 +52,7 @@ class RouteGenerator {
 
   final String adminRoute = "/admin";
   final String studentCreateRoute = "/admin/studentCreate";
+  final String instructorCreateRoute = "/admin/instructorCreate";
 
   final String createAssignmentRoute = "/createAssignment/:sectionID";
   final String contactRoute = "/chad/createContact";
@@ -57,6 +65,12 @@ class RouteGenerator {
   final String evaluationInstr = "/evaluation/:sectionId";
 
   final String createEvent = "/createEvent";
+  final String abetId = "/:courseID/ABET";
+  final String adminSections = "/admin/allSections";
+  final String adminStudents = "/admin/allStudents";
+  final String adminInstructors = "/admin/allInstructors";
+  final String notifications = "/notifications";
+
   getRouter() {
     return GoRouter(
       initialLocation: loginRoute,
@@ -75,7 +89,7 @@ class RouteGenerator {
         ),
         GoRoute(
           path: studentSectionGrade,
-          builder: (context, state) => StudentSectionGradePage(), // New page
+          builder: (context, state) => StudentSectionGradePage(),
         ),
         GoRoute(
             path: assignmentGradeRoute,
@@ -94,11 +108,11 @@ class RouteGenerator {
             }),
         GoRoute(
           path: studentSectionAttendance,
-          builder: (context, state) => StudentAttendancePage(), // New page
+          builder: (context, state) => StudentAttendancePage(),
         ),
         GoRoute(
           path: instructorAttendance,
-          builder: (context, state) => GiveAttendancePage(), // New page
+          builder: (context, state) => GiveAttendancePage(), 
         ),
         GoRoute(
           path: '/',
@@ -152,7 +166,7 @@ class RouteGenerator {
             path: profileRoute,
             builder: (context, state) {
               final userId = state.pathParameters['userId'].toString();
-              return UserProfilePage(userId: userId);
+              return UserProfilePage(userId: userId, key: ValueKey(userId));
             }),
         GoRoute(
             path: evaluationInstr,
@@ -187,6 +201,11 @@ class RouteGenerator {
               return const StudentCreationPage();
             }),
         GoRoute(
+            path: instructorCreateRoute,
+            builder: (context, state) {
+              return const InstructorCreationPage();
+            }),
+        GoRoute(
             path: instructorRoute,
             builder: (context, state) {
               return const CourseHomePage();
@@ -217,6 +236,32 @@ class RouteGenerator {
               final id = state.pathParameters['id'].toString();
               final sectionId = state.pathParameters['sectionId'].toString();
               return ForumRoutePage(replyId: id, sectionId: sectionId);
+            }),
+        GoRoute(
+            path: abetId,
+            builder: (context, state) {
+              final courseID = state.pathParameters['courseID'].toString();
+              return ABET(course: courseID);
+            }),
+        GoRoute(
+            path: adminSections,
+            builder: (context, state) {
+              return AdminSectionsPage();
+            }),
+        GoRoute(
+            path: adminInstructors,
+            builder: (context, state) {
+              return AdminInstructorsPage();
+            }),
+        GoRoute(
+            path: notifications,
+            builder: (context, state) {
+              return Notifications();
+            }),
+        GoRoute(
+            path: adminStudents,
+            builder: (context, state) {
+              return AdminStudentsPage();
             }),
       ],
     );

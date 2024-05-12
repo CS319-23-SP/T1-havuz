@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:first_trial/Objects/assignment.dart';
@@ -9,10 +10,13 @@ import 'package:flutter/material.dart';
 import 'package:first_trial/token.dart';
 import 'dart:html' as html;
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:intl/intl.dart';
+import 'package:pdf/widgets.dart' as pw;
 
 class Section_Details extends StatefulWidget {
   final Section section;
@@ -36,11 +40,15 @@ class _Section_DetailsState extends State<Section_Details> {
     checkRole();
   }
 
+  List<String> students = [];
+  String selectedStudent = "";
+
   Future<void> checkRole() async {
     role = await TokenStorage.getRole();
     fetchAssignments();
     fetchMaterials();
     setState(() {});
+    students = widget.section.students;
   }
 
   List<Assignment> assignments = [];
@@ -254,8 +262,113 @@ class _Section_DetailsState extends State<Section_Details> {
     }
   }
 
+  List<dynamic> attendances = [];
+
+  Future<void> createReport(studentName) async {
+    if(studentName == null) {
+      return;
+    }
+    try {
+      String? token = await TokenStorage.getToken();
+      if (token == null) {
+        throw Exception('Token not found');
+      }
+
+      var response = await http.post(
+          Uri.parse('http://localhost:8080/instructor/attendance'),
+          body: jsonEncode(
+              {'studentID': studentName, 'sectionID': widget.section.id}),
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
+          });
+
+      final responseJson = jsonDecode(response.body);
+      final List<Map<String, dynamic>> data =
+          List<Map<String, dynamic>>.from(responseJson['data']);
+
+      final pdf = pw.Document();
+
+      final ByteData datao =
+          await rootBundle.load('lib/Assets/fonts/Roboto-Regular.ttf');
+      final ttf = pw.Font.ttf(datao);
+
+      pdf.addPage(pw.Page(build: (pw.Context context) {
+        return pw.Column(
+          crossAxisAlignment: pw.CrossAxisAlignment.start,
+          children: [
+            pw.Text('Attendance Report for Student: $studentName',
+                style: pw.TextStyle(font: ttf, fontSize: 25)),
+            pw.SizedBox(height: 20),
+            pw.Table(
+              children: [
+                pw.TableRow(
+                  children: ['Date', 'Attended Hour', 'Total Hour']
+                      .map((header) => pw.Text(header,
+                          style: pw.TextStyle(font: ttf, fontSize: 20)))
+                      .toList(),
+                ),
+                ...data
+                    .map((entry) => pw.TableRow(
+                          children: [
+                            DateFormat('MMM dd, yyyy')
+                                .format(DateTime.parse(entry['date'])),
+                            entry['hour'].toString(),
+                            entry['totalHour'].toString()
+                          ]
+                              .map((value) => pw.Text(value,
+                                  style: pw.TextStyle(font: ttf, fontSize: 15)))
+                              .toList(),
+                        ))
+                    .toList(),
+              ],
+            ),
+            /*pw.Text('Attendance Report for Student: $studentName',
+                style: pw.TextStyle(font: ttf, fontSize: 25)),
+            pw.SizedBox(height: 20),
+            pw.Table(
+              children: [
+                pw.TableRow(
+                  children: ['Date', 'Attended Hour', 'Total Hour']
+                      .map((header) => pw.Text(header,
+                          style: pw.TextStyle(font: ttf, fontSize: 20)))
+                      .toList(),
+                ),
+                ...data
+                    .map((entry) => pw.TableRow(
+                          children: [
+                            DateFormat('MMM dd, yyyy')
+                                .format(DateTime.parse(entry['date'])),
+                            entry['hour'].toString(),
+                            entry['totalHour'].toString()
+                          ]
+                              .map((value) => pw.Text(value,
+                                  style: pw.TextStyle(font: ttf, fontSize: 15)))
+                              .toList(),
+                        ))
+                    .toList(),
+              ],
+            ),*/ //Enter grade values here
+          ],
+        );
+      }));
+
+      final Uint8List pdfBytes = await pdf.save();
+      final blob = html.Blob([pdfBytes]);
+      final url = html.Url.createObjectUrlFromBlob(blob);
+      final filename = 'report=$studentName.pdf';
+      final anchor = html.AnchorElement(href: url.toString())
+        ..setAttribute('download', filename)
+        ..click();
+      html.Url.revokeObjectUrl(url.toString());
+    } catch (e) {
+      print('Error deletin file: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
     var height = MediaQuery.of(context).size.height;
     var width = MediaQuery.of(context).size.width;
     // Ensure assignments are fetched before rendering
@@ -263,54 +376,98 @@ class _Section_DetailsState extends State<Section_Details> {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
+        Column(
           children: [
-            ElevatedButton(
-                onPressed: widget.onBack, child: Icon(Icons.arrow_back)),
-            Column(
-              children: [
-                if (role == "instructor") ...[
-                  TextButton(
-                      onPressed: () {
-                        GoRouter.of(context)
-                            .go('/createAssignment/${widget.section.id}');
-                      },
-                      child: const Text("Create assignment")),
-                  TextButton(
-                      onPressed: () {
-                        GoRouter.of(context)
-                            .go('/evaluation/${widget.section.id}');
-                      },
-                      child: const Text("See Evaluation")),
-                ],
-                if (role == "student") ...[
-                  TextButton(
-                      onPressed: () {
-                        GoRouter.of(context)
-                            .go('/evaluation/${widget.section.id}');
-                      },
-                      child: const Text("Make Evaluation")),
-                ],
-                TextButton(
-                    onPressed: () {
-                      final String sectionId = widget.section.id;
-                      GoRouter.of(context).go("/$sectionId/createForum");
-                    },
-                    child: Text("Create Forum")),
-                TextButton(
-                    onPressed: () {
-                      final String sectionId = widget.section.id;
-                      GoRouter.of(context).go("/$sectionId/forum");
-                    },
-                    child: Text("View Forums")),
-                TextButton(
-                    onPressed: () {
-                      final String sectionId = widget.section.id;
-                      GoRouter.of(context).go("/section/$sectionId/exams");
-                    },
-                    child: Text("Give Exam Grade")),
-              ],
-            )
+            InkWell(
+              onTap: widget.onBack,
+              child: Container(
+                padding: EdgeInsets.all(20),
+                child: Icon(Icons.arrow_back),
+              ),
+            ),
+            if (role == "instructor") ...[
+              InkWell(
+                  onTap: () {
+                    GoRouter.of(context)
+                        .go('/createAssignment/${widget.section.id}');
+                  },
+                  child: Container(
+                      padding: EdgeInsets.all(20),
+                      child: const Text("Create assignment"))),
+              InkWell(
+                  onTap: () {
+                    GoRouter.of(context).go('/evaluation/${widget.section.id}');
+                  },
+                  child: Container(
+                      padding: EdgeInsets.all(20),
+                      child: const Text("See Evaluation"))),
+              InkWell(
+                  onTap: () {
+                    final String sectionId = widget.section.id;
+                    GoRouter.of(context).go("/section/$sectionId/exams");
+                  },
+                  child: Container(
+                      padding: EdgeInsets.all(20),
+                      child: const Text("Give Exam Grade"))),
+            ],
+            if (role == "student") ...[
+              InkWell(
+                  onTap: () {
+                    GoRouter.of(context).go('/evaluation/${widget.section.id}');
+                  },
+                  child: Container(
+                      padding: EdgeInsets.all(20),
+                      child: const Text("Make Evaluation"))),
+            ],
+            InkWell(
+                onTap: () {
+                  final String sectionId = widget.section.id;
+                  GoRouter.of(context).go("/$sectionId/createForum");
+                },
+                child: Container(
+                    padding: EdgeInsets.all(20), child: Text("Create Forum"))),
+            InkWell(
+                onTap: () {
+                  final String sectionId = widget.section.id;
+                  GoRouter.of(context).go("/$sectionId/forum");
+                },
+                child: Container(
+                    padding: EdgeInsets.all(20), child: Text("View Forums"))),
+            InkWell(
+                onTap: () {
+                  final String courseId = widget.section.sectionID;
+                  GoRouter.of(context).go("/$courseId/ABET");
+                },
+                child: Container(
+                    padding: EdgeInsets.all(20), child: Text("ABET"))),
+                    if(role == "instructor") ...[
+                      DropdownMenu<String>(
+              inputDecorationTheme:
+                  InputDecorationTheme(border: InputBorder.none),
+              hintText: "Select Term",
+              onSelected: (String? value) {
+                setState(() {
+                  selectedStudent = value.toString();
+                });
+              },
+              dropdownMenuEntries:
+                  students.map<DropdownMenuEntry<String>>((String value) {
+                return DropdownMenuEntry<String>(value: value, label: value);
+              }).toList(),
+            ),
+            InkWell(
+              onTap: () {
+                if (selectedStudent != null) {
+                  createReport(selectedStudent);
+                } else {
+                  print("choose a student man cmon");
+                }
+              },
+              child: Container(
+                  padding: EdgeInsets.all(20), child: Text("Create Report")),
+            ),
+                    ]
+>>>>>>> bbe8f0a314ca53730c983c5176e71ad94e406246
           ],
         ),
         Expanded(
@@ -346,6 +503,7 @@ class _Section_DetailsState extends State<Section_Details> {
                             DateTime deadline =
                                 DateTime.parse(assignment.deadline);
                             return ListTile(
+<<<<<<< HEAD
                                 title: Row(
                               children: [
                                 Expanded(
@@ -443,6 +601,36 @@ class _Section_DetailsState extends State<Section_Details> {
                                 ),
                               ],
                             ));
+=======
+                              title: InkWell(
+                                child: Container(
+                                  padding: EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                      border: Border.all(width: 1)),
+                                  child: Row(
+                                    children: [
+                                      Icon(Icons.assignment),
+                                      SizedBox(width: 15),
+                                      Expanded(
+                                        child: Text(
+                                          "${assignment.name} (Due: ${DateFormat('MMM dd').format(deadline)})",
+                                          overflow: TextOverflow.ellipsis,
+                                          maxLines: 1,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                onTap: () async {
+                                  final String assignmentid = assignment.id;
+                                  final String sectionid = assignment.sectionID;
+                                  String? role = await TokenStorage.getRole();
+                                  GoRouter.of(context).go(
+                                      '/$role/assignment/$sectionid/$assignmentid');
+                                },
+                              ),
+                            );
+>>>>>>> bbe8f0a314ca53730c983c5176e71ad94e406246
                           },
                         ),
                       ],
@@ -477,11 +665,15 @@ class _Section_DetailsState extends State<Section_Details> {
                   Padding(
                     padding:
                         EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-                    child: ElevatedButton(
-                      onPressed: () {
+                    child: InkWell(
+                      onTap: () {
                         uploadFile();
                       },
-                      child: Text("Upload File"),
+                      child: Container(
+                          padding: EdgeInsets.all(10),
+                          decoration:
+                              BoxDecoration(border: Border.all(width: 1)),
+                          child: Text("Upload File")),
                     ),
                   ),
                 ],
@@ -507,11 +699,17 @@ class _Section_DetailsState extends State<Section_Details> {
                           ),
                         ],
                         if (role == "student") ...[
-                          TextButton(
-                            onPressed: () {
+                          InkWell(
+                            onTap: () {
                               downloadFile(filename);
                             },
-                            child: Text("Download"),
+                            child: Container(
+                                padding: EdgeInsets.all(10),
+                                child: Text(
+                                  "Download",
+                                  style:
+                                      TextStyle(color: Colors.deepOrangeAccent),
+                                )),
                           ),
                         ],
                       ],
