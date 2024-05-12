@@ -167,7 +167,7 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
     }
 
     String fileExtension = _selectedFileName!.split('.').last;
-    String newFileName = '${id.toString()}.$fileExtension';
+    String newFileName = _selectedFileName.toString();
 
     var answer = "";
 
@@ -248,6 +248,7 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
   }
 
   Future<void> downloadFile(filename, isSolutionKey) async {
+    print(filename);
     try {
       var answer = "";
       if (!isSolutionKey) answer = "/answers";
@@ -281,11 +282,12 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
     try {
       var answer = "";
       if (!isSolutionKey) answer = "/answers";
-      var fileExtension = ".pdf";
       var path = "$term/${widget.sectionID}/${assignment.id}$answer";
-      var filename = id;
+      var filename = students.firstWhere((entry) => entry.contains("$id"));
       var url = Uri.parse(
-          'http://localhost:8080/document?path=$path/$filename$fileExtension');
+          'http://localhost:8080/document?path=$path/$filename');
+      
+      print('http://localhost:8080/document?path=$path/$filename');
 
       var response = await http.delete(url);
 
@@ -331,7 +333,7 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
                             children: [
                               TextButton(
                                 onPressed: () => downloadFile("$id.pdf", true),
-                                child: Text("Solution key: $id.pdf"),
+                                child: Text("Solution key: ${id?.replaceAll(',', ', ') ?? ''}"),
                               ),
                               TextButton(
                                 onPressed: () => _uploadFile(true),
@@ -361,11 +363,14 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
                 Text("Term: ${assignment.term}"),
                 const SizedBox(height: 20),
                 role == "student"
-                    ? students.contains("$id.pdf")
+                    ? students.any((entry) => entry.contains("$id"))
                         ? Row(
                             children: [
                               TextButton(
-                                onPressed: () => downloadFile("$id.pdf", false),
+                                onPressed: () {
+                                    String originalEntry = students.firstWhere((entry) => entry.contains("$id"));
+                                    downloadFile(originalEntry, false);
+                                  },
                                 child: Text("Uploaded Assignment: $id.pdf"),
                               ),
                               TextButton(
@@ -379,7 +384,9 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
                               ),
                               IconButton(
                                 icon: const Icon(Icons.delete),
-                                onPressed: () => deleteFile(false),
+                                onPressed: () => setState(() {
+                                  deleteFile(false);
+                                }) 
                               ),
                             ],
                           )
