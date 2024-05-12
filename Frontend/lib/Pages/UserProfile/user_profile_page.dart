@@ -97,7 +97,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                 SizedBox(
                   height: 150,
                 ),
-                UserCard(user: user),
+                UserInfo(userID: widget.userId),
               ],
             ),
           )

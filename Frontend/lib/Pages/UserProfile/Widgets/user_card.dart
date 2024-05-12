@@ -5,36 +5,11 @@ import 'package:first_trial/token.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-class UserCard extends StatelessWidget {
-  const UserCard({
-    Key? key,
-    required this.user,
-  }) : super(key: key);
-  final Map<dynamic, dynamic> user;
-
-  @override
-  Widget build(BuildContext context) {
-    final screenwidth = MediaQuery.of(context).size.width;
-    final screenheigth = MediaQuery.of(context).size.height;
-    return Container(
-      width: 7 * screenwidth / 17,
-      height: screenheigth / 2,
-      decoration: BoxDecoration(
-          color: PoolColors.cardWhite, borderRadius: BorderRadius.circular(15)),
-      padding: const EdgeInsets.only(top: 10, left: 10, right: 10, bottom: 10),
-      child: UserInfo(user: user),
-    );
-  }
-
-  Widget buildProfileImage() => CircleAvatar(
-        radius: 50,
-        backgroundImage: AssetImage(AssetLocations.userPhoto),
-      );
-}
 
 class UserInfo extends StatefulWidget {
-  const UserInfo({Key? key, required this.user}) : super(key: key);
-  final Map<dynamic, dynamic> user;
+  const UserInfo({Key? key, required this.userID}) : super(key: key);
+
+  final String userID;
 
   @override
   State<UserInfo> createState() => _UserInfoState();
@@ -43,25 +18,29 @@ class UserInfo extends StatefulWidget {
 class _UserInfoState extends State<UserInfo> {
   String _displayText = 'Initial Text';
   late TextEditingController _textController;
-
-  bool _editing = false;
+  
   var user;
+  var originalID;
+  var auth;
+  bool _editing = false;
   var about;
   @override
   void initState() {
     super.initState();
-    getUser();
+    setState(() {
+      getAuth();
+      getUser();
+    });
   }
 
-  void getUser() async {
-    String? id = await TokenStorage.getID();
+  void getAuth() async {
+    String id = widget.userID;
+    originalID = await TokenStorage.getID();
 
     String? token = await TokenStorage.getToken();
     if (token == null) {
       throw Exception('Token not found');
     }
-
-    var role = await TokenStorage.getRole();
 
     final response = await http.get(
       Uri.http('localhost:8080', '/auth/$id'),
@@ -75,9 +54,9 @@ class _UserInfoState extends State<UserInfo> {
       final responseData = json.decode(response.body);
       if (responseData['success']) {
         setState(() {
-          user = responseData["auth"];
-          if (user['about'] != null && user['about'].isNotEmpty) {
-            about = user['about'];
+          auth = responseData["auth"];
+          if (auth['about'] != null && auth['about'].isNotEmpty) {
+            about = auth['about'];
             _displayText = about;
           }
           else{
@@ -87,6 +66,53 @@ class _UserInfoState extends State<UserInfo> {
         });
       } else {
         throw Exception('Failed to fetch students data');
+      }
+    }
+  }
+
+  void getUser() async {
+    String id = widget.userID;
+
+    String? token = await TokenStorage.getToken();
+    if (token == null) {
+      throw Exception('Token not found');
+    }
+      final response = await http.get(
+        Uri.http('localhost:8080', '/student/$id'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        if (responseData['success']) {
+          setState(() {
+            user = responseData["student"];
+          });
+        } else {
+          throw Exception('Failed to fetch students data');
+        }
+      }
+    else {
+      final response = await http.get(
+        Uri.http('localhost:8080', '/instructor/$id'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        if (responseData['success']) {
+          setState(() {
+            user = responseData["instructor"];
+          });
+        } else {
+          throw Exception('Failed to fetch instructors data');
+        }
       }
     }
   }
@@ -131,15 +157,26 @@ class _UserInfoState extends State<UserInfo> {
 
   @override
   Widget build(BuildContext context) {
-    final id = widget.user["id"] ?? "Unknown";
-    final firstName = widget.user["firstName"] ?? "Unknown";
-    final middleName = widget.user["middleName"] ?? "Unknown";
-    final lastName = widget.user["lastName"] ?? "Unknown";
-    final department = widget.user["department"] ?? "Unknown";
-    List<dynamic>? coursesTaken = widget.user["allTakenCourses"];
+    final id = user?["id"] ?? "Unknown";
+    final firstName = user?["firstName"] ?? "Unknown";
+    final middleName = user?["middleName"] ?? "Unknown";
+    final lastName = user?["lastName"] ?? "Unknown";
+    final department = user?["department"] ?? "Unknown";
+    List<dynamic>? coursesTaken = user?["coursesTaken"];
+    List<dynamic>? coursesGiven = user?["coursesGiven"];
+    final role = auth?["role"];
     final aboutYourself = "dd";
     final screen = MediaQuery.of(context).size;
-    return Column(
+    final screenwidth = MediaQuery.of(context).size.width;
+    final screenheigth = MediaQuery.of(context).size.height;
+
+    return Container(
+      width: 7 * screenwidth / 17,
+      height: screenheigth / 2,
+      decoration: BoxDecoration(
+          color: PoolColors.cardWhite, borderRadius: BorderRadius.circular(15)),
+      padding: const EdgeInsets.only(top: 10, left: 10, right: 10, bottom: 10),
+      child: Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -194,7 +231,8 @@ class _UserInfoState extends State<UserInfo> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    Text(
+                    if(role == "student") ...[
+                      const Text(
                       "Courses Taken",
                       style: TextStyle(
                         shadows: [
@@ -208,12 +246,30 @@ class _UserInfoState extends State<UserInfo> {
                     ),
                     if (coursesTaken != null)
                       ...coursesTaken.map((course) => Text(course.toString())),
-                  ],
-                ),
+                    ],
+                    if(role == "instructor") ...[
+                      const Text(
+                      "Courses Given",
+                      style: TextStyle(
+                        shadows: [
+                          Shadow(color: Colors.black, offset: Offset(0, -5))
+                        ],
+                        color: Colors.transparent,
+                        decoration: TextDecoration.underline,
+                        decorationColor: Colors.black,
+                        decorationThickness: 4,
+                      ),
+                    ),
+                    if (coursesGiven != null)
+                      ...coursesGiven.map((course) => Text(course.toString())),
+                    ],
+                ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
+      ),
+    
         SizedBox(
           height: 10,
         ),
@@ -236,7 +292,7 @@ class _UserInfoState extends State<UserInfo> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(
+                        const Text(
                           "About Yourself",
                           style: TextStyle(
                             shadows: [
@@ -248,7 +304,8 @@ class _UserInfoState extends State<UserInfo> {
                             decorationThickness: 4,
                           ),
                         ),
-                        _editing
+                        if(originalID.toString() == id.toString()) ...[
+                          _editing
                             ? IconButton(
                                 onPressed: () {
                                   _toggleEditing();
@@ -260,6 +317,8 @@ class _UserInfoState extends State<UserInfo> {
                                   setState(() {});
                                 },
                                 icon: Icon(Icons.edit))
+                        ]
+                        
                       ],
                     ),
                     SizedBox(height: 10),
@@ -286,7 +345,7 @@ class _UserInfoState extends State<UserInfo> {
                             child: Container(
                               height: screen.height / 6,
                               padding: EdgeInsets.only(bottom: 10),
-                              width: double.infinity, // Adjust width as needed
+                              width: 1500, // Adjust width as needed
                               child: Padding(
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 10.0),
@@ -308,6 +367,8 @@ class _UserInfoState extends State<UserInfo> {
           ),
         )
       ],
+    ),
     );
   }
-}
+  }
+

@@ -69,15 +69,15 @@ class RouteGenerator {
       routes: [
         GoRoute(
           path: studentSectionGrade,
-          builder: (context, state) => StudentSectionGradePage(), // New page
+          builder: (context, state) => StudentSectionGradePage(),
         ),
         GoRoute(
           path: studentSectionAttendance,
-          builder: (context, state) => StudentAttendancePage(), // New page
+          builder: (context, state) => StudentAttendancePage(),
         ),
         GoRoute(
           path: instructorAttendance,
-          builder: (context, state) => GiveAttendancePage(), // New page
+          builder: (context, state) => GiveAttendancePage(), 
         ),
         GoRoute(
           path: '/',

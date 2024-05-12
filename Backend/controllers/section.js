@@ -73,15 +73,24 @@ const onCreateSection = async (req, res) => {
 
   const onGetSections = async (req, res) => {
     try {
+      console.log(req.params);
         const sections = await sectionModel.getSections();
         return res.status(200).json({ success: true, sections });
     } catch (error) {
         return res.status(500).json({ success: false, error: error })
     }
 }
+
+const onGetSectionTerm = async (req, res) => {
+  try {
+      const sections = await sectionModel.getSectionsbyTerm(req.params.term);
+      return res.status(200).json({ success: true, sections });
+  } catch (error) {
+      return res.status(500).json({ success: false, error: error })
+  }
+}
 const onGetSectionByIDAndTerm = async (req, res) => {
   try {
-    console.log(req.params)
       const section = await sectionModel.getSectionByIDAndTerm(req.params.id, req.params.term);
       return res.status(200).json({ success: true, section });
   } catch (error) {
@@ -132,5 +141,6 @@ console.log("ao");
     onGetSections,
     onGetSection,
     onGetSectionByIDAndTerm,
-    onGetStudentsBySectionID
+    onGetStudentsBySectionID,
+    onGetSectionTerm
   };
