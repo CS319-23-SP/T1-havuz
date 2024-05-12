@@ -1,4 +1,5 @@
 import 'package:first_trial/Pages/ABET/abet.dart';
+import 'package:first_trial/Pages/Admin/Create/section_create.dart';
 import 'package:first_trial/Pages/Notifications/notifications.dart';
 import 'package:first_trial/Pages/Admin/Create/instructor_create_page.dart';
 import 'package:first_trial/Pages/Admin/admin_instuctor.dart';
@@ -70,6 +71,7 @@ class RouteGenerator {
   final String adminStudents = "/admin/allStudents";
   final String adminInstructors = "/admin/allInstructors";
   final String notifications = "/notifications";
+  final String sectionCreate = "/admin/section";
 
   getRouter() {
     return GoRouter(
@@ -106,13 +108,18 @@ class RouteGenerator {
                 term: "2024 Spring",
               );
             }),
+
+           GoRoute(
+          path: sectionCreate,
+          builder: (context, state) => SectionCreate(),
+        ),
         GoRoute(
           path: studentSectionAttendance,
           builder: (context, state) => StudentAttendancePage(),
         ),
         GoRoute(
           path: instructorAttendance,
-          builder: (context, state) => GiveAttendancePage(), 
+          builder: (context, state) => GiveAttendancePage(),
         ),
         GoRoute(
           path: '/',

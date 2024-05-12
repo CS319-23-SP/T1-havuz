@@ -94,7 +94,7 @@ const onGetSectionByIDAndTerm = async (req, res) => {
       const section = await sectionModel.getSectionByIDAndTerm(req.params.id, req.params.term);
       return res.status(200).json({ success: true, section });
   } catch (error) {
-      return res.status(500).json({ success: false, error: error })
+      return res.status(500).json({ success: false, error: error})
     }
 }
 const onGetStudentsBySectionID = async (req, res) => {
