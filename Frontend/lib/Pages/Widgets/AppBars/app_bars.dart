@@ -68,39 +68,42 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         ],
       ),
       actions: [
-        IconButton(
-          onPressed: () {},
-          icon: const Icon(Icons.notifications_active_outlined),
-        ),
-        IconButton(
-          onPressed: () async {
-            var id = await TokenStorage.getID();
-            GoRouter.of(context).go('/chad');
-          },
-          icon: Icon(Icons.chat_bubble_outline),
-        ),
-        IconButton(
-          onPressed: () async {
-            var id = await TokenStorage.getID();
-            GoRouter.of(context).go('/calendar');
-          },
-          icon: const Icon(Icons.calendar_month_outlined),
-        ),
-        IconButton(
-          onPressed: () async {
-            var id = await TokenStorage.getID();
-            GoRouter.of(context).go('/user/profile/$id');
-          },
-          icon: const Icon(Icons.person_outline),
-        ),
-        IconButton(
-          onPressed: () async {
-            await TokenStorage.deleteToken();
-            GoRouter.of(context).go('/login');
-          },
-          icon: Icon(Icons.logout),
-        ),
-      ],
+            IconButton(
+            onPressed: () async {
+      var id = await TokenStorage.getID();
+      GoRouter.of(context).go('/notifications');
+    },
+            icon: Icon(Icons.notifications_active_outlined),
+          ),
+  IconButton(
+    onPressed: () async {
+      var id = await TokenStorage.getID();
+      GoRouter.of(context).go('/chad');
+    },
+    icon: Icon(Icons.chat_bubble_outline),
+  ),
+  IconButton(
+    onPressed: () async {
+      var id = await TokenStorage.getID();
+      GoRouter.of(context).go('/calendar');
+    },
+    icon: Icon(Icons.calendar_month_outlined),
+  ),
+  IconButton(
+    onPressed: () async {
+      var id = await TokenStorage.getID();
+      GoRouter.of(context).go('/user/profile/$id');
+    },
+    icon: Icon(Icons.person_outline),
+  ),
+  IconButton(
+    onPressed: () async {
+      await TokenStorage.deleteToken();
+      GoRouter.of(context).go('/login');
+    },
+    icon: Icon(Icons.logout),
+  ),
+],
     );
   }
 
