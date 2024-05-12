@@ -61,6 +61,15 @@ sectionSchema.statics.getSections = async function () {
       }
 }
 
+sectionSchema.statics.getSectionsbyTerm = async function (term) {
+    try {
+        const sections = await this.find({term: term});
+        return sections;
+      } catch (error) {
+        throw error;
+      }
+}
+
 sectionSchema.statics.deleteSection = async function (id, term, courseID) {
     try {
       const result = await this.deleteOne({ id: id, term: term, courseID: courseID});

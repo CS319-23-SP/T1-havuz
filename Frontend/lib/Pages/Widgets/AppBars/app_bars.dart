@@ -99,6 +99,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             var id = await TokenStorage.getID();
             GoRouter.of(context).go('/user/profile/$id');
           },
+
           icon: Icon(Icons.person_outline),
         ),
         IconButton(
