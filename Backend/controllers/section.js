@@ -208,22 +208,18 @@ const onUpdateMidtermGrade = async (req, res) => {
     const { sectionID } = req.params;
     const { studentID, grade, term } = req.body;
 
-    // Find the section by its ID
     const section = await sectionModel.findOne({ id: sectionID, term: term });
     if (!section) {
       return res.status(404).json({ success: false, error: "Section not found" });
     }
 
-    // Check if the student already has a midterm grade
     const existingMidterm = section.midterm.find(item => item.studentID === studentID);
     if (existingMidterm) {
-      // If the student already has a midterm grade, update it
       await sectionModel.updateOne(
         { id: sectionID, term: term, "midterm.studentID": studentID },
         { $set: { "midterm.$.grade": grade } }
       );
     } else {
-      // If the student does not have a midterm grade, add a new entry
       await sectionModel.updateOne(
         { id: sectionID, term: term },
         { $push: { midterm: { studentID, grade } } }
@@ -241,15 +237,22 @@ const onUpdateFinalGrade = async (req, res) => {
     const { sectionID } = req.params;
     const { studentID, grade, term } = req.body;
 
-    // Update the final grade for the specified student
-    const result = await sectionModel.updateOne(
-      { id: sectionID, term: term, "final.studentID": studentID }, // Find document by section ID, term, and matching studentID
-      { $set: { "final.$.grade": grade } } // Update the grade field for the matching studentID
-    );
+    const section = await sectionModel.findOne({ id: sectionID, term: term });
+    if (!section) {
+      return res.status(404).json({ success: false, error: "Section not found" });
+    }
 
-    // Check if the document was found and updated
-    if (result.nModified === 0) {
-      return res.status(404).json({ success: false, error: "Section or student not found" });
+    const existingFinal = section.final.find(item => item.studentID === studentID);
+    if (existingFinal) {
+      await sectionModel.updateOne(
+        { id: sectionID, term: term, "final.studentID": studentID },
+        { $set: { "final.$.grade": grade } }
+      );
+    } else {
+      await sectionModel.updateOne(
+        { id: sectionID, term: term },
+        { $push: { final: { studentID, grade } } }
+      );
     }
 
     return res.status(200).json({ success: true, message: "Final grade updated successfully" });
