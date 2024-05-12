@@ -57,6 +57,8 @@ class _NotificationsState extends State<Notifications> {
           return {
             'title': notification['title'],
             'date': notification['date'],
+            'isSeen': notification['isSeen'],
+            'id': notification['_id']
           };
         }).toList();
 
@@ -65,6 +67,34 @@ class _NotificationsState extends State<Notifications> {
         });
       } else {
         throw Exception('Failed to fetch courses data');
+      }
+    } catch (e) {
+      print('Error fetching notifications: $e');
+    }
+  }
+
+  Future<void> fetchIsSeen(String id) async {
+    try {
+      String? token = await TokenStorage.getToken();
+      if (token == null) {
+        throw Exception('Token not found');
+      }
+      String? ID = await TokenStorage.getID();
+
+      final response = await http.post(
+        Uri.http('localhost:8080', '/event/$id'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+      );
+      if (response.statusCode == 200) {
+        // Remove the notification from the list
+        setState(() {
+          notifications.removeWhere((notification) => notification['id'] == id);
+        });
+      } else {
+        throw Exception('Failed to mark notification as seen');
       }
     } catch (e) {
       print('Error fetching notifications: $e');
@@ -99,53 +129,58 @@ class _NotificationsState extends State<Notifications> {
                 }
 
                 final notification = notifications[index];
-                return ListTile(
-                  title: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'You are invited to:',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      Text(
-                        notification['title'],
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ],
-                  ),
-                  subtitle: Text(
-                    'Date: ${_formatDate(notification['date'])}',
-                    style: TextStyle(color: Colors.grey),
-                  ),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      InkWell(
-                        onTap: () {
-                          GoRouter.of(context).go('/calendar');
-                        },
-                        child: Container(
-                          padding: EdgeInsets.all(10),
-                          decoration:
-                              BoxDecoration(border: Border.all(width: 0.5)),
-                          child: Icon(Icons.done_all),
+                if (notification['isSeen']) {
+                  return Container();
+                } else {
+                  return ListTile(
+                    title: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'You are invited to:',
+                          style: TextStyle(fontWeight: FontWeight.bold),
                         ),
-                      ),
-                      SizedBox(width: 8), // Add some space between buttons
-                      InkWell(
-                        onTap: () {
-                          GoRouter.of(context).go('/calendar');
-                        },
-                        child: Container(
-                          padding: EdgeInsets.all(10),
-                          decoration:
-                              BoxDecoration(border: Border.all(width: 0.5)),
-                          child: Icon(Icons.calendar_month_outlined),
+                        Text(
+                          notification['title'],
+                          style: TextStyle(fontWeight: FontWeight.bold),
                         ),
-                      ),
-                    ],
-                  ),
-                );
+                      ],
+                    ),
+                    subtitle: Text(
+                      'Date: ${_formatDate(notification['date'])}',
+                      style: TextStyle(color: Colors.grey),
+                    ),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        InkWell(
+                          onTap: () {
+                            fetchIsSeen(notification['id']);
+                          },
+                          child: Container(
+                            padding: EdgeInsets.all(10),
+                            decoration:
+                                BoxDecoration(border: Border.all(width: 0.5)),
+                            child: Icon(Icons.done_all),
+                          ),
+                        ),
+                        SizedBox(width: 8), // Add some space between buttons
+                        InkWell(
+                          onTap: () {
+                            Navigator.pop(context);
+                            GoRouter.of(context).go('/calendar');
+                          },
+                          child: Container(
+                            padding: EdgeInsets.all(10),
+                            decoration:
+                                BoxDecoration(border: Border.all(width: 0.5)),
+                            child: Icon(Icons.calendar_month_outlined),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }
               },
             ),
           ],

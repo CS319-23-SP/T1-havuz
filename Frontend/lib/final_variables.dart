@@ -6,6 +6,16 @@ import 'package:flip_card/flip_card.dart';
 
 class PoolTerm {
   static const String term = "2024 Spring";
+  static const List<String> terms = [
+    "2024 Spring",
+    "2024 Fall",
+    "2023 Spring",
+    "2023 Fall",
+    "2022 Spring",
+    "2022 Fall",
+    "2021 Spring",
+    "2021 Fall",
+  ];
 }
 
 class PoolColors {
