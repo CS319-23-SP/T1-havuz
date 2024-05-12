@@ -171,21 +171,6 @@ class LoginPageWidget extends StatelessWidget {
                           ),
                         ),
                       ),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      const PasswordForgetPage()));
-                        },
-                        style: TextButton.styleFrom(
-                          foregroundColor: PoolColors.black,
-                          padding: const EdgeInsets.all(20),
-                          textStyle: const TextStyle(fontSize: 15),
-                        ),
-                        child: FittedBox(child: Text("Forgot Password?")),
-                      ),
                     ],
                   ),
                 ),

@@ -180,8 +180,7 @@ class _ABETState extends State<ABET> {
                                       horizontal: 10.0),
                                   child: Text(
                                     annen,
-                                    style: GoogleFonts.chilanka(
-                                        textStyle: TextStyle(fontSize: 20)),
+                                    style: TextStyle(fontSize: 20),
                                   ),
                                 ),
                               ),

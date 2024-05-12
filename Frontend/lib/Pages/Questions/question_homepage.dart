@@ -140,7 +140,6 @@ class _QuestionHomepageState extends State<QuestionHomepage> {
     for (var questionData in responseData['questions'] as List<dynamic>) {
       final question = Question.fromJson(questionData);
       parsedQuestions.add(question);
-      print(calculateAverageGrade(questionData!["history"]));
     }
     setState(() {
       questions = parsedQuestions;
@@ -418,11 +417,11 @@ class _QuestionHomepageState extends State<QuestionHomepage> {
                                         ),
                                       ),
                                       // Expanded column for average grade
-                                      Expanded(
+                                      /*Expanded(
                                         child: Text(
                                           '${histories != null ? histories![index].toStringAsFixed(0) : "N/A"}', // Display average grade or "N/A" if not available
                                         ),
-                                      ),
+                                      ),*/
                                     ],
                                   ),
                                 );

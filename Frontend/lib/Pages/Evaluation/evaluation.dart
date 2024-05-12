@@ -137,7 +137,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
                     TextFormField(
                       controller: courseEvaController,
                       decoration: InputDecoration(
-                        labelText: 'How was the course?',
+                        labelText: 'Kurs nasıldı?',
                         border: OutlineInputBorder(),
                       ),
                     ),
@@ -145,7 +145,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
                     TextFormField(
                       controller: instrEvaController,
                       decoration: InputDecoration(
-                        labelText: 'Hocanın annesine ne demek isterdin? ',
+                        labelText: 'Anıl hoca nasıl birisi anlatsana biraz? ',
                         border: OutlineInputBorder(),
                       ),
                     ),

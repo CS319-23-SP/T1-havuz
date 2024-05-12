@@ -164,14 +164,22 @@ class _AdminStudentsPageState extends State<AdminStudentsPage> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             LeftBar(role: role),
-            Flexible(flex: 2, child: Placeholder()),
+            Flexible(
+                flex: 2,
+                child: Placeholder(
+                  color: Colors.transparent,
+                )),
             Flexible(
                 flex: 7,
                 child: StudentData(
                     students: students,
                     onDelete: deleteStudent,
                     onEdit: editStudent)),
-            Flexible(flex: 2, child: Placeholder()),
+            Flexible(
+                flex: 2,
+                child: Placeholder(
+                  color: Colors.transparent,
+                )),
           ],
         ),
         /*floatingActionButton: Row(

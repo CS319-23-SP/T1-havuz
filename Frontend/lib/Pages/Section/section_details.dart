@@ -443,7 +443,7 @@ class _Section_DetailsState extends State<Section_Details> {
               DropdownMenu<String>(
                 inputDecorationTheme:
                     InputDecorationTheme(border: InputBorder.none),
-                hintText: "Select Term",
+                hintText: "Select Student",
                 onSelected: (String? value) {
                   setState(() {
                     selectedStudent = value.toString();

@@ -97,15 +97,17 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           },
           icon: Icon(Icons.calendar_month_outlined),
         ),
-        IconButton(
-          onPressed: () async {
-            var id = await TokenStorage.getID();
-            ValueNotifier<String> userIdNotifier = ValueNotifier<String>('');
-            userIdNotifier.value = id.toString();
-            GoRouter.of(context).go('/user/profile/$id');
-          },
-          icon: Icon(Icons.person_outline),
-        ),
+        if (role != "admin") ...[
+          IconButton(
+            onPressed: () async {
+              var id = await TokenStorage.getID();
+              ValueNotifier<String> userIdNotifier = ValueNotifier<String>('');
+              userIdNotifier.value = id.toString();
+              GoRouter.of(context).go('/user/profile/$id');
+            },
+            icon: Icon(Icons.person_outline),
+          ),
+        ],
         IconButton(
           onPressed: () async {
             await TokenStorage.deleteToken();
