@@ -116,7 +116,7 @@ class _StudentSectionGradePageState extends State<StudentSectionGradePage> {
 
       final response = await http.get(
         Uri.parse(
-            'http://localhost:8080/section/midterm/$studentID/$sectionID'),
+            'http://localhost:8080/section/midterm/grade/$studentID/$sectionID'),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
@@ -148,7 +148,8 @@ class _StudentSectionGradePageState extends State<StudentSectionGradePage> {
       final token = await TokenStorage.getToken();
 
       final response = await http.get(
-        Uri.parse('http://localhost:8080/section/$studentID/$sectionID/final'),
+        Uri.parse(
+            'http://localhost:8080/section/final/grade/$studentID/$sectionID'),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
@@ -203,8 +204,19 @@ class _StudentSectionGradePageState extends State<StudentSectionGradePage> {
                         fontSize: 24, fontWeight: FontWeight.bold),
                   ),
                   const Divider(),
-                  Text('Midterm Grade: ${midtermGrades[section.id] ?? "N/A"}'),
-                  Text('Final Grade: ${finalGrades[section.id] ?? "N/A"}'),
+                  midtermGrades[section.id] != null &&
+                          midtermGrades[section.id] != 'N/A'
+                      ? Text(
+                          'Midterm Grade: ${midtermGrades[section.id]}',
+                        )
+                      : SizedBox(), // Empty SizedBox when midterm grade is N/A or null
+
+                  finalGrades[section.id] != null &&
+                          finalGrades[section.id] != 'N/A'
+                      ? Text(
+                          'Final Grade: ${finalGrades[section.id]}',
+                        )
+                      : SizedBox(),
                   const Divider(),
                   ...assignments.map((assignment) {
                     final assignmentData = assignment as Map<String, dynamic>;
