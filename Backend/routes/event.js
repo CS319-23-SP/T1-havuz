@@ -7,6 +7,7 @@ router
   .post('/', event.createEvent)
   .get('/details/:eventId', event.getEventDetailstById)
   .get('/:userId', event.getEventsByUserId)
-  .get('/notifications/:userId', event.getEventNotificationsByUserId);
+  .get('/notifications/:userId', event.getEventNotificationsByUserId)
+  .post('/:notificationId', event.markNotificationAsSeen);
 
 module.exports = router;
