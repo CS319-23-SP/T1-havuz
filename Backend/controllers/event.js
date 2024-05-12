@@ -1,5 +1,6 @@
 const makeValidation = require('@withvoid/make-validation');
 const Event = require('../models/event');
+const { EventNotification } = require('../models/event')
 
 const createEvent = async (req, res) => {
   try {
@@ -36,8 +37,19 @@ const getEventsByUserId = async (req, res) => {
   }
 };
 
+const getEventNotificationsByUserId = async (req, res) => {
+  const userId = req.params.userId; 
+  try {
+    const notifications = await EventNotification.getEventNotificationsByUserId(userId);
+    res.status(200).json(notifications);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 module.exports = {
   createEvent,
   getEventDetailstById,
   getEventsByUserId,
+  getEventNotificationsByUserId,
 };
