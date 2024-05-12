@@ -25,6 +25,7 @@ import 'package:first_trial/Pages/Questions/question_homepage.dart';
 import 'package:first_trial/Pages/Homepage/homepage.dart';
 import 'package:first_trial/Pages/Instructor/give_attendance_page.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter/widgets.dart';
 
 class RouteGenerator {
   final String loginRoute = "/login";
@@ -122,7 +123,7 @@ class RouteGenerator {
             path: profileRoute,
             builder: (context, state) {
               final userId = state.pathParameters['userId'].toString();
-              return UserProfilePage(userId: userId);
+              return UserProfilePage(userId: userId, key: ValueKey(userId));
             }),
         GoRoute(
             path: evaluationInstr,
