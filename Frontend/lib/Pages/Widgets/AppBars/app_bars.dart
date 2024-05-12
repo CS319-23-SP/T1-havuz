@@ -70,17 +70,19 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         ],
       ),
       actions: [
-        IconButton(
-          onPressed: () async {
-            showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return Notifications(); // Display Notifications as a dialog
-              },
-            );
-          },
-          icon: Icon(Icons.notifications_active_outlined),
-        ),
+        if (role != "admin") ...[
+          IconButton(
+            onPressed: () async {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return Notifications(); // Display Notifications as a dialog
+                },
+              );
+            },
+            icon: Icon(Icons.notifications_active_outlined),
+          ),
+        ],
         IconButton(
           onPressed: () async {
             var id = await TokenStorage.getID();
@@ -102,7 +104,6 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             userIdNotifier.value = id.toString();
             GoRouter.of(context).go('/user/profile/$id');
           },
-
           icon: Icon(Icons.person_outline),
         ),
         IconButton(

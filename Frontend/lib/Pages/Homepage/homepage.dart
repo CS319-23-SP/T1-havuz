@@ -211,7 +211,7 @@ class _SectionDataState extends State<SectionData> {
                       color: getRandomColor(),
                       borderRadius: BorderRadius.circular(15)),
                   height: 0.7 *
-                      (MediaQuery.of(context).size.width - 200) /
+                      (MediaQuery.of(context).size.width - 270) /
                       4, // 70% of card height
                 ),
                 // ID display area

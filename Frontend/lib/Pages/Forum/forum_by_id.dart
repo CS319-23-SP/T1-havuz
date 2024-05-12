@@ -70,11 +70,12 @@ class _ForumRoutePageState extends State<ForumRoutePage> {
       );
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
+
+        forum.message = responseData["post"]['message'];
+        forum.replyId = responseData["post"]['replyID'];
+        forum.parentReplyId = responseData["post"]['parentReplyId'];
+        forum.postedByUser = responseData["post"]['postedByUser'];
         setState(() {
-          forum.message = responseData["post"]['message'];
-          forum.replyId = responseData["post"]['replyID'];
-          forum.parentReplyId = responseData["post"]['parentReplyId'];
-          forum.postedByUser = responseData["post"]['postedByUser'];
           replies = parseForumReplyData(responseData['repliesOfPost']);
         });
       } else {
@@ -102,6 +103,12 @@ class _ForumRoutePageState extends State<ForumRoutePage> {
         throw Exception('Token not found');
       }
       final message = addReplyController.text;
+
+      // Check if forum is null or forum.replyId is null
+      if (forum == null || forum.replyId == null) {
+        throw Exception('Forum or replyId is null');
+      }
+
       final replyId = forum.replyId;
 
       final url = Uri.parse('http://localhost:8080/forum/$replyId');
@@ -118,18 +125,15 @@ class _ForumRoutePageState extends State<ForumRoutePage> {
         body: json.encode(requestBody),
       );
       if (response.statusCode == 201) {
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return SuccessWidget(
-              context: context,
-              onDismiss: () {
-                addReplyController.clear();
-                isVisibleTextField = false;
-              },
-            );
-          },
-        );
+        final responseData = json.decode(response.body);
+        print(responseData);
+        ForumReply newReply = ForumReply.fromJson(responseData);
+
+        // Add the new reply to the replies array
+        setState(() {
+          replies.add(newReply);
+        });
+        await fetchForums();
       }
     } catch (e) {
       print("object$e");
@@ -160,7 +164,7 @@ class _ForumRoutePageState extends State<ForumRoutePage> {
                                 child: ListBody(
                                   children: <Widget>[
                                     Text(
-                                        'There is no more parent nigga calm down.'),
+                                        'There is no more parent in this forum!'),
                                   ],
                                 ),
                               ),
@@ -168,7 +172,7 @@ class _ForumRoutePageState extends State<ForumRoutePage> {
                                 TextButton(
                                   child: const Text('OK'),
                                   onPressed: () {
-                                    GoRouter.of(context).go("/$role");
+                                    Navigator.pop(context);
                                   },
                                 ),
                               ],
@@ -207,18 +211,29 @@ class _ForumRoutePageState extends State<ForumRoutePage> {
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
-                                    forum.postedByUser,
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold),
+                                  Padding(
+                                    padding: const EdgeInsets.all(15.0),
+                                    child: InkWell(
+                                      onTap: () {
+                                        GoRouter.of(context).go(
+                                            "/user/profile/${forum.postedByUser}");
+                                      },
+                                      child: Text(
+                                        forum.postedByUser,
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 24),
+                                      ),
+                                    ),
                                   ),
                                   Padding(
-                                    padding: const EdgeInsets.only(left: 20.0),
+                                    padding: const EdgeInsets.only(
+                                        left: 40.0, right: 80),
                                     child: Text(
                                       forum.message,
                                       style: TextStyle(
                                         fontWeight: FontWeight.w400,
-                                        fontSize: 24,
+                                        fontSize: 16,
                                       ),
                                     ),
                                   ),
