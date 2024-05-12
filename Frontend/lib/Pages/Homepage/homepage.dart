@@ -112,13 +112,14 @@ class _CourseHomePageState extends State<CourseHomePage> {
             role: role,
           ),
           body: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               LeftBar(
                 role: role,
               ),
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.all(20.0),
+                  padding: const EdgeInsets.all(25),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -184,62 +185,54 @@ class _SectionDataState extends State<SectionData> {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      itemCount: 1,
+    return GridView.builder(
       shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 4,
+        crossAxisSpacing: 20,
+        mainAxisSpacing: 20.0,
+      ),
+      itemCount: widget.sections.length,
       itemBuilder: (context, index) {
-        return GridView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 4,
-            crossAxisSpacing: 20,
-            mainAxisSpacing: 20.0,
-          ),
-          itemCount: widget.sections.length,
-          itemBuilder: (context, index) {
-            Section post = widget.sections[index];
-            return InkWell(
-              focusColor: Colors.transparent,
-              onTap: () {
-                widget.onTapCourse(index);
-              },
-              child: Card(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Design area with random color
-                    Container(
-                      decoration: BoxDecoration(
-                          color: getRandomColor(),
-                          borderRadius: BorderRadius.circular(15)),
-                      height: 0.7 *
-                          (MediaQuery.of(context).size.width - 200) /
-                          4, // 70% of card height
-                    ),
-                    // ID display area
-                    Container(
-                      height:
-                          0.3 * (MediaQuery.of(context).size.width - 150) / 4,
-                      padding: EdgeInsets.all(8.0),
-                      alignment: Alignment.center,
-                      child: FittedBox(
-                        fit: BoxFit.cover,
-                        child: Text(
-                          post.id,
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
-                          ),
-                        ),
+        Section post = widget.sections[index];
+        return InkWell(
+          focusColor: Colors.transparent,
+          onTap: () {
+            widget.onTapCourse(index);
+          },
+          child: Card(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Design area with random color
+                Container(
+                  decoration: BoxDecoration(
+                      color: getRandomColor(),
+                      borderRadius: BorderRadius.circular(15)),
+                  height: 0.7 *
+                      (MediaQuery.of(context).size.width - 200) /
+                      4, // 70% of card height
+                ),
+                // ID display area
+                Container(
+                  padding: EdgeInsets.all(8.0),
+                  alignment: Alignment.center,
+                  child: FittedBox(
+                    fit: BoxFit.cover,
+                    child: Text(
+                      post.id,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
                       ),
                     ),
-                  ],
+                  ),
                 ),
-              ),
-            );
-          },
+              ],
+            ),
+          ),
         );
       },
     );

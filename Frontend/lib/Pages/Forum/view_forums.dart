@@ -1,8 +1,10 @@
 import 'package:first_trial/Objects/forum_post.dart';
 import 'package:first_trial/Pages/Widgets/AppBars/app_bars.dart';
+import 'package:first_trial/Pages/Widgets/LeftBar/left_bar.dart';
 import 'package:first_trial/final_variables.dart';
 import 'package:first_trial/token.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -72,23 +74,56 @@ class _ViewForumPageState extends State<ViewForumPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(role: role),
-      body: Center(
-        child: ListView.builder(
-          itemCount: forums.length,
-          itemBuilder: (context, index) {
-            final forum = forums[index];
-            return ListTile(
-              title: Text(forum.title),
-              subtitle: Text(forum.forumInitiator),
-              onTap: () {
-                final id = forum.initialReplyId;
-                final sectionID = forum.sectionId;
+      body: Row(
+        children: [
+          LeftBar(role: role),
+          Flexible(
+              flex: 2,
+              child: Placeholder(
+                color: Colors.transparent,
+              )),
+          Flexible(
+            flex: 7,
+            child: Column(
+              children: [
+                Expanded(
+                  child: Container(
+                    margin: EdgeInsets.symmetric(vertical: 15),
+                    decoration: BoxDecoration(border: Border.all(width: 1)),
+                    child: ListView.builder(
+                      itemCount: forums.length,
+                      itemBuilder: (context, index) {
+                        final forum = forums[index];
+                        return Container(
+                          margin: EdgeInsets.only(bottom: 10),
+                          decoration: BoxDecoration(
+                              color: Color.fromARGB(255, 112, 177, 139),
+                              border: Border(
+                                  bottom: BorderSide(color: Colors.black))),
+                          child: ListTile(
+                            title: Text(forum.title),
+                            subtitle: Text(forum.forumInitiator),
+                            onTap: () {
+                              final id = forum.initialReplyId;
+                              final sectionID = forum.sectionId;
 
-                GoRouter.of(context).go("/$sectionID/forum/$id");
-              },
-            );
-          },
-        ),
+                              GoRouter.of(context).go("/$sectionID/forum/$id");
+                            },
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Flexible(
+              flex: 2,
+              child: Placeholder(
+                color: Colors.transparent,
+              )),
+        ],
       ),
     );
   }

@@ -46,13 +46,19 @@ class Chat_HomepageState extends State<Chat_Homepage> {
             createdAt: DateTime(2022))
       ]);
 
-  List<String> contactIds = [];
   List<ChatRoom> chatRooms = [];
   @override
   void initState() {
     super.initState();
+    connectAndListen(context);
     checkRole();
     getContacts();
+  }
+
+  @override
+  void dispose() {
+    // Close the connection here
+    super.dispose();
   }
 
   Future<void> checkRole() async {
@@ -61,6 +67,7 @@ class Chat_HomepageState extends State<Chat_Homepage> {
   }
 
   Future<void> getContacts() async {
+    chatRooms.clear();
     try {
       String? token = await TokenStorage.getToken();
       if (token == null) {
@@ -77,9 +84,13 @@ class Chat_HomepageState extends State<Chat_Homepage> {
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
         if (responseData['success']) {
-          for (var i = 0; i < responseData['conversations'].length; i++) {
-            cr = parseChatRoomData(responseData['conversations'])[i];
-            chatRooms.add(cr);
+          List<ChatRoom> newChatRooms =
+              parseChatRoomData(responseData['conversations']);
+          for (var room in newChatRooms) {
+            if (!chatRooms
+                .any((existingRoom) => existingRoom.roomId == room.roomId)) {
+              chatRooms.add(room);
+            }
           }
           setState(() {});
         } else {
@@ -89,7 +100,7 @@ class Chat_HomepageState extends State<Chat_Homepage> {
         throw Exception('Failed to fetch courses data');
       }
     } catch (e) {
-      print('Error fetching coD33FADSFurses: $e');
+      print('Error fetching courses: $e');
     }
   }
 
@@ -195,6 +206,7 @@ class Chat_HomepageState extends State<Chat_Homepage> {
   void parseMessagesData(dynamic responseData, String roomID) async {
     List<ChatMessage> roomMessages = [];
     for (var i = 0; i < responseData['conversation'].length; i++) {
+      print(ChatMessage.fromJson(responseData['conversation'][i]));
       final message = ChatMessage.fromJson(responseData['conversation'][i]);
       roomMessages.add(message);
     }
@@ -257,7 +269,11 @@ class Chat_HomepageState extends State<Chat_Homepage> {
     }
   }
 
-  void connectAndListen() {
+  bool hasViewedYouAdded = false;
+
+  void connectAndListen(BuildContext context) {
+    if (!mounted) return; // Check if the widget is still mounted
+
     print("called");
 
     IO.Socket socket = IO.io('http://localhost:8080',
@@ -266,15 +282,27 @@ class Chat_HomepageState extends State<Chat_Homepage> {
     socket.onConnect((_) {
       print('connect');
     });
-    socket.on('newchatroom', (data) => print("newwroom"));
-    socket.on('newmessage', (data) => print(data));
+
+    socket.on('newchatroom', (data) {
+      if (!hasViewedYouAdded && mounted) {
+        viewYouAddedNigga(context); // Pass the context here
+      }
+    });
+
+    socket.on('newmessage', (data) => print("message sent"));
     socket.onDisconnect((_) => print('disconnect'));
+  }
+
+  void viewYouAddedNigga(BuildContext context) {
+    hasViewedYouAdded = true;
+
+    print("viewYouAddedNigga");
+    chatRooms.clear();
+    getContacts();
   }
 
   @override
   Widget build(BuildContext context) {
-    connectAndListen();
-
     return Scaffold(
       appBar: CustomAppBar(role: role),
       body: Row(
@@ -413,52 +441,12 @@ class _ContactsState extends State<Contacts> {
     final screenHeight = MediaQuery.of(context).size.height;
 
     // Filter out the user's own ID from the list of chatRoom
-    List<List<String>> otherUserIds = [
-      [],
-      [],
-      [],
-      [],
-      [],
-      [],
-      [],
-      [],
-      [],
-      [],
-      [],
-      [],
-      [],
-      [],
-      [],
-      [],
-      [],
-      [],
-      [],
-      [],
-      [],
-      [],
-      [],
-      [],
-      [],
-      [],
-      [],
-      [],
-      [],
-      [],
-      [],
-      [],
-      [],
-      [],
-      [],
-      [],
-      [],
-      [],
-      [],
-      [],
-      [],
-      [],
-      []
-    ];
 
+    List<List<String>> otherUserIds = List.generate(
+      widget.chatRoom.length,
+      (_) => [],
+      growable: false,
+    );
     // Iterate through each chat room's userIds and exclude the user's own ID
     int index = 0;
     widget.chatRoom.forEach((chatRoom) {

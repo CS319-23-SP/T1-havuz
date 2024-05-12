@@ -9,6 +9,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 
 class Notifications extends StatefulWidget {
   const Notifications({Key? key}) : super(key: key);
@@ -51,7 +52,8 @@ class _NotificationsState extends State<Notifications> {
       );
       if (response.statusCode == 200) {
         List<dynamic> responseData = json.decode(response.body);
-        List<Map<String, dynamic>> parsedNotifications = responseData.map((notification) {
+        List<Map<String, dynamic>> parsedNotifications =
+            responseData.map((notification) {
           return {
             'title': notification['title'],
             'date': notification['date'],
@@ -73,6 +75,7 @@ class _NotificationsState extends State<Notifications> {
   Widget build(BuildContext context) {
     return Dialog(
       child: Container(
+        constraints: BoxConstraints(maxWidth: 600),
         padding: EdgeInsets.all(16.0),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -90,21 +93,57 @@ class _NotificationsState extends State<Notifications> {
               shrinkWrap: true,
               itemCount: notifications.length,
               itemBuilder: (BuildContext context, int index) {
+                String _formatDate(String dateString) {
+                  DateTime dateTime = DateTime.parse(dateString);
+                  return DateFormat('dd-MM-yyyy').format(dateTime);
+                }
+
                 final notification = notifications[index];
                 return ListTile(
-                  title: Text(
-                    'You are invited to the event called: ${notification['title']}',
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                  title: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'You are invited to:',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      Text(
+                        notification['title'],
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ],
                   ),
                   subtitle: Text(
-                    'Date: ${notification['date']}',
+                    'Date: ${_formatDate(notification['date'])}',
                     style: TextStyle(color: Colors.grey),
                   ),
-                  trailing: ElevatedButton(
-                    onPressed: () {
-                      GoRouter.of(context).go('/calendar');
-                    },
-                    child: Text('See Calendar'),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      InkWell(
+                        onTap: () {
+                          GoRouter.of(context).go('/calendar');
+                        },
+                        child: Container(
+                          padding: EdgeInsets.all(10),
+                          decoration:
+                              BoxDecoration(border: Border.all(width: 0.5)),
+                          child: Icon(Icons.done_all),
+                        ),
+                      ),
+                      SizedBox(width: 8), // Add some space between buttons
+                      InkWell(
+                        onTap: () {
+                          GoRouter.of(context).go('/calendar');
+                        },
+                        child: Container(
+                          padding: EdgeInsets.all(10),
+                          decoration:
+                              BoxDecoration(border: Border.all(width: 0.5)),
+                          child: Icon(Icons.calendar_month_outlined),
+                        ),
+                      ),
+                    ],
                   ),
                 );
               },
