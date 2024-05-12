@@ -65,7 +65,7 @@ class _Section_DetailsState extends State<Section_Details> {
       String sectionID = widget.section.id;
 
       final response = await http.get(
-        Uri.http('localhost:8080', '/assignment/instructor/$term/$sectionID'),
+        Uri.http('localhost:8080', '/assignment/$term/$sectionID'),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
@@ -265,7 +265,7 @@ class _Section_DetailsState extends State<Section_Details> {
   List<dynamic> attendances = [];
 
   Future<void> createReport(studentName) async {
-    if(studentName == null) {
+    if (studentName == null) {
       return;
     }
     try {
@@ -400,6 +400,14 @@ class _Section_DetailsState extends State<Section_Details> {
                   child: Container(
                       padding: EdgeInsets.all(20),
                       child: const Text("See Evaluation"))),
+              InkWell(
+                  onTap: () {
+                    final String sectionId = widget.section.id;
+                    GoRouter.of(context).go("/section/$sectionId/exams");
+                  },
+                  child: Container(
+                      padding: EdgeInsets.all(20),
+                      child: const Text("Give Exam Grade"))),
             ],
             if (role == "student") ...[
               InkWell(
@@ -431,33 +439,33 @@ class _Section_DetailsState extends State<Section_Details> {
                 },
                 child: Container(
                     padding: EdgeInsets.all(20), child: Text("ABET"))),
-                    if(role == "instructor") ...[
-                      DropdownMenu<String>(
-              inputDecorationTheme:
-                  InputDecorationTheme(border: InputBorder.none),
-              hintText: "Select Term",
-              onSelected: (String? value) {
-                setState(() {
-                  selectedStudent = value.toString();
-                });
-              },
-              dropdownMenuEntries:
-                  students.map<DropdownMenuEntry<String>>((String value) {
-                return DropdownMenuEntry<String>(value: value, label: value);
-              }).toList(),
-            ),
-            InkWell(
-              onTap: () {
-                if (selectedStudent != null) {
-                  createReport(selectedStudent);
-                } else {
-                  print("choose a student man cmon");
-                }
-              },
-              child: Container(
-                  padding: EdgeInsets.all(20), child: Text("Create Report")),
-            ),
-                    ]
+            if (role == "instructor") ...[
+              DropdownMenu<String>(
+                inputDecorationTheme:
+                    InputDecorationTheme(border: InputBorder.none),
+                hintText: "Select Term",
+                onSelected: (String? value) {
+                  setState(() {
+                    selectedStudent = value.toString();
+                  });
+                },
+                dropdownMenuEntries:
+                    students.map<DropdownMenuEntry<String>>((String value) {
+                  return DropdownMenuEntry<String>(value: value, label: value);
+                }).toList(),
+              ),
+              InkWell(
+                onTap: () {
+                  if (selectedStudent != null) {
+                    createReport(selectedStudent);
+                  } else {
+                    print("choose a student man cmon");
+                  }
+                },
+                child: Container(
+                    padding: EdgeInsets.all(20), child: Text("Create Report")),
+              ),
+            ]
           ],
         ),
         Expanded(
@@ -493,34 +501,103 @@ class _Section_DetailsState extends State<Section_Details> {
                             DateTime deadline =
                                 DateTime.parse(assignment.deadline);
                             return ListTile(
-                              title: InkWell(
-                                child: Container(
-                                  padding: EdgeInsets.all(10),
-                                  decoration: BoxDecoration(
-                                      border: Border.all(width: 1)),
-                                  child: Row(
-                                    children: [
-                                      Icon(Icons.assignment),
-                                      SizedBox(width: 15),
-                                      Expanded(
-                                        child: Text(
-                                          "${assignment.name} (Due: ${DateFormat('MMM dd').format(deadline)})",
-                                          overflow: TextOverflow.ellipsis,
-                                          maxLines: 1,
+                                title: Row(
+                              children: [
+                                Expanded(
+                                  child: TextButton(
+                                    child: Row(
+                                      children: [
+                                        Icon(Icons.assignment),
+                                        SizedBox(width: 15),
+                                        Expanded(
+                                          child: Text(
+                                            "${assignment.name} (Due: ${DateFormat('MMM dd').format(deadline)})",
+                                            overflow: TextOverflow.ellipsis,
+                                            maxLines: 1,
+                                          ),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
+                                    onPressed: () async {
+                                      final String assignmentid = assignment.id;
+                                      final String sectionid =
+                                          assignment.sectionID;
+                                      String? role =
+                                          await TokenStorage.getRole();
+                                      GoRouter.of(context).go(
+                                          '/$role/assignment/$sectionid/$assignmentid');
+                                    },
                                   ),
                                 ),
-                                onTap: () async {
-                                  final String assignmentid = assignment.id;
-                                  final String sectionid = assignment.sectionID;
-                                  String? role = await TokenStorage.getRole();
-                                  GoRouter.of(context).go(
-                                      '/$role/assignment/$sectionid/$assignmentid');
-                                },
-                              ),
-                            );
+                                Expanded(
+                                  child: role == "instructor"
+                                      ? TextButton(
+                                          child: Row(
+                                            children: [
+                                              Icon(Icons.grade),
+                                              SizedBox(width: 15),
+                                              Expanded(
+                                                child: Text(
+                                                  "Grade",
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  maxLines: 1,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          onPressed: () async {
+                                            final String assignmentid =
+                                                assignment.id;
+                                            final String sectionid =
+                                                assignment.sectionID;
+                                            String? role =
+                                                await TokenStorage.getRole();
+                                            GoRouter.of(context).go(
+                                              '/$role/assignment/$sectionid/$assignmentid/grade',
+                                            );
+                                          },
+                                        )
+                                      : SizedBox
+                                          .shrink(), // This widget will be invisible if the condition is false
+                                ),
+                                Expanded(
+                                  child: role == "instructor"
+                                      ? TextButton(
+                                          child: Row(
+                                            children: [
+                                              Icon(Icons.analytics),
+                                              SizedBox(width: 15),
+                                              Expanded(
+                                                child: Text(
+                                                  "Analysis",
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  maxLines: 1,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          onPressed: () async {
+                                            final String assignmentID =
+                                                assignment.id;
+                                            final String sectionID =
+                                                assignment.sectionID;
+                                            String? role =
+                                                await TokenStorage.getRole();
+                                            print(role);
+                                            print(sectionID);
+                                            print(assignmentID);
+                                            GoRouter.of(context).go(
+                                              '/$role/assignment/$sectionID/$assignmentID/analysis',
+                                            );
+                                          },
+                                        )
+                                      : SizedBox
+                                          .shrink(), // This widget will be invisible if the condition is false
+                                ),
+                              ],
+                            ));
                           },
                         ),
                       ],

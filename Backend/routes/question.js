@@ -10,6 +10,7 @@ router
   .post('/search', roleChecker(['admin', 'instructor']), question.onSearchQuestion)
   .get('/:id', question.onGetQuestionByID)
   .delete('/:id', roleChecker(['admin', 'instructor']), question.onDeleteQuestionByID)
-  .patch('/:id', roleChecker(['admin', 'instructor']), question.onEditQuestionByID);
+  .patch('/:id', roleChecker(['admin', 'instructor']), question.onEditQuestionByID)
+  .put('/update-history/:id', roleChecker(['admin', 'instructor']), question.onUpdateHistory);
 
 module.exports = router;

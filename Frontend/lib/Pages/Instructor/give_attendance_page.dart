@@ -25,7 +25,8 @@ class _GiveAttendancePageState extends State<GiveAttendancePage> {
   Map<String, bool> studentAttendance = {}; // To track if a student is present
   DateTime selectedDate = DateTime.now(); // Default to today's date
   String? role = "unknown";
-
+  String? term = "2024 Spring";
+  var histories = [[], []];
   @override
   void initState() {
     super.initState();
@@ -124,7 +125,7 @@ class _GiveAttendancePageState extends State<GiveAttendancePage> {
         throw Exception('Token not found');
       }
       final response = await http.post(
-        Uri.parse('http://localhost:8080/instructor/give-attendance'),
+        Uri.parse('http://localhost:8080/instructor/give-attendance/${term}'),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',

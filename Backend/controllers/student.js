@@ -84,8 +84,8 @@ const onGetStudentByID = async (req, res) => {
 
 const onGetStudentAttendance = async (req, res) => {
     try {
-      const { studentID } = req.params; 
-      const attendanceRecords = await Attendance.find({ studentID });
+      const { studentID, term } = req.params; 
+      const attendanceRecords = await Attendance.find({ studentID, term });
   
       if (!attendanceRecords || attendanceRecords.length === 0) {
         return res.status(404).json({ success: false, error: "No attendance records found for this student." });
@@ -100,15 +100,13 @@ const onGetStudentAttendance = async (req, res) => {
 
   const onGetSectionsByStudentID = async (req, res) => {
     try {
-      // Get student ID from URL parameters
       const studentID = req.params.studentID;
   
       if (!studentID) {
         return res.status(400).json({ success: false, error: "Student ID is required" });
       }
   
-      // Search for sections with the given student ID and term "2024 Spring"
-      const term = "2024 Spring"; // Hardcoded term
+      const term = "2024 Spring"; 
       const sections = await Section.find({
         students: studentID,
         term: term,
@@ -118,7 +116,6 @@ const onGetStudentAttendance = async (req, res) => {
         return res.status(404).json({ success: false, error: "No sections found for this student ID" });
       }
   
-      // Return the sections
       return res.status(200).json({ success: true, sections });
     } catch (error) {
       console.error("Error retrieving sections:", error);

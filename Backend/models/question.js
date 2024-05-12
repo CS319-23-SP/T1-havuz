@@ -13,8 +13,11 @@ const questionSchema = new mongoose.Schema(
           text: String,
           topics: [String],
           toughness: String,
-          history: [{String: Number}],
-          point: Number,
+          history: [{
+            studentID: String,
+            grade: Number,
+            term: String
+          }],
           pastExams: [String], // Exam ID + Course ID + Term
           creatorID: String,
     },

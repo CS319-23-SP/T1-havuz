@@ -22,6 +22,10 @@ const attendanceSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    term: {
+      type: String,
+      default: 0,
+    },
   },
   {
     timestamps: true,

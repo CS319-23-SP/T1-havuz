@@ -133,7 +133,130 @@ console.log("ao");
     return res.status(500).json({ success: false, error: error.message });
   }
 };
- 
+
+
+
+const onGetFinal = async (req, res) => {
+  console.log("afaf");
+
+  try {
+    console.log("aafaefaefae");
+
+    console.log(req.params);
+    const { studentID, sectionID } = req.params;
+    console.log(studentID);
+    console.log(sectionID);
+    // Find the section by its ID
+    const section = await sectionModel.findOne({ id: sectionID, term : "2024 Spring" });
+    if (!section) {
+      return res.status(404).json({ success: false, error: "Section not found" });
+    }
+
+    // Find the final grade for the specified student
+    const final = section.final.find(item => item.studentID === studentID);
+    if (!final) {
+      return res.status(404).json({ success: false, error: "Final grade not found for this student" });
+    }
+
+    // Return the final grade as a string value
+    return res.status(200).json({ success: true, grade: final.grade.toString() });
+  } catch (error) {
+    return res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+const onGetMidterm = async (req, res) => {
+  const { studentID, sectionID } = req.params; 
+  const validation = makeValidation(types => ({
+    payload: req.body,
+    checks: {
+      term: { type: types.string },
+    }
+  }));
+  if (!validation.success) return res.status(400).json(validation);
+
+  console.log(req.param)
+  try {
+    const section = await sectionModel.getSectionByIDAndTerm({ sectionID, term });
+
+    if (!section) {
+      return res.status(404).json({ success: false, message: "Section not found" });
+    }
+
+    // Check if the student is enrolled in the section
+    if (!section.students.includes(studentID)) {
+      return res.status(403).json({ success: false, message: "Student is not enrolled in this section" });
+    }
+
+    // Find the midterm grade for the student in the section
+    const midtermGrade = section.midterm.find(entry => entry.studentID === studentID);
+
+    if (!midtermGrade) {
+      return res.status(404).json({ success: false, message: "Midterm grade not found for the student" });
+    }
+
+    // Respond with the midterm grade
+    res.status(200).json({ success: true, grade: midtermGrade.grade });
+  } catch (error) {
+    console.error("Error fetching midterm grade:", error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
+const onUpdateMidtermGrade = async (req, res) => {
+  try {
+    const { sectionID } = req.params;
+    const { studentID, grade, term } = req.body;
+
+    // Find the section by its ID
+    const section = await sectionModel.findOne({ id: sectionID, term: term });
+    if (!section) {
+      return res.status(404).json({ success: false, error: "Section not found" });
+    }
+
+    // Check if the student already has a midterm grade
+    const existingMidterm = section.midterm.find(item => item.studentID === studentID);
+    if (existingMidterm) {
+      // If the student already has a midterm grade, update it
+      await sectionModel.updateOne(
+        { id: sectionID, term: term, "midterm.studentID": studentID },
+        { $set: { "midterm.$.grade": grade } }
+      );
+    } else {
+      // If the student does not have a midterm grade, add a new entry
+      await sectionModel.updateOne(
+        { id: sectionID, term: term },
+        { $push: { midterm: { studentID, grade } } }
+      );
+    }
+
+    return res.status(200).json({ success: true, message: "Midterm grade updated successfully" });
+  } catch (error) {
+    return res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+const onUpdateFinalGrade = async (req, res) => {
+  try {
+    const { sectionID } = req.params;
+    const { studentID, grade, term } = req.body;
+
+    // Update the final grade for the specified student
+    const result = await sectionModel.updateOne(
+      { id: sectionID, term: term, "final.studentID": studentID }, // Find document by section ID, term, and matching studentID
+      { $set: { "final.$.grade": grade } } // Update the grade field for the matching studentID
+    );
+
+    // Check if the document was found and updated
+    if (result.nModified === 0) {
+      return res.status(404).json({ success: false, error: "Section or student not found" });
+    }
+
+    return res.status(200).json({ success: true, message: "Final grade updated successfully" });
+  } catch (error) {
+    return res.status(500).json({ success: false, error: error.message });
+  }
+};
   module.exports = {
     onCreateSection,
     onEditSection,
@@ -141,6 +264,10 @@ console.log("ao");
     onGetSections,
     onGetSection,
     onGetSectionByIDAndTerm,
+    onUpdateMidtermGrade,
+    onUpdateFinalGrade,
+    onGetMidterm,
+    onGetFinal,
     onGetStudentsBySectionID,
     onGetSectionTerm
   };

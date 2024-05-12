@@ -36,7 +36,8 @@ class _QuestionHomepageState extends State<QuestionHomepage> {
   List<Question> questions = [];
 
   String? role = "unknown";
-
+  //var histories = [[], []];
+  List<double>? histories;
   @override
   void initState() {
     super.initState();
@@ -139,10 +140,22 @@ class _QuestionHomepageState extends State<QuestionHomepage> {
     for (var questionData in responseData['questions'] as List<dynamic>) {
       final question = Question.fromJson(questionData);
       parsedQuestions.add(question);
+      print(calculateAverageGrade(questionData!["history"]));
     }
     setState(() {
       questions = parsedQuestions;
     });
+  }
+
+  double calculateAverageGrade(List<dynamic> history) {
+    if (history.isEmpty) return 0.0;
+
+    double sum = 0.0;
+    for (var entry in history) {
+      sum += entry['grade'];
+    }
+    histories?.add(sum / history.length);
+    return sum / history.length;
   }
 
   String dropdownValue = "";
@@ -391,15 +404,24 @@ class _QuestionHomepageState extends State<QuestionHomepage> {
                                       ),
                                       Expanded(
                                         child: Text(
-                                            '${question.pastExams.toString()}'),
+                                          '${question.pastExams.toString()}',
+                                        ),
                                       ),
                                       Expanded(
                                         child: Text(
-                                            '${question.courses.join(', ')}'),
+                                          '${question.courses.join(', ')}',
+                                        ),
                                       ),
                                       Expanded(
                                         child: Text(
-                                            '${question.topics.join(', ')}'),
+                                          '${question.topics.join(', ')}',
+                                        ),
+                                      ),
+                                      // Expanded column for average grade
+                                      Expanded(
+                                        child: Text(
+                                          '${histories != null ? histories![index].toStringAsFixed(0) : "N/A"}', // Display average grade or "N/A" if not available
+                                        ),
                                       ),
                                     ],
                                   ),
@@ -416,7 +438,7 @@ class _QuestionHomepageState extends State<QuestionHomepage> {
             )
           ],
         ),
-    );
-}
-}
+      );
+    }
+  }
 }

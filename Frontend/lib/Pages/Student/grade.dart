@@ -1,5 +1,7 @@
 import 'package:first_trial/final_variables.dart';
 import 'package:flutter/material.dart';
+import 'package:first_trial/Pages/Widgets/AppBars/app_bars.dart';
+import 'package:first_trial/Pages/Widgets/LeftBar/left_bar.dart';
 import 'package:first_trial/Objects/section.dart';
 import 'package:first_trial/token.dart';
 import 'package:http/http.dart' as http;
@@ -16,9 +18,11 @@ class StudentSectionGradePage extends StatefulWidget {
 
 class _StudentSectionGradePageState extends State<StudentSectionGradePage> {
   List<Section> sections = [];
-  Map<String, List<dynamic>> sectionAssignments = {};
+  Map<String, List<dynamic>>? sectionAssignments = {};
   String? studentID;
   String? term = PoolTerm.term;
+  Map<String, String> midtermGrades = {};
+  Map<String, String> finalGrades = {};
 
   @override
   void initState() {
@@ -54,10 +58,11 @@ class _StudentSectionGradePageState extends State<StudentSectionGradePage> {
           } else {
             throw Exception("Invalid data format for sections");
           }
-
           // Fetch assignments for each section
           for (var section in sections) {
-            await _fetchAssignmentsForSection(section, token);
+            await _fetchAssignmentsForSection(section);
+            await _fetchMidtermGrade(section.id);
+            await _fetchFinalGrade(section.id);
           }
 
           setState(() {}); // Refresh UI with updated data
@@ -72,33 +77,98 @@ class _StudentSectionGradePageState extends State<StudentSectionGradePage> {
     }
   }
 
-  Future<void> _fetchAssignmentsForSection(
-      Section section, String token) async {
+  Future<void> _fetchAssignmentsForSection(Section section) async {
     try {
-      List<dynamic> assignments = [];
+      final token = await TokenStorage.getToken();
 
-      for (var assignmentID in section.assignments) {
-        final response = await http.get(
-          Uri.parse(
-              'http://localhost:8080/assignment/$assignmentID/$term/${section.id}'),
-          headers: {
-            'Authorization': 'Bearer $token',
-            'Content-Type': 'application/json',
-          },
-        );
+      final response = await http.get(
+        Uri.parse('http://localhost:8080/assignment/$term/${section.id}'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+      );
 
-        if (response.statusCode == 200) {
-          final responseData = json.decode(response.body);
-          assignments.add(responseData['assignment']); // Extract assignment map
-        } else {
-          throw Exception("Failed to fetch assignment with ID $assignmentID");
-        }
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+
+        // Filter assignments to only include those with grades for the student
+        final filteredAssignments = (responseData['assignments'] as List)
+            .where((assignment) => (assignment['grades'] as List).any(
+                (gradeData) =>
+                    gradeData['studentID'] == studentID &&
+                    gradeData['grade'] != null))
+            .toList();
+
+        sectionAssignments![section.id] = filteredAssignments;
+      } else {
+        throw Exception(
+            "Failed to fetch assignments for section ${section.id}");
       }
-
-      sectionAssignments[section.id] =
-          assignments; // Store assignments for the section
     } catch (e) {
       print("Error fetching assignments for section ${section.id}: $e");
+    }
+  }
+
+  Future<void> _fetchMidtermGrade(String sectionID) async {
+    try {
+      final token = await TokenStorage.getToken();
+
+      final response = await http.get(
+        Uri.parse(
+            'http://localhost:8080/section/midterm/$studentID/$sectionID'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+      );
+      print(sectionID);
+      print(studentID);
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+
+        if (responseData['success']) {
+          print(responseData.toString());
+
+          final grade = responseData['grade'].toString();
+          midtermGrades[sectionID] = grade;
+        } else {
+          midtermGrades[sectionID] = 'N/A';
+        }
+      } else {
+        throw Exception("Failed  midterm grade for section $sectionID");
+      }
+    } catch (e) {
+      print("Error midterm grade for section $sectionID: $e");
+    }
+  }
+
+  Future<void> _fetchFinalGrade(String sectionID) async {
+    try {
+      final token = await TokenStorage.getToken();
+
+      final response = await http.get(
+        Uri.parse('http://localhost:8080/section/$studentID/$sectionID/final'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        if (responseData['success']) {
+          print(responseData.toString());
+          final grade = responseData['grade'].toString();
+          finalGrades[sectionID] = grade;
+        } else {
+          finalGrades[sectionID] = 'N/A';
+        }
+      } else {
+        throw Exception("Failed final grade for section $sectionID");
+      }
+    } catch (e) {
+      print("Error final grade for section $sectionID: $e");
     }
   }
 
@@ -117,7 +187,7 @@ class _StudentSectionGradePageState extends State<StudentSectionGradePage> {
       body: ListView(
         padding: const EdgeInsets.all(16.0), // Adding padding for the list
         children: sections.map((section) {
-          final assignments = sectionAssignments[section.id] ?? [];
+          final assignments = sectionAssignments![section.id] ?? [];
 
           return Card(
             elevation: 4, // Add a shadow effect
@@ -133,25 +203,21 @@ class _StudentSectionGradePageState extends State<StudentSectionGradePage> {
                         fontSize: 24, fontWeight: FontWeight.bold),
                   ),
                   const Divider(),
-                  ...assignments.asMap().entries.map((entry) {
-                    final assignment = entry.value;
+                  Text('Midterm Grade: ${midtermGrades[section.id] ?? "N/A"}'),
+                  Text('Final Grade: ${finalGrades[section.id] ?? "N/A"}'),
+                  const Divider(),
+                  ...assignments.map((assignment) {
                     final assignmentData = assignment as Map<String, dynamic>;
-                    print(assignmentData);
 
                     final assignmentName =
                         assignmentData['name'] ?? 'Unknown Assignment';
 
-                    int? grade;
-
-                    for (var map in assignmentData['grades']) {
-                      if (map.containsKey(studentID)) {
-                        grade = map[studentID];
-                        break;
-                      }
-                    }
-
-                    final studentGrade =
-                        grade ?? 'N/A'; // If grade is null, display 'N/A'
+                    // Get the grade for the student
+                    final studentGrade = assignmentData['grades']
+                        .firstWhere(
+                            (gradeData) => gradeData['studentID'] == studentID,
+                            orElse: () => {'grade': 'N/A'})['grade']
+                        .toString();
 
                     return Padding(
                       padding: const EdgeInsets.symmetric(
@@ -164,8 +230,7 @@ class _StudentSectionGradePageState extends State<StudentSectionGradePage> {
                             style: const TextStyle(fontSize: 18),
                           ),
                           Text(
-                            studentGrade
-                                .toString(), // Convert to string for display
+                            studentGrade,
                             style: const TextStyle(
                                 fontSize: 18, fontWeight: FontWeight.bold),
                           ),

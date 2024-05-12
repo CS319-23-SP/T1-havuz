@@ -21,6 +21,7 @@ class _StudentAttendancePageState extends State<StudentAttendancePage> {
   List<dynamic> attendanceRecords = []; // Attendance records for the student
   String? role = "unknown";
   String? id = "unknown";
+  String? term = "2024 Spring";
   @override
   void initState() {
     super.initState();
@@ -42,7 +43,7 @@ class _StudentAttendancePageState extends State<StudentAttendancePage> {
         throw Exception('Token not found');
       }
       final response = await http.get(
-        Uri.parse('http://localhost:8080/student/attendance/$studentID'),
+        Uri.parse('http://localhost:8080/student/attendance/$studentID/$term'),
         headers: {
           'Authorization': 'Bearer ' + token,
           'Content-Type': 'application/json',

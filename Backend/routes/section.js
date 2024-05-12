@@ -12,6 +12,11 @@ router
   .get('/:id/:term', section.onGetSectionByIDAndTerm)
   .get('/sections/:sectionID/students', section.onGetStudentsBySectionID)
   .delete('/:id/:term/:courseID', roleChecker(['admin', 'instructor']), section.onDeleteSection)
-  .patch('/:id/:term/:courseID', roleChecker(['admin', 'instructor']), section.onEditSection);
+  .patch('/:id/:term/:courseID', roleChecker(['admin', 'instructor']), section.onEditSection)
+  .put('/:sectionID/midterm', section.onUpdateMidtermGrade)
+  .put('/:sectionID/final', section.onUpdateFinalGrade)
+  .get('/midterm/:studentID/:sectionID', section.onGetMidterm)
+  .get('/:studentID/:sectionID/final', section.onGetFinal);
 
+  
 module.exports = router;

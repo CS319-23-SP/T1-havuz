@@ -13,8 +13,12 @@ const assignmentSchema = new mongoose.Schema(
           sectionID: String,
           deadline: String, 
           solutionKey: String,
+          weights: [Number],
           questions: [String],
-          grades: [{String: Number}]
+          grades: [{
+            studentID: String,
+            grade: Number
+          }]
     },
     {
         timestamps: true,
@@ -22,7 +26,7 @@ const assignmentSchema = new mongoose.Schema(
     }
 );
 
-assignmentSchema.statics.createAssignment = async function (term, sectionID, questions, deadline, name) {
+assignmentSchema.statics.createAssignment = async function (term, sectionID, questions, deadline, name, weights) {
     try {
         const lastAssignment = await this.findOne({term: term, sectionID: sectionID}).sort({ id: -1});
         let id;
@@ -34,7 +38,7 @@ assignmentSchema.statics.createAssignment = async function (term, sectionID, que
             id = `01`;
         }
 
-        const assignment = await this.create({id, term, sectionID, questions, deadline, name});
+        const assignment = await this.create({id, term, sectionID, questions, deadline, name, weights});
         return assignment;
     } catch (error) {
         throw error;
@@ -51,7 +55,7 @@ assignmentSchema.statics.getAssignment = async function (id, term, sectionID) {
     }
 }
 
-assignmentSchema.statics.getAssignmentsForInstructor = async function (term, sectionID) {
+assignmentSchema.statics.getAssignmentsForSection = async function (term, sectionID) {
     try {
         const assignments = await this.find({ term: term, sectionID: sectionID});
         if(!assignments) throw ({error: 'No assignment with this id, term, or section ID found' });

@@ -14,6 +14,14 @@ const sectionSchema = new mongoose.Schema(
           quota: String,
           students: [String],
           assignments: [String],
+          midterm: [{
+            studentID: String,
+            grade: Number,
+          }],
+          final: [{
+            studentID: String,
+            grade: Number,
+          }],
           instructorID: String,
           material: [String]
     },
