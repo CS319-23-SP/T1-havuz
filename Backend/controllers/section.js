@@ -124,31 +124,16 @@ console.log("ao");
     return res.status(500).json({ success: false, error: error.message });
   }
 };
-const onGetMidterm = async (req, res) => {
-  try {
-    const { studentID, sectionID } = req.params;
-    console.log(studentID);
-    console.log(sectionID);
 
-    // Find the section by its ID
-    const section = await sectionModel.findOne({ id: sectionID,term : "2024 Spring" });
-    if (!section) {
-      return res.status(404).json({ success: false, error: "Section not found" });
-    }
-    // Find the midterm grade for the specified student
-    const midterm = section.midterm.find(item => item.studentID === studentID);
-    if (!midterm) {
-      return res.status(404).json({ success: false, error: "Midterm grade not found for this student" });
-    }
 
-    // Return the midterm grade as a string value
-    return res.status(200).json({ success: true, grade: midterm.grade.toString() });
-  } catch (error) {
-    return res.status(500).json({ success: false, error: error.message });
-  }
-};
+
 const onGetFinal = async (req, res) => {
+  console.log("afaf");
+
   try {
+    console.log("aafaefaefae");
+
+    console.log(req.params);
     const { studentID, sectionID } = req.params;
     console.log(studentID);
     console.log(sectionID);
@@ -170,6 +155,45 @@ const onGetFinal = async (req, res) => {
     return res.status(500).json({ success: false, error: error.message });
   }
 };
+
+const onGetMidterm = async (req, res) => {
+  const { studentID, sectionID } = req.params; 
+  const validation = makeValidation(types => ({
+    payload: req.body,
+    checks: {
+      term: { type: types.string },
+    }
+  }));
+  if (!validation.success) return res.status(400).json(validation);
+
+  console.log(req.param)
+  try {
+    const section = await sectionModel.getSectionByIDAndTerm({ sectionID, term });
+
+    if (!section) {
+      return res.status(404).json({ success: false, message: "Section not found" });
+    }
+
+    // Check if the student is enrolled in the section
+    if (!section.students.includes(studentID)) {
+      return res.status(403).json({ success: false, message: "Student is not enrolled in this section" });
+    }
+
+    // Find the midterm grade for the student in the section
+    const midtermGrade = section.midterm.find(entry => entry.studentID === studentID);
+
+    if (!midtermGrade) {
+      return res.status(404).json({ success: false, message: "Midterm grade not found for the student" });
+    }
+
+    // Respond with the midterm grade
+    res.status(200).json({ success: true, grade: midtermGrade.grade });
+  } catch (error) {
+    console.error("Error fetching midterm grade:", error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
 const onUpdateMidtermGrade = async (req, res) => {
   try {
     const { sectionID } = req.params;

@@ -14,7 +14,7 @@ router
   .patch('/:id/:term/:courseID', roleChecker(['admin', 'instructor']), section.onEditSection)
   .put('/:sectionID/midterm', section.onUpdateMidtermGrade)
   .put('/:sectionID/final', section.onUpdateFinalGrade)
-  .get('/:studentID/:sectionID/midterm', section.onGetMidterm)
+  .get('/midterm/:studentID/:sectionID', section.onGetMidterm)
   .get('/:studentID/:sectionID/final', section.onGetFinal);
 
   

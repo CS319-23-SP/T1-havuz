@@ -112,24 +112,24 @@ class _StudentSectionGradePageState extends State<StudentSectionGradePage> {
 
   Future<void> _fetchMidtermGrade(String sectionID) async {
     try {
-      String? token = await TokenStorage.getToken();
-      if (token == null) {
-        throw Exception('Token not found');
-      }
-      print(studentID);
-      print(sectionID);
+      final token = await TokenStorage.getToken();
+
       final response = await http.get(
         Uri.parse(
-            'http://localhost:8080/student/$studentID/$sectionID/midterm'),
+            'http://localhost:8080/section/midterm/$studentID/$sectionID'),
         headers: {
-          'Authorization': 'Bearer ' + token,
+          'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
         },
       );
-
+      print(sectionID);
+      print(studentID);
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
+
         if (responseData['success']) {
+          print(responseData.toString());
+
           final grade = responseData['grade'].toString();
           midtermGrades[sectionID] = grade;
         } else {
@@ -148,7 +148,7 @@ class _StudentSectionGradePageState extends State<StudentSectionGradePage> {
       final token = await TokenStorage.getToken();
 
       final response = await http.get(
-        Uri.parse('http://localhost:8080/student/$studentID/$sectionID/final'),
+        Uri.parse('http://localhost:8080/section/$studentID/$sectionID/final'),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
@@ -158,6 +158,7 @@ class _StudentSectionGradePageState extends State<StudentSectionGradePage> {
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
         if (responseData['success']) {
+          print(responseData.toString());
           final grade = responseData['grade'].toString();
           finalGrades[sectionID] = grade;
         } else {
