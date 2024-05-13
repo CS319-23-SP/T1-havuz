@@ -86,7 +86,7 @@ class _AdminInstructorsPageState extends State<AdminInstructorsPage> {
         .toList();
   }
 
-  Future<void> deleteStudent(String instructorId, int index) async {
+  Future<void> deleteInstructor(String instructorId, int index) async {
     try {
       String? token = await TokenStorage.getToken();
       if (token == null) {
@@ -115,6 +115,8 @@ class _AdminInstructorsPageState extends State<AdminInstructorsPage> {
     }
   }
 
+  Future<void> editInstructor(String a, int b) async {}
+
   @override
   Widget build(BuildContext context) {
     if (role != 'admin') {
@@ -136,7 +138,10 @@ class _AdminInstructorsPageState extends State<AdminInstructorsPage> {
             Flexible(
                 flex: 7,
                 child: InstructorData(
-                    instructors: instructors, onDelete: deleteStudent)),
+                  instructors: instructors,
+                  onDelete: deleteInstructor,
+                  onEdit: editInstructor,
+                )),
             Flexible(
                 flex: 2,
                 child: Placeholder(
@@ -172,11 +177,13 @@ class _AdminInstructorsPageState extends State<AdminInstructorsPage> {
 class InstructorData extends StatelessWidget {
   final List<Instructor> instructors;
   final Function(String, int) onDelete;
+  final Function(String, int) onEdit;
 
   const InstructorData({
     Key? key,
     required this.instructors,
     required this.onDelete,
+    required this.onEdit,
   }) : super(key: key);
 
   @override
@@ -238,9 +245,17 @@ class InstructorData extends StatelessWidget {
                     ),
                     Expanded(
                       flex: 1,
-                      child: IconButton(
-                        icon: const Icon(Icons.delete, color: Colors.red),
-                        onPressed: () => onDelete(instructor.id, index),
+                      child: Row(
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.edit, color: Colors.yellow),
+                            onPressed: () => onEdit(instructor.id, index),
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.delete, color: Colors.red),
+                            onPressed: () => onDelete(instructor.id, index),
+                          ),
+                        ],
                       ),
                     ),
                   ],

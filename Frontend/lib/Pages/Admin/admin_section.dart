@@ -90,14 +90,7 @@ class _AdminSectionsPage extends State<AdminSectionsPage> {
     bool _showDetails = showDetails;
 
     int _ind = ind;
-/*
-    Widget page = Placeholder();
 
-    if (_showDetails) {
-      page = Course_Details(course: courses[ind]);
-    } else {
-      page = CourseData(courses: courses);
-    }*/
     return CalendarControllerProvider(
       controller: EventController(),
       child: MaterialApp(
@@ -219,13 +212,18 @@ class _SectionDataState extends State<SectionData> {
                       alignment: Alignment.center,
                       child: FittedBox(
                         fit: BoxFit.cover,
-                        child: Text(
-                          post.id,
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
-                          ),
+                        child: Column(
+                          children: [
+                            Text(
+                              post.id,
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                              ),
+                            ),
+                            Text(post.term),
+                          ],
                         ),
                       ),
                     ),
