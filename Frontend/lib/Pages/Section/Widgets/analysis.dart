@@ -153,7 +153,7 @@ class _AnalysisPageState extends State<AnalysisPage> {
           LeftBar(role: widget.role),
           Expanded(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -163,60 +163,115 @@ class _AnalysisPageState extends State<AnalysisPage> {
                   ),
                 ),
                 if (attendancePercentages != null && grades != null)
-                  AspectRatio(
-                    aspectRatio: 1.5,
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: LineChart(
-                        LineChartData(
-                          minX: 0,
-                          maxX: 100,
-                          minY: 0,
-                          maxY: 100,
-                          lineBarsData: [
-                            LineChartBarData(
-                              spots: List.generate(
-                                attendancePercentages!.length,
-                                (index) => FlSpot(
-                                  attendancePercentages![index],
-                                  grades![index],
-                                ),
-                              ),
-                              isCurved: true,
-                            ),
-                          ],
-                          titlesData: FlTitlesData(
-                            bottomTitles: SideTitles(
-                              showTitles: true,
-                              reservedSize: 22,
-                              getTitles: (value) {
-                                // You can customize this function to provide custom labels for x-axis
-                                return value.toInt().toString();
-                              },
-                              margin: 10,
-                            ),
-                            leftTitles: SideTitles(
-                              showTitles: true,
-                              getTitles: (value) {
-                                // You can customize this function to provide custom labels for y-axis
-                                return value.toInt().toString();
-                              },
-                              reservedSize: 28,
-                              margin: 12,
-                            ),
-                          ),
-                          gridData: FlGridData(
-                            show: true,
-                            drawVerticalLine: true,
-                            drawHorizontalLine: true,
-                            horizontalInterval: 10,
-                            verticalInterval: 10,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      RotatedBox(
+                        quarterTurns: -1, // 90-degree rotation (vertical)
+                        child: Text(
+                          'Grades',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                            color: Colors.black,
                           ),
                         ),
                       ),
-                    ),
+                      Container(
+                        alignment: Alignment.center,
+                        width: 700,
+                        height: 700,
+                        child: AspectRatio(
+                          aspectRatio: 1.0,
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: LineChart(
+                              LineChartData(
+                                minX: 0,
+                                maxX: 100,
+                                minY: 0,
+                                maxY: 100,
+                                lineBarsData: [
+                                  LineChartBarData(
+                                    spots: List.generate(
+                                      attendancePercentages!.length,
+                                      (index) => FlSpot(
+                                        attendancePercentages![index],
+                                        grades![index],
+                                      ),
+                                    ),
+                                    isCurved: true,
+                                  ),
+                                ],
+                                titlesData: FlTitlesData(
+                                  topTitles: SideTitles(showTitles: false),
+                                  rightTitles: SideTitles(showTitles: false),
+                                  bottomTitles: SideTitles(
+                                    showTitles: true,
+                                    reservedSize: 22,
+                                    getTitles: (value) {
+                                      if (value == 0) {
+                                        return '0%';
+                                      } else if (value == 10) {
+                                        return '10%';
+                                      } else if (value == 20) {
+                                        return '20%';
+                                      } else if (value == 30) {
+                                        return '30%';
+                                      } else if (value == 40) {
+                                        return '40%';
+                                      } else if (value == 50) {
+                                        return '50%';
+                                      } else if (value == 60) {
+                                        return '60%';
+                                      } else if (value == 70) {
+                                        return '70%';
+                                      } else if (value == 80) {
+                                        return '80%';
+                                      } else if (value == 90) {
+                                        return '90%';
+                                      } else if (value == 100) {
+                                        return '100%';
+                                      } else {
+                                        return '';
+                                      }
+                                    },
+                                    margin: 10,
+                                  ),
+                                  leftTitles: SideTitles(
+                                    showTitles: true,
+                                    getTitles: (value) {
+                                      return value.toInt().toString();
+                                    },
+                                    reservedSize: 28,
+                                    margin: 12,
+                                  ),
+                                ),
+                                gridData: FlGridData(
+                                  show: true,
+                                  drawVerticalLine: true,
+                                  drawHorizontalLine: true,
+                                  horizontalInterval: 10,
+                                  verticalInterval: 10,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                Text("Attendance", textAlign: TextAlign.center)
+                Text(
+                  "Attendance Percentages",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                ),
+                if (attendancePercentages == null || grades == null)
+                  Text(
+                    "No Grade Given Yet",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
               ],
             ),
           ),

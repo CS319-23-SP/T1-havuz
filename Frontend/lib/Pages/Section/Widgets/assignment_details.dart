@@ -205,10 +205,8 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
 
   Future<void> fetchStudentList() async {
     try {
-      var answer = "";
-      if(!(id?.length==6))
-      answer = "/answers";
-      var path = "$term/${widget.sectionID}/${assignment.id}$answer";
+      var path = "$term/${widget.sectionID}/${assignment.id}/answers";
+
       var url = Uri.parse('http://localhost:8080/document/list?path=$path');
 
       var response = await http.get(url);
@@ -222,8 +220,13 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
 
         fileList.forEach((filename) {
           String filenameStr = filename.toString();
+          print(filenameStr);
           setState(() {
-            if (filenameStr != "answers" && filenameStr != '$id.pdf'&& filenameStr != 'materials') students.add(filenameStr);
+            if (filenameStr != "answers" && filenameStr != 'materials') {
+              if(!('$id.pdf' == filenameStr && id?.length == 6)){
+                students.add(filenameStr);
+              }     
+            }
           });
         });
 
@@ -285,8 +288,13 @@ class _Assignment_DetailsState extends State<Assignment_Details> {
       var answer = "";
       if (!isSolutionKey) answer = "/answers";
       var path = "$term/${widget.sectionID}/${assignment.id}$answer";
-      var filename = students.firstWhere((entry) => entry.contains("$id"));
-      print(filename);
+      var filename = "";
+      if(id?.length == 6){
+        filename = "$id.pdf";
+      } else {
+        filename = students.firstWhere((entry) => entry.contains("$id"));
+      }
+
       var url = Uri.parse(
           'http://localhost:8080/document?path=$path/$filename');
 
