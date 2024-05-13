@@ -37,7 +37,7 @@ class _QuestionHomepageState extends State<QuestionHomepage> {
 
   String? role = "unknown";
   //var histories = [[], []];
-  List<double>? histories;
+  List<double> histories = [];
   @override
   void initState() {
     super.initState();
@@ -140,6 +140,7 @@ class _QuestionHomepageState extends State<QuestionHomepage> {
     for (var questionData in responseData['questions'] as List<dynamic>) {
       final question = Question.fromJson(questionData);
       parsedQuestions.add(question);
+      histories.add(calculateAverageGrade(questionData!["history"]));
     }
     setState(() {
       questions = parsedQuestions;
@@ -153,7 +154,6 @@ class _QuestionHomepageState extends State<QuestionHomepage> {
     for (var entry in history) {
       sum += entry['grade'];
     }
-    histories?.add(sum / history.length);
     return sum / history.length;
   }
 
@@ -378,6 +378,11 @@ class _QuestionHomepageState extends State<QuestionHomepage> {
                                   'Topics',
                                 ),
                               ),
+                              Expanded(
+                                child: Text(
+                                  'Avg Grade',
+                                ),
+                              ),
                             ],
                           ),
                         ),
@@ -417,11 +422,11 @@ class _QuestionHomepageState extends State<QuestionHomepage> {
                                         ),
                                       ),
                                       // Expanded column for average grade
-                                      /*Expanded(
+                                      Expanded(
                                         child: Text(
                                           '${histories != null ? histories![index].toStringAsFixed(0) : "N/A"}', // Display average grade or "N/A" if not available
                                         ),
-                                      ),*/
+                                      ),
                                     ],
                                   ),
                                 );
