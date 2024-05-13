@@ -146,6 +146,16 @@ class _AnalysisPageState extends State<AnalysisPage> {
 
   @override
   Widget build(BuildContext context) {
+    List<double>? sortedAttendancePercentages =
+        List.from(attendancePercentages!);
+    List<double>? sortedGrades = List.from(grades!);
+
+    // Sort both lists based on attendance percentages
+    sortedAttendancePercentages.sort((a, b) => b.compareTo(a));
+    sortedGrades = sortedAttendancePercentages.map((percentage) {
+      int index = attendancePercentages!.indexOf(percentage);
+      return grades![index];
+    }).toList();
     return Scaffold(
       appBar: CustomAppBar(role: widget.role),
       body: Row(
@@ -196,8 +206,8 @@ class _AnalysisPageState extends State<AnalysisPage> {
                                     spots: List.generate(
                                       attendancePercentages!.length,
                                       (index) => FlSpot(
-                                        attendancePercentages![index],
-                                        grades![index],
+                                        sortedAttendancePercentages![index],
+                                        sortedGrades![index],
                                       ),
                                     ),
                                     isCurved: true,
