@@ -17,6 +17,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:intl/intl.dart';
+import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 
 class Section_Details extends StatefulWidget {
@@ -316,76 +317,119 @@ class _Section_DetailsState extends State<Section_Details> {
                     gradeData['grade'] != null))
             .toList();
 
-      print(filteredAssignments);
-      
-      /*final List<Map<String, dynamic>> dataGrade =
-          List<Map<String, dynamic>>.from(neworesponseJson['data']);*/
-
-      /*final pdf = pw.Document();
+      final pdf = pw.Document();
 
       final ByteData datao =
           await rootBundle.load('lib/Assets/fonts/Roboto-Regular.ttf');
       final ttf = pw.Font.ttf(datao);
 
-      pdf.addPage(pw.Page(build: (pw.Context context) {
-        return pw.Column(
-          crossAxisAlignment: pw.CrossAxisAlignment.start,
-          children: [
-            pw.Text('Attendance Report for Student: $studentName',
-                style: pw.TextStyle(font: ttf, fontSize: 25)),
-            pw.SizedBox(height: 20),
-            pw.Table(
-              children: [
-                pw.TableRow(
-                  children: ['Date', 'Attended Hour', 'Total Hour']
-                      .map((header) => pw.Text(header,
-                          style: pw.TextStyle(font: ttf, fontSize: 20)))
-                      .toList(),
-                ),
-                ...data
-                    .map((entry) => pw.TableRow(
-                          children: [
-                            DateFormat('MMM dd, yyyy')
-                                .format(DateTime.parse(entry['date'])),
-                            entry['hour'].toString(),
-                            entry['totalHour'].toString()
-                          ]
-                              .map((value) => pw.Text(value,
-                                  style: pw.TextStyle(font: ttf, fontSize: 15)))
-                              .toList(),
+      pdf.addPage(
+  pw.Page(
+    build: (pw.Context context) {
+      return pw.Column(
+        crossAxisAlignment: pw.CrossAxisAlignment.start,
+        children: [
+          pw.Text(
+            'Attendance Report for Student: $studentName',
+            style: pw.TextStyle(font: ttf, fontSize: 25, fontWeight: pw.FontWeight.bold),
+          ),
+          pw.SizedBox(height: 20),
+          pw.Table(
+            border: pw.TableBorder.all(width: 1, color: PdfColors.grey),
+            columnWidths: {0: pw.FlexColumnWidth(1.5), 1: pw.FlexColumnWidth(1.0), 2: pw.FlexColumnWidth(1.0)},
+            children: [
+              pw.TableRow(
+                children: ['Date', 'Attended Hour', 'Total Hour']
+                    .map((header) => pw.Container(
+                          alignment: pw.Alignment.center,
+                          padding: const pw.EdgeInsets.all(5),
+                          child: pw.Text(header, style: pw.TextStyle(font: ttf, fontSize: 20)),
                         ))
                     .toList(),
-              ],
-            ),
-            /*pw.Text('Attendance Report for Student: $studentName',
-                style: pw.TextStyle(font: ttf, fontSize: 25)),
-            pw.SizedBox(height: 20),
-            pw.Table(
-              children: [
-                pw.TableRow(
-                  children: ['Date', 'Attended Hour', 'Total Hour']
-                      .map((header) => pw.Text(header,
-                          style: pw.TextStyle(font: ttf, fontSize: 20)))
-                      .toList(),
+              ),
+              ...data.map(
+                (entry) => pw.TableRow(
+                  children: [
+                    pw.Container(
+                      alignment: pw.Alignment.center,
+                      padding: const pw.EdgeInsets.all(5),
+                      child: pw.Text(
+                        DateFormat('MMM dd, yyyy').format(DateTime.parse(entry['date'])),
+                        style: pw.TextStyle(font: ttf, fontSize: 15),
+                      ),
+                    ),
+                    pw.Container(
+                      alignment: pw.Alignment.center,
+                      padding: const pw.EdgeInsets.all(5),
+                      child: pw.Text(
+                        entry['hour'].toString(),
+                        style: pw.TextStyle(font: ttf, fontSize: 15),
+                      ),
+                    ),
+                    pw.Container(
+                      alignment: pw.Alignment.center,
+                      padding: const pw.EdgeInsets.all(5),
+                      child: pw.Text(
+                        entry['totalHour'].toString(),
+                        style: pw.TextStyle(font: ttf, fontSize: 15),
+                      ),
+                    )
+                  ],
                 ),
-                ...data
-                    .map((entry) => pw.TableRow(
-                          children: [
-                            DateFormat('MMM dd, yyyy')
-                                .format(DateTime.parse(entry['date'])),
-                            entry['hour'].toString(),
-                            entry['totalHour'].toString()
-                          ]
-                              .map((value) => pw.Text(value,
-                                  style: pw.TextStyle(font: ttf, fontSize: 15)))
-                              .toList(),
+              ),
+            ],
+          ),
+          pw.SizedBox(height: 20),
+          pw.Text(
+            'Grades Report for Student: $studentName',
+            style: pw.TextStyle(font: ttf, fontSize: 25, fontWeight: pw.FontWeight.bold),
+          ),
+          pw.SizedBox(height: 20),
+          pw.Table(
+            border: pw.TableBorder.all(width: 1, color: PdfColors.grey),
+            columnWidths: {0: pw.FlexColumnWidth(1.5), 1: pw.FlexColumnWidth(1.0)},
+            children: [
+              pw.TableRow(
+                children: ['Assignment', 'Grade']
+                    .map((header) => pw.Container(
+                          alignment: pw.Alignment.center,
+                          padding: const pw.EdgeInsets.all(5),
+                          child: pw.Text(header, style: pw.TextStyle(font: ttf, fontSize: 20)),
                         ))
                     .toList(),
-              ],
-            ),*/ //Enter grade values here
-          ],
-        );
-      }));
+              ),
+              ...filteredAssignments.map(
+                (assignment) => pw.TableRow(
+                  children: [
+                    pw.Container(
+                      alignment: pw.Alignment.center,
+                      padding: const pw.EdgeInsets.all(5),
+                      child: pw.Text(
+                        assignment['name'].toString(),
+                        style: pw.TextStyle(font: ttf, fontSize: 15),
+                      ),
+                    ),
+                    pw.Container(
+                      alignment: pw.Alignment.center,
+                      padding: const pw.EdgeInsets.all(5),
+                      child: pw.Text(
+                        assignment['grades']
+                            .firstWhere((grade) => grade['studentID'] == studentName)['grade']
+                            .toString(),
+                        style: pw.TextStyle(font: ttf, fontSize: 15),
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ],
+      );
+    },
+  ),
+);
+
 
       final Uint8List pdfBytes = await pdf.save();
       final blob = html.Blob([pdfBytes]);
@@ -394,7 +438,7 @@ class _Section_DetailsState extends State<Section_Details> {
       final anchor = html.AnchorElement(href: url.toString())
         ..setAttribute('download', filename)
         ..click();
-      html.Url.revokeObjectUrl(url.toString());*/
+      html.Url.revokeObjectUrl(url.toString());
     } catch (e) {
       print('Error deletin file: $e');
     }
