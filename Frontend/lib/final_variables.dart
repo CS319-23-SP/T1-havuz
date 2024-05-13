@@ -37,6 +37,7 @@ class AssetLocations {
   static const String bilkentLogo = "lib/Assets/bilkent_logo.png";
   static const String loginDesign = "lib/Assets/login_design.png";
   static const String userPhoto = "lib/Assets/user_photo.jpg";
+  static const String defaultt = "lib/Assets/default.jpg";
 }
 
 const List<String> examButtonList = <String>[
